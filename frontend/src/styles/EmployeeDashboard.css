@@ -1,0 +1,86 @@
+.employee-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 230px;
+  background: #1e1e2f;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar .logo {
+  margin-bottom: 10px;
+}
+
+.sidebar .menu button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #2c2c3e;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.sidebar .menu button.active {
+  background: #4caf50;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  padding: 25px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+/* TABLE */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.styled-table th, .styled-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.present {
+  color: green;
+  font-weight: bold;
+}
+
+.absent {
+  color: red;
+  font-weight: bold;
+}
+
+/* CALENDAR COLORS */
+.present-day {
+  background: #b2f5b0 !important;
+}
+
+.absent-day {
+  background: #ffb3b3 !important;
+}
+
+.toggle-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 15px;   /* <-- adds space before the table */
+}
+
+
+

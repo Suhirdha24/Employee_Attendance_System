@@ -1,0 +1,77 @@
+.dash-container {
+  padding: 25px;
+}
+
+.dash-title {
+  font-size: 34px;
+  font-weight: bold;
+  color: #2b2bff;
+  text-align: center;
+}
+
+.dash-welcome {
+  text-align: center;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.dash-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.btn-group {
+  margin-top: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 0;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn-primary {
+  background: #2575fc;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6a11cb;
+  color: white;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+}
+
+.styled-table th {
+  background: #2575fc;
+  color: white;
+  padding: 10px;
+}
+
+.styled-table td {
+  padding: 10px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+
+.green {
+  color: green;
+  font-weight: bold;
+}
+
+.red {
+  color: red;
+  font-weight: bold;
+}

@@ -1,0 +1,70 @@
+/* NAVBAR WRAPPER */
+.navbar {
+  width: 100%;
+  background: #03242c;
+  padding: 12px 20px;
+  color: white;
+  box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+}
+
+/* NAV INNER CONTAINER */
+.nav-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* LOGO */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* NAVLINKS */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item {
+  color: white;
+  text-decoration: none;
+  font-size: 17px;
+  transition: 0.3s;
+}
+
+.nav-item:hover {
+  text-decoration: underline;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  background: #0c8c91;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #0dd4e2;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+}

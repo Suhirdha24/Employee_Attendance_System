@@ -1,0 +1,72 @@
+.manager-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #1b263b;
+  color: white;
+  padding: 25px;
+}
+
+.logo {
+  font-size: 26px;
+  margin-bottom: 25px;
+}
+
+.menu button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #415a77;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.menu button.active {
+  background: #778da9;
+  font-weight: bold;
+}
+
+.export-btn {
+  background: #4b7bec !important;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background: #f8f9fa;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.present {
+  color: green;
+  font-weight: bold;
+}
+
+.absent {
+  color: red;
+  font-weight: bold;
+}
+
+.chart-box {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 750px;
+}
