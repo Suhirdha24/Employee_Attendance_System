@@ -126,5 +126,14 @@ This project is part of the Tap Academy SDE Internship Drive Task.
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure 
+<img width="1222" height="667" alt="image" src="https://github.com/user-attachments/assets/5295af9a-4d5f-4e4b-b6f8-976c42566185" />
+<img width="1163" height="535" alt="image" src="https://github.com/user-attachments/assets/ad6adb1d-76c8-4ab0-90e6-6ad946eff3b3" />
+<img width="1064" height="498" alt="image" src="https://github.com/user-attachments/assets/6151f3a1-dd56-4e24-b269-242ef01f0ba4" />
+<img width="1109" height="528" alt="image" src="https://github.com/user-attachments/assets/8ad705e3-1d90-4332-891d-417908319a5a" />
+<img width="1255" height="621" alt="image" src="https://github.com/user-attachments/assets/76b37966-5c71-42c2-8a5a-a55e91bf752f" />
+<img width="983" height="580" alt="image" src="https://github.com/user-attachments/assets/b2cdaf05-60dd-4c41-943a-7672a781d4ed" />
+<img width="710" height="558" alt="image" src="https://github.com/user-attachments/assets/1765b9c5-36a0-45cd-b763-f2b462082434" />
+
+
 
