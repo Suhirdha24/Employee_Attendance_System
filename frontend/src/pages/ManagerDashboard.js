@@ -164,12 +164,21 @@ export default function ManagerDashboard() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <button className="btn btn-outline" onClick={handleExportCSV}>
             📥 Export CSV
           </button>
+          <Link to="/manager/all-attendance" className="btn btn-outline" style={{ textDecoration: "none" }}>
+            📋 All Records
+          </Link>
+          <Link to="/manager/calendar" className="btn btn-outline" style={{ textDecoration: "none" }}>
+            📅 Team Calendar
+          </Link>
+          <Link to="/manager/reports" className="btn btn-outline" style={{ textDecoration: "none" }}>
+            📑 Reports
+          </Link>
           <Link to="/manager/charts" className="btn btn-primary" style={{ textDecoration: "none" }}>
-            📊 Visual Analytics →
+            📊 Analytics →
           </Link>
         </div>
       </div>

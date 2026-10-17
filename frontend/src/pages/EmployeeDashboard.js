@@ -269,13 +269,22 @@ export default function EmployeeDashboard() {
             {actionLoading ? "Processing..." : isCheckedOut ? "✓ Checked Out" : "⏹ Mark Check-Out"}
           </button>
 
-          <Link
-            to="/employee/history"
-            className="btn btn-outline"
-            style={{ marginLeft: "auto", textDecoration: "none" }}
-          >
-            📅 View Calendar & History →
-          </Link>
+          <div style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+            <Link
+              to="/employee/mark-attendance"
+              className="btn btn-outline"
+              style={{ textDecoration: "none" }}
+            >
+              ⏱ Punch Terminal
+            </Link>
+            <Link
+              to="/employee/history"
+              className="btn btn-outline"
+              style={{ textDecoration: "none" }}
+            >
+              📅 View History →
+            </Link>
+          </div>
         </div>
       </div>
 

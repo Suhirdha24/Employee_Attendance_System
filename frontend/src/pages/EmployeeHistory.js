@@ -212,7 +212,7 @@ export default function EmployeeHistory() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
                 <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(168, 85, 247, 0.4)", border: "1px solid #c084fc" }} />
-                <span>Half-Day (<4.5 hrs)</span>
+                <span>Half-Day (&lt; 4.5 hrs)</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
                 <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #f87171" }} />

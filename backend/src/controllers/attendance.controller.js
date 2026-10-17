@@ -385,11 +385,17 @@ exports.teamSummary = async (req, res) => {
 // MANAGER — EXPORT ATTENDANCE CSV
 exports.exportCSV = async (req, res) => {
   try {
-    const { startDate, endDate, department } = req.query;
+    const { startDate, endDate, department, status, employeeId } = req.query;
     let query = {};
 
     if (startDate && endDate) {
       query.date = { $gte: startDate, $lte: endDate };
+    } else if (startDate) {
+      query.date = { $gte: startDate };
+    }
+
+    if (status && status !== "all") {
+      query.status = status;
     }
 
     let records = await Attendance.find(query)
@@ -401,6 +407,12 @@ exports.exportCSV = async (req, res) => {
     if (department && department !== "all") {
       records = records.filter(
         (r) => r.userId.department && r.userId.department.toLowerCase() === department.toLowerCase()
+      );
+    }
+
+    if (employeeId) {
+      records = records.filter(
+        (r) => r.userId.employeeId && r.userId.employeeId.toLowerCase() === employeeId.toLowerCase()
       );
     }
 

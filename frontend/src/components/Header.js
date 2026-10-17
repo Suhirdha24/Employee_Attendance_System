@@ -54,12 +54,20 @@ export default function Header() {
                 Dashboard
               </Link>
               <Link
+                to="/employee/mark-attendance"
+                className={`nav-link ${
+                  isActive("/employee/mark-attendance") ? "active" : ""
+                }`}
+              >
+                Mark Attendance
+              </Link>
+              <Link
                 to="/employee/history"
                 className={`nav-link ${
                   isActive("/employee/history") ? "active" : ""
                 }`}
               >
-                History & Calendar
+                History
               </Link>
               <Link
                 to="/employee/profile"
@@ -79,7 +87,31 @@ export default function Header() {
                 to="/manager"
                 className={`nav-link ${isActive("/manager") ? "active" : ""}`}
               >
-                Command Center
+                Dashboard
+              </Link>
+              <Link
+                to="/manager/all-attendance"
+                className={`nav-link ${
+                  isActive("/manager/all-attendance") ? "active" : ""
+                }`}
+              >
+                All Attendance
+              </Link>
+              <Link
+                to="/manager/calendar"
+                className={`nav-link ${
+                  isActive("/manager/calendar") ? "active" : ""
+                }`}
+              >
+                Team Calendar
+              </Link>
+              <Link
+                to="/manager/reports"
+                className={`nav-link ${
+                  isActive("/manager/reports") ? "active" : ""
+                }`}
+              >
+                Reports
               </Link>
               <Link
                 to="/manager/charts"

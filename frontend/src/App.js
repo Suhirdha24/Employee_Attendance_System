@@ -6,9 +6,13 @@ import { getMe } from "./features/authSlice";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import MarkAttendance from "./pages/MarkAttendance";
 import EmployeeHistory from "./pages/EmployeeHistory";
 import EmployeeProfile from "./pages/EmployeeProfile";
 import ManagerDashboard from "./pages/ManagerDashboard";
+import AllEmployeesAttendance from "./pages/AllEmployeesAttendance";
+import TeamCalendarView from "./pages/TeamCalendarView";
+import ReportsPage from "./pages/ReportsPage";
 import ManagerCharts from "./pages/ManagerCharts";
 import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -51,12 +55,20 @@ export default function App() {
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* EMPLOYEE ROUTES */}
+              {/* EMPLOYEE ROUTES (SPECIFIED IN README) */}
               <Route
                 path="/employee"
                 element={
                   <PrivateRoute roles={["employee"]}>
                     <EmployeeDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/employee/mark-attendance"
+                element={
+                  <PrivateRoute roles={["employee"]}>
+                    <MarkAttendance />
                   </PrivateRoute>
                 }
               />
@@ -77,12 +89,36 @@ export default function App() {
                 }
               />
 
-              {/* MANAGER ROUTES */}
+              {/* MANAGER ROUTES (SPECIFIED IN README) */}
               <Route
                 path="/manager"
                 element={
                   <PrivateRoute roles={["manager"]}>
                     <ManagerDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/manager/all-attendance"
+                element={
+                  <PrivateRoute roles={["manager"]}>
+                    <AllEmployeesAttendance />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/manager/calendar"
+                element={
+                  <PrivateRoute roles={["manager"]}>
+                    <TeamCalendarView />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/manager/reports"
+                element={
+                  <PrivateRoute roles={["manager"]}>
+                    <ReportsPage />
                   </PrivateRoute>
                 }
               />
