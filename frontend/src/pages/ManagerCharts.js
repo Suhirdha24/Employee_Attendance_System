@@ -1,62 +1,164 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/api";
-import { useSelector } from "react-redux";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
 import { Link } from "react-router-dom";
-import "../styles/ManagerDashboard.css";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  CartesianGrid,
+  LineChart,
+  Line,
+} from "recharts";
 
 export default function ManagerCharts() {
-  const auth = useSelector((s) => s.auth);
+  const [dashboardData, setDashboardData] = useState(null);
   const [todayList, setTodayList] = useState([]);
-
-  const loadToday = async () => {
-    try {
-      const res = await API.get("/attendance/all-today");
-      setTodayList(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadToday();
+    Promise.all([API.get("/dashboard/manager"), API.get("/attendance/all-today")])
+      .then(([dashRes, todayRes]) => {
+        setDashboardData(dashRes.data);
+        setTodayList(todayRes.data);
+      })
+      .catch((err) => console.error("Error loading analytics:", err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const chartData = todayList.map((e) => ({
-    name: e.name,
-    hours: e.totalHours === "-" ? 0 : Number(e.totalHours),
+  // Employee hours data for today
+  const employeeHoursData = todayList.map((e) => ({
+    name: e.name ? e.name.split(" ")[0] : "Emp",
+    fullName: e.name,
+    department: e.department || "General",
+    hours: typeof e.totalHours === "number" ? e.totalHours : parseFloat(e.totalHours) || 0,
+    status: e.status,
   }));
 
+  // Daily trends for the past 7 days
+  const dailyTrends = dashboardData?.dailyTrends || [];
+
   return (
-    <div className="manager-wrapper">
-
-      {/* SIDEBAR */}
-      <aside className="sidebar">
-        <h2 className="logo">📊 Manager</h2>
-
-        <nav className="menu">
-          <Link to="/manager"><button>📅 Today's Report</button></Link>
-          <Link to="/manager"><button>📁 All Records</button></Link>
-          <button className="active">📈 Visualization</button>
-        </nav>
-      </aside>
-
-      {/* CHART PAGE */}
-      <main className="main-content">
-        <h2>📈 Daily Working Hours Chart</h2>
-
-        <div className="chart-box">
-          <BarChart width={700} height={350} data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis label={{ value: "Hours", angle: -90, position: "insideLeft" }} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="hours" fill="#4b7bec" />
-          </BarChart>
+    <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+      {/* HEADER */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "16px",
+          marginBottom: "24px",
+        }}
+      >
+        <div>
+          <span style={{ fontSize: "12px", color: "var(--accent-cyan)", fontWeight: 700, textTransform: "uppercase" }}>
+            Data Intelligence
+          </span>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Workforce Analytics & Trends</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
+            Visual analysis of shift durations, 7-day presence curves, and team workloads
+          </p>
         </div>
-      </main>
 
+        <Link to="/manager" className="btn btn-outline" style={{ textDecoration: "none" }}>
+          ← Back to Command Center
+        </Link>
+      </div>
+
+      {/* CHARTS GRID */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: "24px" }}>
+        {/* CHART 1: TODAY'S HOURS BY EMPLOYEE */}
+        <div className="card">
+          <div style={{ marginBottom: "16px" }}>
+            <h2 style={{ fontSize: "18px" }}>Today: Working Hours per Employee</h2>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+              Logged shift durations for all employees today
+            </p>
+          </div>
+
+          <div style={{ width: "100%", height: 320 }}>
+            {employeeHoursData.length === 0 ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-dim)" }}>
+                {loading ? "Loading chart data..." : "No employee activity logged yet today."}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={employeeHoursData} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
+                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} unit="h" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(17, 24, 39, 0.95)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "8px",
+                      color: "#fff",
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
+                  <Bar dataKey="hours" name="Hours Worked" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
+        {/* CHART 2: 7-DAY ATTENDANCE & HOURS TREND */}
+        <div className="card">
+          <div style={{ marginBottom: "16px" }}>
+            <h2 style={{ fontSize: "18px" }}>7-Day Team Trend: Presence & Total Hours</h2>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+              Aggregated daily present count and total company hours
+            </p>
+          </div>
+
+          <div style={{ width: "100%", height: 320 }}>
+            {dailyTrends.length === 0 ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-dim)" }}>
+                {loading ? "Loading trends..." : "No trend history recorded yet."}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyTrends} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
+                  <XAxis dataKey="date" stroke="#9ca3af" fontSize={11} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(17, 24, 39, 0.95)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "8px",
+                      color: "#fff",
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="present"
+                    name="Employees Present"
+                    stroke="#10b981"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="hours"
+                    name="Total Team Hours"
+                    stroke="#06b6d4"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
+                    dot={{ r: 3 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
