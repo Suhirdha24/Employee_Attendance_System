@@ -13,10 +13,18 @@ export default function Header() {
   return (
     <header className="navbar">
       <div className="nav-container">
-        {/* BRAND LOGO */}
+        {/* CORPORATE BRAND LOGO */}
         <Link to="/" className="brand-logo">
-          <div className="brand-icon">⚡</div>
-          <span>NexTrack</span>
+          <div className="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <div>
+            <span className="brand-title">StaffTrack HRMS</span>
+            <span className="brand-sub">Workforce Attendance Management</span>
+          </div>
         </Link>
 
         {/* NAVIGATION LINKS */}

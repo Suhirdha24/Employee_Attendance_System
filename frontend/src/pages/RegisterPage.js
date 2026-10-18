@@ -22,7 +22,7 @@ export default function RegisterPage() {
 
     const res = await dispatch(register({ name, email, password, role, department }));
     if (res.meta.requestStatus === "fulfilled") {
-      addToast("Account registered successfully! Welcome aboard.", "success");
+      addToast("Account registered successfully. Welcome to StaffTrack.", "success");
       if (role === "manager") nav("/manager");
       else nav("/employee");
     } else {
@@ -32,32 +32,37 @@ export default function RegisterPage() {
 
   return (
     <div style={{ maxWidth: "480px", margin: "50px auto", padding: "0 16px" }}>
-      <div className="card glass-card">
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+      <div className="card" style={{ padding: "36px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div
             style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "14px",
-              background: "var(--accent-gradient)",
+              width: "44px",
+              height: "44px",
+              borderRadius: "8px",
+              background: "var(--primary)",
+              color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "22px",
-              margin: "0 auto 12px",
+              fontSize: "18px",
+              fontWeight: 800,
+              margin: "0 auto 14px",
+              boxShadow: "var(--shadow-sm)",
             }}
           >
-            🚀
+            ST
           </div>
-          <h2 style={{ fontSize: "24px" }}>Create an Account</h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
-            Join the team and start logging your attendance
+          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>
+            Employee Registration
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
+            Provision a new workforce profile in the attendance management system
           </p>
         </div>
 
         <form onSubmit={handleRegister}>
           <div className="form-group">
-            <label className="form-label">Full Name</label>
+            <label className="form-label">Full Legal Name</label>
             <input
               className="form-input"
               value={name}
@@ -68,13 +73,13 @@ export default function RegisterPage() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Work Email</label>
+            <label className="form-label">Corporate Email Address</label>
             <input
               className="form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. alex@company.com"
+              placeholder="e.g. alex.johnson@company.com"
               required
             />
           </div>
@@ -93,21 +98,21 @@ export default function RegisterPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
             <div className="form-group">
-              <label className="form-label">Role</label>
+              <label className="form-label">Assigned Role</label>
               <select
-                className="form-select"
+                className="input-field"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
                 <option value="employee">Employee</option>
-                <option value="manager">Manager</option>
+                <option value="manager">Manager / Admin</option>
               </select>
             </div>
 
             <div className="form-group">
               <label className="form-label">Department</label>
               <select
-                className="form-select"
+                className="input-field"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
               >
@@ -124,22 +129,33 @@ export default function RegisterPage() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", marginTop: "12px", padding: "12px" }}
+            style={{ width: "100%", marginTop: "12px", padding: "11px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Creating Account..." : "Create Account"}
+            {auth.loading ? "Creating Profile..." : "Create Workforce Account"}
           </button>
 
           {auth.error && (
-            <p style={{ color: "#f87171", fontSize: "13px", marginTop: "12px", textAlign: "center" }}>
+            <div
+              style={{
+                marginTop: "14px",
+                padding: "10px 12px",
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                borderRadius: "6px",
+                color: "#991b1b",
+                fontSize: "13px",
+                textAlign: "center",
+              }}
+            >
               {auth.error}
-            </p>
+            </div>
           )}
         </form>
 
         <div style={{ marginTop: "24px", textAlign: "center", fontSize: "13px", color: "var(--text-muted)" }}>
           Already have an account?{" "}
-          <Link to="/login" style={{ fontWeight: 600 }}>
+          <Link to="/login" style={{ color: "var(--accent-blue)", fontWeight: 600 }}>
             Sign In
           </Link>
         </div>

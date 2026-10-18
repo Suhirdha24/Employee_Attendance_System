@@ -37,7 +37,6 @@ export default function TeamCalendarView() {
       ]);
 
       setAllAttendance(attRes.data);
-      // Derive list of unique employees
       setEmployees(todayRes.data);
     } catch (err) {
       console.error("Team calendar load error:", err);
@@ -124,13 +123,13 @@ export default function TeamCalendarView() {
       const isMedium = presentCount >= 2;
 
       return (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "4px" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "3px" }}>
           <span
             style={{
-              width: "6px",
-              height: "6px",
+              width: "5px",
+              height: "5px",
               borderRadius: "50%",
-              backgroundColor: isHigh ? "#10b981" : isMedium ? "#f59e0b" : "#ef4444",
+              backgroundColor: isHigh ? "var(--status-present-text)" : isMedium ? "var(--status-late-text)" : "var(--status-absent-text)",
               display: "inline-block",
             }}
           />
@@ -154,24 +153,24 @@ export default function TeamCalendarView() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-purple)", fontWeight: 700, textTransform: "uppercase" }}>
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Schedule & Availability
           </span>
-          <h1 style={{ fontSize: "30px", marginTop: "2px" }}>Team Calendar View</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Team Calendar & Daily Schedule</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Browse day-by-day attendance records, team presence heatmaps, and individual punch logs
+            Audit daily team turnout, departmental presence rates, and specific shift logs
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <Link to="/manager" className="btn btn-outline">
             ← Dashboard
           </Link>
           <Link to="/manager/all-attendance" className="btn btn-outline">
-            All Records Table
+            Attendance Table
           </Link>
           <Link to="/manager/reports" className="btn btn-primary">
-            Reports & Analytics →
+            Audit Reports →
           </Link>
         </div>
       </div>
@@ -181,7 +180,7 @@ export default function TeamCalendarView() {
         {/* LEFT COLUMN: INTERACTIVE CALENDAR */}
         <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <h2 style={{ fontSize: "18px" }}>Select Date</h2>
+            <h2 style={{ fontSize: "18px", color: "var(--text-main)" }}>Select Working Day</h2>
             <button
               className="btn btn-outline btn-sm"
               onClick={() => setSelectedDate(new Date())}
@@ -204,7 +203,7 @@ export default function TeamCalendarView() {
             style={{
               marginTop: "20px",
               paddingTop: "16px",
-              borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+              borderTop: "1px solid var(--border-subtle)",
               width: "100%",
               display: "flex",
               justifyContent: "space-around",
@@ -213,15 +212,15 @@ export default function TeamCalendarView() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }} />
-              High Presence (&gt;80%)
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#059669" }} />
+              High Turnout (&gt;80%)
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#f59e0b" }} />
-              Partial (50-80%)
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#d97706" }} />
+              Moderate (50-80%)
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444" }} />
+              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#dc2626" }} />
               Low (&lt;50%)
             </div>
           </div>
@@ -240,10 +239,10 @@ export default function TeamCalendarView() {
             }}
           >
             <div>
-              <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700 }}>
+              <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase" }}>
                 {selectedDate.toLocaleDateString("en-US", { weekday: "long" })}
               </span>
-              <h2 style={{ fontSize: "20px" }}>{selectedDateStr}</h2>
+              <h2 style={{ fontSize: "20px", color: "var(--text-main)" }}>{selectedDateStr}</h2>
             </div>
 
             {/* DEPARTMENT FILTER */}
@@ -266,45 +265,45 @@ export default function TeamCalendarView() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
-              gap: "10px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+              gap: "8px",
               marginBottom: "20px",
             }}
           >
-            <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Turnout</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--accent-cyan)" }}>
+            <div style={{ background: "var(--bg-surface)", padding: "10px", borderRadius: "6px", border: "1px solid var(--border-subtle)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Turnout</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--primary)" }}>
                 {dayMetrics.rate}%
               </div>
             </div>
-            <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Present</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "#34d399" }}>
+            <div style={{ background: "var(--status-present-bg)", padding: "10px", borderRadius: "6px", border: "1px solid var(--status-present-border)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--status-present-text)", textTransform: "uppercase" }}>Present</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-present-text)" }}>
                 {dayMetrics.present}
               </div>
             </div>
-            <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Late</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "#fbbf24" }}>
+            <div style={{ background: "var(--status-late-bg)", padding: "10px", borderRadius: "6px", border: "1px solid var(--status-late-border)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--status-late-text)", textTransform: "uppercase" }}>Late</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-late-text)" }}>
                 {dayMetrics.late}
               </div>
             </div>
-            <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Half-Day</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "#c084fc" }}>
+            <div style={{ background: "var(--status-half-bg)", padding: "10px", borderRadius: "6px", border: "1px solid var(--status-half-border)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--status-half-text)", textTransform: "uppercase" }}>Half-Day</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-half-text)" }}>
                 {dayMetrics.halfDay}
               </div>
             </div>
-            <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Absent</div>
-              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "#f87171" }}>
+            <div style={{ background: "var(--status-absent-bg)", padding: "10px", borderRadius: "6px", border: "1px solid var(--status-absent-border)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--status-absent-text)", textTransform: "uppercase" }}>Absent</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-absent-text)" }}>
                 {dayMetrics.absent}
               </div>
             </div>
           </div>
 
           {/* DAY ATTENDANCE LIST */}
-          <div style={{ maxHeight: "380px", overflowY: "auto", border: "1px solid rgba(255, 255, 255, 0.06)", borderRadius: "8px" }}>
+          <div style={{ maxHeight: "380px", overflowY: "auto", border: "1px solid var(--border-medium)", borderRadius: "6px" }}>
             <table className="custom-table" style={{ fontSize: "13px" }}>
               <thead>
                 <tr>
@@ -312,14 +311,14 @@ export default function TeamCalendarView() {
                   <th>Department</th>
                   <th>In</th>
                   <th>Out</th>
-                  <th>Hours</th>
+                  <th>Duration</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "30px" }}>
+                    <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
                       Loading team attendance...
                     </td>
                   </tr>
@@ -333,12 +332,12 @@ export default function TeamCalendarView() {
                   selectedDayRecords.map((r, idx) => (
                     <tr key={idx}>
                       <td>
-                        <div style={{ fontWeight: 600 }}>{r.name}</div>
-                        <div style={{ fontSize: "11px", color: "var(--text-dim)" }}>{r.employeeId}</div>
+                        <div style={{ fontWeight: 600, color: "var(--text-main)" }}>{r.name}</div>
+                        <div style={{ fontSize: "11px", color: "var(--text-muted)", fontFamily: "monospace" }}>{r.employeeId}</div>
                       </td>
                       <td>{r.department}</td>
-                      <td>{formatTime(r.checkInTime)}</td>
-                      <td>{formatTime(r.checkOutTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(r.checkInTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(r.checkOutTime)}</td>
                       <td style={{ fontWeight: 600 }}>
                         {typeof r.totalHours === "number" ? `${r.totalHours}h` : r.totalHours}
                       </td>

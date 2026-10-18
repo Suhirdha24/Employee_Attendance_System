@@ -102,7 +102,7 @@ export default function EmployeeDashboard() {
     <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
       {/* HEADER GREETING & DIGITAL CLOCK */}
       <div
-        className="card glass-card"
+        className="card"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -110,48 +110,48 @@ export default function EmployeeDashboard() {
           flexWrap: "wrap",
           gap: "20px",
           marginBottom: "24px",
-          background: "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(11, 15, 25, 0.95) 100%)",
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-            <span style={{ fontSize: "20px" }}>👋</span>
-            <span style={{ color: "var(--accent-cyan)", fontSize: "14px", fontWeight: "600" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+            <span style={{ color: "var(--accent-blue)", fontSize: "13px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.04em" }}>
               {user?.department || "General"} Department
             </span>
-            <span style={{ color: "var(--text-dim)" }}>•</span>
-            <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>ID: {user?.employeeId}</span>
+            <span style={{ color: "#cbd5e1" }}>•</span>
+            <span style={{ color: "#64748b", fontSize: "13px" }}>ID: {user?.employeeId}</span>
           </div>
-          <h1 style={{ fontSize: "28px" }}>
+          <h1 style={{ fontSize: "26px", color: "#0f172a" }}>
             {greeting}, {user?.name}
           </h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
-            Welcome to your attendance control hub. Have a productive day!
+          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "4px" }}>
+            Employee workstation & shift dashboard
           </p>
         </div>
 
         {/* LIVE CLOCK DISPLAY */}
         <div
           style={{
-            background: "var(--bg-surface)",
-            padding: "16px 24px",
-            borderRadius: "14px",
-            border: "1px solid var(--border-subtle)",
+            background: "#f8fafc",
+            padding: "14px 22px",
+            borderRadius: "6px",
+            border: "1px solid #e2e8f0",
             textAlign: "right",
           }}
         >
           <div
             style={{
-              fontFamily: "var(--font-heading)",
-              fontSize: "26px",
-              fontWeight: "800",
-              color: "#ffffff",
+              fontFamily: "monospace",
+              fontSize: "24px",
+              fontWeight: "700",
+              color: "#0f172a",
               letterSpacing: "0.05em",
             }}
           >
             {currentTime.toLocaleTimeString([], { hour12: true })}
           </div>
-          <div style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
+          <div style={{ color: "#64748b", fontSize: "12px", marginTop: "2px" }}>
             {currentTime.toLocaleDateString(undefined, {
               weekday: "long",
               year: "numeric",
@@ -167,7 +167,7 @@ export default function EmployeeDashboard() {
         className="card"
         style={{
           marginBottom: "24px",
-          border: isCheckedIn && !isCheckedOut ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid var(--border-subtle)",
+          border: "1px solid #e2e8f0",
         }}
       >
         <div
@@ -181,10 +181,10 @@ export default function EmployeeDashboard() {
           }}
         >
           <div>
-            <span style={{ fontSize: "12px", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, letterSpacing: "0.05em" }}>
-              TODAY'S SHIFT STATUS
+            <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748b", fontWeight: 700, letterSpacing: "0.05em" }}>
+              Today's Shift Status
             </span>
-            <h2 style={{ fontSize: "20px", marginTop: "4px" }}>Daily Punch & Time Log</h2>
+            <h2 style={{ fontSize: "18px", color: "#0f172a", marginTop: "2px" }}>Daily Attendance Record</h2>
           </div>
 
           <div>
@@ -207,30 +207,31 @@ export default function EmployeeDashboard() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "16px",
-            marginBottom: "24px",
-            background: "var(--bg-surface)",
+            gap: "14px",
+            marginBottom: "20px",
+            background: "#f8fafc",
             padding: "16px",
-            borderRadius: "12px",
+            borderRadius: "6px",
+            border: "1px solid #e2e8f0",
           }}
         >
           <div>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Check-In Time</span>
-            <p style={{ fontSize: "18px", fontWeight: 700, color: "#fff", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Check-In Timestamp</span>
+            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {formatTime(todayData?.attendance?.checkInTime)}
             </p>
           </div>
 
           <div>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Check-Out Time</span>
-            <p style={{ fontSize: "18px", fontWeight: 700, color: "#fff", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Check-Out Timestamp</span>
+            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {formatTime(todayData?.attendance?.checkOutTime)}
             </p>
           </div>
 
           <div>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Total Duration</span>
-            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--accent-cyan)", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Shift Duration</span>
+            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {activeDuration ? (
                 <span>{activeDuration}</span>
               ) : todayData?.attendance?.totalHours ? (
@@ -242,8 +243,8 @@ export default function EmployeeDashboard() {
           </div>
 
           <div>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Policy Standard</span>
-            <p style={{ fontSize: "13px", color: "var(--text-dim)", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Policy Standard</span>
+            <p style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>
               Grace punch: 09:30 AM
             </p>
           </div>

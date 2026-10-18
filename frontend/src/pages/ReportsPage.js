@@ -134,9 +134,9 @@ export default function ReportsPage() {
   // Status breakdown for Pie Chart
   const statusPieData = useMemo(() => {
     return [
-      { name: "Present", value: metrics.present, color: "#10b981" },
-      { name: "Late", value: metrics.late, color: "#f59e0b" },
-      { name: "Half-Day", value: metrics.halfDay, color: "#a855f7" },
+      { name: "Present", value: metrics.present, color: "#059669" },
+      { name: "Late", value: metrics.late, color: "#d97706" },
+      { name: "Half-Day", value: metrics.halfDay, color: "#4f46e5" },
     ].filter((item) => item.value > 0);
   }, [metrics]);
 
@@ -177,7 +177,7 @@ export default function ReportsPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    addToast("Report exported successfully as CSV!", "success");
+    addToast("Audit report exported successfully as CSV", "success");
   };
 
   return (
@@ -194,18 +194,18 @@ export default function ReportsPage() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-green)", fontWeight: 700, textTransform: "uppercase" }}>
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Executive Reporting
           </span>
-          <h1 style={{ fontSize: "30px", marginTop: "2px" }}>Attendance Reports & Audits</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Attendance Reports & Compliance Audits</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Comprehensive performance metrics, department evaluations, and audit exports
+            Comprehensive compliance scores, department evaluation, and verified timesheet exports
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <button className="btn btn-primary" onClick={handleExportReportCSV}>
-            📥 Download Report CSV
+            Download Report CSV
           </button>
           <Link to="/manager" className="btn btn-outline">
             Dashboard
@@ -226,13 +226,13 @@ export default function ReportsPage() {
           flexWrap: "wrap",
           gap: "16px",
           marginBottom: "24px",
-          padding: "16px 24px",
+          padding: "16px 20px",
         }}
       >
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
           <div>
-            <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-              Timeframe
+            <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "4px", fontWeight: 600 }}>
+              Audit Timeframe
             </label>
             <select
               className="input-field"
@@ -241,14 +241,14 @@ export default function ReportsPage() {
               style={{ width: "auto" }}
             >
               <option value="7">Last 7 Days</option>
-              <option value="30">Last 30 Days (Monthly)</option>
-              <option value="all">All Time Records</option>
+              <option value="30">Last 30 Days (Monthly Cycle)</option>
+              <option value="all">All-Time Historical</option>
             </select>
           </div>
 
           <div>
-            <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-              Department Filter
+            <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "4px", fontWeight: 600 }}>
+              Department Scope
             </label>
             <select
               className="input-field"
@@ -256,7 +256,7 @@ export default function ReportsPage() {
               onChange={(e) => setSelectedDept(e.target.value)}
               style={{ width: "auto" }}
             >
-              <option value="all">All Departments</option>
+              <option value="all">All Organizational Units</option>
               <option value="Engineering">Engineering</option>
               <option value="UI/UX Design">UI/UX Design</option>
               <option value="Human Resources">Human Resources</option>
@@ -267,7 +267,7 @@ export default function ReportsPage() {
         </div>
 
         <div style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-          Analyzing <strong>{metrics.totalRecords}</strong> entries across <strong>{employees.length}</strong> employees
+          Auditing <strong>{metrics.totalRecords}</strong> records across <strong>{employees.length}</strong> active staff members
         </div>
       </div>
 
@@ -276,40 +276,40 @@ export default function ReportsPage() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "18px",
-          marginBottom: "28px",
+          gap: "16px",
+          marginBottom: "24px",
         }}
       >
-        <div className="card" style={{ borderLeft: "4px solid var(--accent-cyan)" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Attendance Rate</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--accent-cyan)", marginTop: "6px" }}>
+        <div className="card" style={{ borderLeft: "4px solid var(--primary)" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Attendance Rate</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--primary)", marginTop: "6px" }}>
             {metrics.attendanceRate}%
           </div>
           <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Weighted compliance score</div>
         </div>
 
-        <div className="card" style={{ borderLeft: "4px solid #10b981" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Punctuality Rate</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "#10b981", marginTop: "6px" }}>
+        <div className="card" style={{ borderLeft: "4px solid #059669" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Punctuality Rate</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "#059669", marginTop: "6px" }}>
             {metrics.punctualityRate}%
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Checked in before 09:30 AM</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Punched in before 09:30 AM</div>
         </div>
 
-        <div className="card" style={{ borderLeft: "4px solid var(--accent-blue)" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Avg Daily Hours</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--accent-blue)", marginTop: "6px" }}>
+        <div className="card" style={{ borderLeft: "4px solid #2563eb" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Avg Daily Shift</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "#2563eb", marginTop: "6px" }}>
             {metrics.avgHours} hrs
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Per employee active shift</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Per active employee daily</div>
         </div>
 
-        <div className="card" style={{ borderLeft: "4px solid var(--accent-purple)" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Total Logged Hours</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--accent-purple)", marginTop: "6px" }}>
+        <div className="card" style={{ borderLeft: "4px solid #4f46e5" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Total Logged Hours</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "#4f46e5", marginTop: "6px" }}>
             {metrics.totalHours} h
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Total workforce productivity</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Total workforce output</div>
         </div>
       </div>
 
@@ -319,30 +319,32 @@ export default function ReportsPage() {
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
           gap: "24px",
-          marginBottom: "28px",
+          marginBottom: "24px",
         }}
       >
         {/* CHART: DEPARTMENT ATTENDANCE RATE */}
         <div className="card">
-          <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>Department Attendance Compliance (%)</h2>
+          <h2 style={{ fontSize: "18px", marginBottom: "4px", color: "var(--text-main)" }}>Department Attendance Compliance (%)</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "16px" }}>
-            Comparative turnout rates across organizational departments
+            Turnout compliance rates compared across departments
           </p>
 
           <div style={{ width: "100%", height: 260 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={departmentStats} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
-                <XAxis dataKey="name" stroke="#9ca3af" fontSize={11} />
-                <YAxis stroke="#9ca3af" fontSize={12} domain={[0, 100]} unit="%" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} unit="%" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "rgba(17, 24, 39, 0.95)",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    borderRadius: "8px",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "6px",
+                    boxShadow: "var(--shadow-md)",
+                    color: "#0f172a",
                   }}
                 />
-                <Bar dataKey="attendanceRate" name="Attendance %" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="attendanceRate" name="Attendance %" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -350,9 +352,9 @@ export default function ReportsPage() {
 
         {/* CHART: STATUS BREAKDOWN PIE */}
         <div className="card">
-          <h2 style={{ fontSize: "18px", marginBottom: "4px" }}>Attendance Status Distribution</h2>
+          <h2 style={{ fontSize: "18px", marginBottom: "4px", color: "var(--text-main)" }}>Shift Classification Distribution</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "16px" }}>
-            Proportion of Present, Late, and Half-day occurrences
+            Breakdown of Present, Late, and Half-day occurrences
           </p>
 
           <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -375,7 +377,14 @@ export default function ReportsPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      boxShadow: "var(--shadow-md)",
+                    }}
+                  />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -386,10 +395,10 @@ export default function ReportsPage() {
 
       {/* DEPARTMENT AUDIT SUMMARY TABLE */}
       <div className="card" style={{ padding: "0", overflow: "hidden" }}>
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
-          <h2 style={{ fontSize: "18px" }}>Department Audit Summary</h2>
+        <div style={{ padding: "18px 24px", borderBottom: "1px solid var(--border-subtle)", background: "#fafbfc" }}>
+          <h2 style={{ fontSize: "18px", color: "var(--text-main)" }}>Department Audit Performance Summary</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
-            Detailed breakdown of departmental headcount, working hours, and performance
+            Headcount breakdown, total logged shifts, and departmental rating
           </p>
         </div>
 
@@ -399,11 +408,11 @@ export default function ReportsPage() {
               <tr>
                 <th>Department</th>
                 <th>Headcount</th>
-                <th>Audited Records</th>
+                <th>Audited Shifts</th>
                 <th>Attendance Rate</th>
                 <th>Avg Working Hours</th>
                 <th>Total Hours</th>
-                <th style={{ textAlign: "right" }}>Health Rating</th>
+                <th style={{ textAlign: "right" }}>Compliance Status</th>
               </tr>
             </thead>
             <tbody>
@@ -411,10 +420,10 @@ export default function ReportsPage() {
                 const isHealthy = dept.attendanceRate >= 80;
                 return (
                   <tr key={idx}>
-                    <td style={{ fontWeight: 600 }}>{dept.name}</td>
+                    <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{dept.name}</td>
                     <td>{dept.headcount} members</td>
                     <td>{dept.totalRecords} shifts</td>
-                    <td style={{ fontWeight: 700, color: isHealthy ? "#34d399" : "#fbbf24" }}>
+                    <td style={{ fontWeight: 700, color: isHealthy ? "#059669" : "#d97706" }}>
                       {dept.attendanceRate}%
                     </td>
                     <td>{dept.avgHours} hrs/day</td>
@@ -423,11 +432,12 @@ export default function ReportsPage() {
                       <span
                         className="badge-pill"
                         style={{
-                          color: isHealthy ? "#34d399" : "#fbbf24",
-                          borderColor: isHealthy ? "rgba(16, 185, 129, 0.3)" : "rgba(245, 158, 11, 0.3)",
+                          background: isHealthy ? "var(--status-present-bg)" : "var(--status-late-bg)",
+                          color: isHealthy ? "var(--status-present-text)" : "var(--status-late-text)",
+                          borderColor: isHealthy ? "var(--status-present-border)" : "var(--status-late-border)",
                         }}
                       >
-                        {isHealthy ? "✓ Optimal" : "⚠️ Needs Review"}
+                        {isHealthy ? "Optimal" : "Needs Review"}
                       </span>
                     </td>
                   </tr>

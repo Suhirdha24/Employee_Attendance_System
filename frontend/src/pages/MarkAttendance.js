@@ -83,16 +83,17 @@ export default function MarkAttendance() {
       const hours = Math.floor(totalSecs / 3600);
       const mins = Math.floor((totalSecs % 3600) / 60);
       const secs = totalSecs % 60;
-      return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      return `${String(hours).padStart(2, "0")}h ${String(mins).padStart(2, "0")}m ${String(secs).padStart(2, "0")}s`;
     }
     return null;
   }, [isCheckedIn, isCheckedOut, todayData, currentTime]);
 
-  const isAfterLateCutoff = currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() > 30);
+  const isAfterLateCutoff =
+    currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() > 30);
 
   return (
-    <div style={{ maxWidth: "960px", margin: "0 auto", paddingBottom: "48px" }}>
-      {/* HEADER BREADCRUMB */}
+    <div style={{ maxWidth: "880px", margin: "0 auto", paddingBottom: "48px" }}>
+      {/* HEADER SECTION */}
       <div
         style={{
           display: "flex",
@@ -100,25 +101,25 @@ export default function MarkAttendance() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: "16px",
-          marginBottom: "28px",
+          marginBottom: "24px",
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-            Attendance Terminal
+          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Staff Workstation
           </span>
-          <h1 style={{ fontSize: "32px", marginTop: "4px" }}>Mark Today's Attendance</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "15px", marginTop: "4px" }}>
-            Record your daily punch in / punch out with automatic shift verification
+          <h1 style={{ fontSize: "28px", color: "#0f172a", marginTop: "2px" }}>Mark Attendance</h1>
+          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "2px" }}>
+            Record official daily punch in and punch out for shift tracking
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px" }}>
-          <Link to="/employee" className="btn btn-outline">
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Link to="/employee" className="btn btn-outline btn-sm">
             ← Dashboard
           </Link>
-          <Link to="/employee/history" className="btn btn-primary">
-            View History →
+          <Link to="/employee/history" className="btn btn-primary btn-sm">
+            View My History →
           </Link>
         </div>
       </div>
@@ -127,190 +128,159 @@ export default function MarkAttendance() {
       <div
         className="card"
         style={{
-          background: "linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.85))",
-          border: "1px solid rgba(59, 130, 246, 0.25)",
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
           textAlign: "center",
-          padding: "40px 24px",
-          position: "relative",
-          overflow: "hidden",
+          padding: "36px 28px",
+          marginBottom: "24px",
+          border: "1px solid #e2e8f0",
         }}
       >
-        {/* BACKGROUND GLOW ACCENT */}
-        <div
-          style={{
-            position: "absolute",
-            top: "-80px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "300px",
-            height: "160px",
-            background: isCheckedIn && !isCheckedOut
-              ? "radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%)"
-              : "radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%)",
-            filter: "blur(40px)",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* WORK MODE TOGGLE */}
-        <div
-          style={{
-            display: "inline-flex",
-            background: "rgba(0, 0, 0, 0.3)",
-            padding: "4px",
-            borderRadius: "30px",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            marginBottom: "24px",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setWorkMode("Office")}
+        {/* WORK MODE SELECTOR */}
+        <div style={{ marginBottom: "20px" }}>
+          <div
             style={{
-              padding: "8px 18px",
-              borderRadius: "24px",
-              fontSize: "13px",
-              fontWeight: 600,
-              background: workMode === "Office" ? "var(--accent-blue)" : "transparent",
-              color: workMode === "Office" ? "#fff" : "var(--text-muted)",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
+              display: "inline-flex",
+              background: "#f1f5f9",
+              padding: "4px",
+              borderRadius: "6px",
+              border: "1px solid #cbd5e1",
             }}
           >
-            🏢 In-Office
-          </button>
-          <button
-            type="button"
-            onClick={() => setWorkMode("Remote")}
-            style={{
-              padding: "8px 18px",
-              borderRadius: "24px",
-              fontSize: "13px",
-              fontWeight: 600,
-              background: workMode === "Remote" ? "var(--accent-purple)" : "transparent",
-              color: workMode === "Remote" ? "#fff" : "var(--text-muted)",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            🏠 Remote / WFH
-          </button>
+            <button
+              type="button"
+              onClick={() => setWorkMode("Office")}
+              style={{
+                padding: "6px 16px",
+                borderRadius: "4px",
+                fontSize: "13px",
+                fontWeight: 600,
+                background: workMode === "Office" ? "#ffffff" : "transparent",
+                color: workMode === "Office" ? "#0f172a" : "#64748b",
+                border: workMode === "Office" ? "1px solid #cbd5e1" : "none",
+                boxShadow: workMode === "Office" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              In-Office Station
+            </button>
+            <button
+              type="button"
+              onClick={() => setWorkMode("Remote")}
+              style={{
+                padding: "6px 16px",
+                borderRadius: "4px",
+                fontSize: "13px",
+                fontWeight: 600,
+                background: workMode === "Remote" ? "#ffffff" : "transparent",
+                color: workMode === "Remote" ? "#0f172a" : "#64748b",
+                border: workMode === "Remote" ? "1px solid #cbd5e1" : "none",
+                boxShadow: workMode === "Remote" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Authorized Remote / WFH
+            </button>
+          </div>
         </div>
 
         {/* CURRENT DATE & LIVE DIGITAL CLOCK */}
-        <div style={{ marginBottom: "8px", color: "var(--text-muted)", fontSize: "16px", textTransform: "capitalize" }}>
+        <div style={{ color: "#64748b", fontSize: "14px", fontWeight: 500, marginBottom: "4px" }}>
           {currentTime.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </div>
 
         <div
           style={{
-            fontSize: "56px",
-            fontWeight: 800,
-            letterSpacing: "3px",
+            fontSize: "48px",
+            fontWeight: "800",
             fontFamily: "monospace",
-            color: "var(--text-main)",
-            textShadow: "0 0 30px rgba(59, 130, 246, 0.4)",
+            color: "#0f172a",
+            letterSpacing: "1px",
             marginBottom: "16px",
           }}
         >
           {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
         </div>
 
-        {/* CURRENT STATUS BADGE */}
-        <div style={{ marginBottom: "28px" }}>
+        {/* CURRENT STATUS CHIP */}
+        <div style={{ marginBottom: "24px" }}>
           {!isCheckedIn && (
-            <div
+            <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 20px",
-                background: "rgba(239, 68, 68, 0.12)",
-                color: "#f87171",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                borderRadius: "20px",
-                fontSize: "14px",
+                gap: "6px",
+                padding: "5px 14px",
+                background: "#fef2f2",
+                color: "#991b1b",
+                border: "1px solid #fecaca",
+                borderRadius: "4px",
+                fontSize: "13px",
                 fontWeight: 600,
               }}
             >
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444" }} />
-              Not Clocked In Today
-            </div>
+              Not Punched In Today
+            </span>
           )}
 
           {isCheckedIn && !isCheckedOut && (
-            <div
+            <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 20px",
-                background: "rgba(16, 185, 129, 0.12)",
-                color: "#34d399",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "20px",
-                fontSize: "14px",
+                gap: "6px",
+                padding: "5px 14px",
+                background: "#ecfdf5",
+                color: "#065f46",
+                border: "1px solid #a7f3d0",
+                borderRadius: "4px",
+                fontSize: "13px",
                 fontWeight: 600,
               }}
             >
-              <span
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  background: "#10b981",
-                  boxShadow: "0 0 10px #10b981",
-                  animation: "pulse 1.5s infinite",
-                }}
-              />
-              Active Session • {activeDuration}
-            </div>
+              ● Active Shift ({todayData?.status}) • Elapsed: {activeDuration}
+            </span>
           )}
 
           {isCheckedOut && (
-            <div
+            <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 20px",
-                background: "rgba(59, 130, 246, 0.12)",
-                color: "#60a5fa",
-                border: "1px solid rgba(59, 130, 246, 0.3)",
-                borderRadius: "20px",
-                fontSize: "14px",
+                gap: "6px",
+                padding: "5px 14px",
+                background: "#eff6ff",
+                color: "#1d4ed8",
+                border: "1px solid #bfdbfe",
+                borderRadius: "4px",
+                fontSize: "13px",
                 fontWeight: 600,
               }}
             >
-              <span>✓</span> Shift Completed ({todayData?.attendance?.totalHours || 0} hrs logged)
-            </div>
+              ✓ Shift Completed ({todayData?.attendance?.totalHours || 0} hrs logged)
+            </span>
           )}
         </div>
 
-        {/* ACTION BUTTON */}
+        {/* PUNCH ACTION BUTTONS */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
           {!isCheckedIn && (
             <div>
               <button
-                className="btn btn-primary"
+                className="btn btn-success"
                 onClick={handleCheckIn}
                 disabled={actionLoading || loading}
                 style={{
-                  fontSize: "18px",
-                  padding: "16px 48px",
-                  borderRadius: "12px",
-                  boxShadow: "0 10px 25px rgba(59, 130, 246, 0.5)",
-                  cursor: actionLoading ? "not-allowed" : "pointer",
+                  fontSize: "15px",
+                  padding: "14px 36px",
+                  borderRadius: "6px",
                 }}
               >
-                {actionLoading ? "Recording Check-In..." : "🟢 Mark Check-In Now"}
+                {actionLoading ? "Recording Punch..." : "Record Check-In"}
               </button>
               {isAfterLateCutoff && (
-                <div style={{ color: "#fbbf24", fontSize: "13px", marginTop: "12px" }}>
-                  ⚠️ Notice: Current time is past 09:30 AM cutoff. Check-in will be logged as <strong>Late</strong>.
+                <div style={{ color: "#b45309", fontSize: "13px", marginTop: "10px", background: "#fffbeb", padding: "6px 12px", borderRadius: "4px", border: "1px solid #fde68a", display: "inline-block" }}>
+                  Notice: Current time is after 09:30 AM grace cutoff. This check-in will be audited as <strong>Late</strong>.
                 </div>
               )}
             </div>
@@ -319,24 +289,19 @@ export default function MarkAttendance() {
           {isCheckedIn && !isCheckedOut && (
             <div>
               <button
-                className="btn"
+                className="btn btn-danger"
                 onClick={handleCheckOut}
                 disabled={actionLoading || loading}
                 style={{
-                  fontSize: "18px",
-                  padding: "16px 48px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #ef4444, #dc2626)",
-                  color: "#fff",
-                  border: "none",
-                  boxShadow: "0 10px 25px rgba(239, 68, 68, 0.4)",
-                  cursor: actionLoading ? "not-allowed" : "pointer",
+                  fontSize: "15px",
+                  padding: "14px 36px",
+                  borderRadius: "6px",
                 }}
               >
-                {actionLoading ? "Recording Check-Out..." : "🔴 Mark Check-Out Now"}
+                {actionLoading ? "Recording Punch..." : "Record Check-Out"}
               </button>
-              <div style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "12px" }}>
-                Active shift duration: <strong>{activeDuration}</strong>. Less than 4.5 hrs marks as Half-day.
+              <div style={{ color: "#64748b", fontSize: "13px", marginTop: "10px" }}>
+                Active shift duration: <strong>{activeDuration}</strong>. Shifts under 4.5 hrs are audited as Half-Day.
               </div>
             </div>
           )}
@@ -344,46 +309,48 @@ export default function MarkAttendance() {
           {isCheckedOut && (
             <div
               style={{
-                padding: "16px 32px",
-                background: "rgba(16, 185, 129, 0.08)",
-                border: "1px solid rgba(16, 185, 129, 0.2)",
-                borderRadius: "12px",
-                color: "var(--text-muted)",
+                padding: "12px 24px",
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                borderRadius: "6px",
+                color: "#166534",
+                fontSize: "14px",
+                fontWeight: 500,
               }}
             >
-              🎉 You have successfully clocked out for today. See you tomorrow!
+              Your daily attendance has been recorded and finalized for today.
             </div>
           )}
         </div>
 
-        {/* SHIFT SUMMARY DETAILS GRID */}
+        {/* LOGGED SHIFT DETAILS STRIP */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "16px",
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-            paddingTop: "24px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "12px",
+            borderTop: "1px solid #e2e8f0",
+            paddingTop: "20px",
             textAlign: "left",
           }}
         >
-          <div style={{ background: "rgba(255, 255, 255, 0.02)", padding: "14px 18px", borderRadius: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>CHECK-IN TIME</div>
-            <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px", color: isCheckedIn ? "var(--accent-green)" : "inherit" }}>
+          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Check-In Timestamp</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {isCheckedIn ? formatTime(todayData?.attendance?.checkInTime) : "--:--"}
             </div>
           </div>
 
-          <div style={{ background: "rgba(255, 255, 255, 0.02)", padding: "14px 18px", borderRadius: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>CHECK-OUT TIME</div>
-            <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px", color: isCheckedOut ? "var(--accent-cyan)" : "inherit" }}>
+          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Check-Out Timestamp</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {isCheckedOut ? formatTime(todayData?.attendance?.checkOutTime) : "--:--"}
             </div>
           </div>
 
-          <div style={{ background: "rgba(255, 255, 255, 0.02)", padding: "14px 18px", borderRadius: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>HOURS WORKED</div>
-            <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px" }}>
+          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Shift Duration</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
               {isCheckedOut
                 ? `${todayData?.attendance?.totalHours || 0} hrs`
                 : activeDuration
@@ -392,8 +359,8 @@ export default function MarkAttendance() {
             </div>
           </div>
 
-          <div style={{ background: "rgba(255, 255, 255, 0.02)", padding: "14px 18px", borderRadius: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>STATUS</div>
+          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Audit Status</div>
             <div style={{ marginTop: "4px" }}>
               {todayData?.attendance?.status ? (
                 <span className={`status-pill ${todayData.attendance.status}`}>
@@ -411,21 +378,19 @@ export default function MarkAttendance() {
       <div
         className="card"
         style={{
-          marginTop: "24px",
-          background: "rgba(17, 24, 39, 0.4)",
-          border: "1px solid rgba(255, 255, 255, 0.05)",
+          border: "1px solid #e2e8f0",
         }}
       >
-        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>📋 Attendance Policy & Timings</h3>
-        <ul style={{ color: "var(--text-muted)", fontSize: "14px", lineHeight: "1.7", paddingLeft: "20px" }}>
+        <h3 style={{ fontSize: "15px", color: "#0f172a", marginBottom: "10px" }}>Company Attendance Guidelines</h3>
+        <ul style={{ color: "#475569", fontSize: "13px", lineHeight: "1.7", paddingLeft: "18px" }}>
           <li>
-            <strong>Standard Work Shift:</strong> 09:00 AM – 05:30 PM (8.5 Hours).
+            <strong>Standard Work Shift:</strong> 09:00 AM – 05:30 PM (8.5 Hours standard).
           </li>
           <li>
-            <strong>Grace Period:</strong> Check-ins up to 09:30 AM are marked as <strong>Present</strong>. Check-ins after 09:30 AM are automatically flagged as <strong>Late</strong>.
+            <strong>Grace Period:</strong> Punches recorded before 09:30 AM are audited as <strong>Present</strong>. Punches after 09:30 AM are automatically flagged as <strong>Late</strong>.
           </li>
           <li>
-            <strong>Half-Day Threshold:</strong> If total logged hours at punch-out are less than 4.5 hours, status will automatically be recorded as <strong>Half-Day</strong>.
+            <strong>Half-Day Threshold:</strong> If total logged hours at punch-out are less than 4.5 hours, status is recorded as <strong>Half-Day</strong>.
           </li>
         </ul>
       </div>

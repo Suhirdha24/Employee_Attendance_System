@@ -125,7 +125,7 @@ export default function AllEmployeesAttendance() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      addToast("CSV export downloaded successfully!", "success");
+      addToast("Attendance log exported successfully as CSV", "success");
     } catch (err) {
       console.error("Export error:", err);
       addToast("Failed to export CSV", "error");
@@ -146,24 +146,24 @@ export default function AllEmployeesAttendance() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase" }}>
-            Manager Suite
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            Workforce Administration
           </span>
-          <h1 style={{ fontSize: "30px", marginTop: "2px" }}>All Employees Attendance</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>All Employees Attendance Directory</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Historical and daily attendance logs across all departments and team members
+            Audit attendance records, verify punch compliance, and export company-wide logs
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <button className="btn btn-primary" onClick={handleExportCSV}>
-            📥 Export Attendance (CSV)
+            Export to CSV
           </button>
           <Link to="/manager/calendar" className="btn btn-outline">
-            📅 Team Calendar
+            Team Calendar
           </Link>
           <Link to="/manager/reports" className="btn btn-outline">
-            📊 Reports
+            Audit Reports
           </Link>
         </div>
       </div>
@@ -172,23 +172,23 @@ export default function AllEmployeesAttendance() {
       <div
         className="card"
         style={{
-          marginBottom: "24px",
+          marginBottom: "20px",
           display: "flex",
           flexWrap: "wrap",
           gap: "16px",
           alignItems: "center",
-          padding: "18px 24px",
+          padding: "18px 20px",
         }}
       >
         {/* SEARCH */}
         <div style={{ flex: "1 1 240px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
-            Search Name, ID, or Dept
+          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "5px", fontWeight: 600 }}>
+            Search Workforce
           </label>
           <input
             type="text"
             className="input-field"
-            placeholder="Search employee, ID, department..."
+            placeholder="Search by name, ID, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -196,7 +196,7 @@ export default function AllEmployeesAttendance() {
 
         {/* DEPARTMENT FILTER */}
         <div style={{ flex: "1 1 160px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
+          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "5px", fontWeight: 600 }}>
             Department
           </label>
           <select
@@ -215,15 +215,15 @@ export default function AllEmployeesAttendance() {
 
         {/* STATUS FILTER */}
         <div style={{ flex: "1 1 140px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
-            Status
+          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "5px", fontWeight: 600 }}>
+            Compliance Status
           </label>
           <select
             className="input-field"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
-            <option value="all">All Statuses</option>
+            <option value="all">All Classifications</option>
             <option value="present">Present</option>
             <option value="late">Late</option>
             <option value="half-day">Half-Day</option>
@@ -233,8 +233,8 @@ export default function AllEmployeesAttendance() {
 
         {/* START DATE */}
         <div style={{ flex: "1 1 140px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
-            Start Date
+          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "5px", fontWeight: 600 }}>
+            From Date
           </label>
           <input
             type="date"
@@ -246,8 +246,8 @@ export default function AllEmployeesAttendance() {
 
         {/* END DATE */}
         <div style={{ flex: "1 1 140px" }}>
-          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "6px" }}>
-            End Date
+          <label style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: "5px", fontWeight: 600 }}>
+            To Date
           </label>
           <input
             type="date"
@@ -257,11 +257,11 @@ export default function AllEmployeesAttendance() {
           />
         </div>
 
-        {/* CLEAR FILTERS */}
+        {/* RESET */}
         <div style={{ alignSelf: "flex-end" }}>
           <button
             className="btn btn-outline"
-            style={{ padding: "10px 16px" }}
+            style={{ padding: "9px 16px" }}
             onClick={() => {
               setSearchTerm("");
               setSelectedDept("all");
@@ -270,21 +270,23 @@ export default function AllEmployeesAttendance() {
               setEndDate("");
             }}
           >
-            Reset
+            Reset Filters
           </button>
         </div>
       </div>
 
       {/* METRIC BADGES STRIP */}
-      <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginBottom: "20px" }}>
-        <div className="badge-pill">Total Filtered: <strong>{filteredRecords.length}</strong></div>
-        <div className="badge-pill" style={{ color: "#34d399", borderColor: "rgba(16, 185, 129, 0.3)" }}>
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
+        <div className="badge-pill">
+          Total Filtered Records: <strong>{filteredRecords.length}</strong>
+        </div>
+        <div className="badge-pill" style={{ background: "var(--status-present-bg)", color: "var(--status-present-text)", borderColor: "var(--status-present-border)" }}>
           Present: <strong>{filteredRecords.filter((r) => r.status === "present").length}</strong>
         </div>
-        <div className="badge-pill" style={{ color: "#fbbf24", borderColor: "rgba(245, 158, 11, 0.3)" }}>
+        <div className="badge-pill" style={{ background: "var(--status-late-bg)", color: "var(--status-late-text)", borderColor: "var(--status-late-border)" }}>
           Late: <strong>{filteredRecords.filter((r) => r.status === "late").length}</strong>
         </div>
-        <div className="badge-pill" style={{ color: "#c084fc", borderColor: "rgba(168, 85, 247, 0.3)" }}>
+        <div className="badge-pill" style={{ background: "var(--status-half-bg)", color: "var(--status-half-text)", borderColor: "var(--status-half-border)" }}>
           Half-Day: <strong>{filteredRecords.filter((r) => r.status === "half-day").length}</strong>
         </div>
       </div>
@@ -296,12 +298,12 @@ export default function AllEmployeesAttendance() {
             <thead>
               <tr>
                 <th>Employee</th>
-                <th>Employee ID</th>
+                <th>Staff ID</th>
                 <th>Department</th>
-                <th>Date</th>
+                <th>Shift Date</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
-                <th>Hours</th>
+                <th>Duration</th>
                 <th>Status</th>
                 <th style={{ textAlign: "right" }}>Actions</th>
               </tr>
@@ -309,8 +311,8 @@ export default function AllEmployeesAttendance() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: "center", padding: "40px" }}>
-                    Loading attendance records...
+                  <td colSpan="9" style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)" }}>
+                    Loading employee attendance records...
                   </td>
                 </tr>
               ) : filteredRecords.length === 0 ? (
@@ -328,9 +330,10 @@ export default function AllEmployeesAttendance() {
                           style={{
                             width: "32px",
                             height: "32px",
-                            borderRadius: "50%",
-                            background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-                            color: "#fff",
+                            borderRadius: "6px",
+                            background: "var(--primary-light)",
+                            color: "var(--primary)",
+                            border: "1px solid var(--primary-border)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -341,18 +344,18 @@ export default function AllEmployeesAttendance() {
                           {item.name ? item.name.charAt(0) : "E"}
                         </div>
                         <div>
-                          <div style={{ fontWeight: 600 }}>{item.name}</div>
-                          <div style={{ fontSize: "12px", color: "var(--text-dim)" }}>{item.email}</div>
+                          <div style={{ fontWeight: 600, color: "var(--text-main)" }}>{item.name}</div>
+                          <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{item.email}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ fontFamily: "monospace", color: "var(--accent-cyan)" }}>
+                    <td style={{ fontFamily: "monospace", fontWeight: 600, color: "var(--text-main)" }}>
                       {item.employeeId}
                     </td>
                     <td>{item.department || "General"}</td>
                     <td style={{ fontWeight: 500 }}>{item.date}</td>
-                    <td>{formatTime(item.checkInTime)}</td>
-                    <td>{formatTime(item.checkOutTime)}</td>
+                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkInTime)}</td>
+                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkOutTime)}</td>
                     <td style={{ fontWeight: 600 }}>
                       {typeof item.totalHours === "number" ? `${item.totalHours}h` : item.totalHours}
                     </td>
@@ -366,7 +369,7 @@ export default function AllEmployeesAttendance() {
                         className="btn btn-outline btn-sm"
                         onClick={() => handleViewEmployee(item.userId)}
                       >
-                        Inspect
+                        Audit
                       </button>
                     </td>
                   </tr>
@@ -377,55 +380,55 @@ export default function AllEmployeesAttendance() {
         </div>
       </div>
 
-      {/* DRILL-DOWN MODAL */}
+      {/* DRILL-DOWN AUDIT MODAL */}
       {selectedEmp && (
         <div className="modal-backdrop" onClick={() => setSelectedEmp(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "700px" }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "720px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
               <div>
-                <h2 style={{ fontSize: "22px" }}>{selectedEmp.employee.name}</h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
-                  {selectedEmp.employee.employeeId} • {selectedEmp.employee.department} • {selectedEmp.employee.email}
+                <h2 style={{ fontSize: "20px", color: "var(--text-main)" }}>{selectedEmp.employee.name}</h2>
+                <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
+                  Staff ID: <strong>{selectedEmp.employee.employeeId}</strong> • {selectedEmp.employee.department} • {selectedEmp.employee.email}
                 </p>
               </div>
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => setSelectedEmp(null)}
-                style={{ borderRadius: "50%", width: "32px", height: "32px", padding: 0 }}
+                style={{ borderRadius: "4px", width: "30px", height: "30px", padding: 0 }}
               >
                 ✕
               </button>
             </div>
 
             {/* STATS STRIP */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}>
-              <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Total Days</div>
-                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px" }}>{selectedEmp.stats.totalDays}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
+              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)", textAlign: "center" }}>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Total Shifts</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--text-main)" }}>{selectedEmp.stats.totalDays}</div>
               </div>
-              <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Present</div>
-                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px", color: "#34d399" }}>
+              <div style={{ background: "var(--status-present-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-present-border)", textAlign: "center" }}>
+                <div style={{ fontSize: "11px", color: "var(--status-present-text)", textTransform: "uppercase" }}>Present</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-present-text)" }}>
                   {selectedEmp.stats.presentDays}
                 </div>
               </div>
-              <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Late</div>
-                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px", color: "#fbbf24" }}>
+              <div style={{ background: "var(--status-late-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-late-border)", textAlign: "center" }}>
+                <div style={{ fontSize: "11px", color: "var(--status-late-text)", textTransform: "uppercase" }}>Late</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--status-late-text)" }}>
                   {selectedEmp.stats.lateDays}
                 </div>
               </div>
-              <div style={{ background: "rgba(255, 255, 255, 0.03)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Total Hours</div>
-                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "4px", color: "var(--accent-blue)" }}>
+              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)", textAlign: "center" }}>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Total Logged</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "var(--primary)" }}>
                   {selectedEmp.stats.totalHours}h
                 </div>
               </div>
             </div>
 
             {/* RECENT ATTENDANCE HISTORY LIST */}
-            <h4 style={{ fontSize: "15px", marginBottom: "12px" }}>Recent Attendance Entries</h4>
-            <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "8px" }}>
+            <h4 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "10px", color: "var(--text-main)" }}>Recent Verified Shift Entries</h4>
+            <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border-medium)", borderRadius: "6px" }}>
               <table className="custom-table" style={{ fontSize: "13px" }}>
                 <thead>
                   <tr>
@@ -439,10 +442,10 @@ export default function AllEmployeesAttendance() {
                 <tbody>
                   {selectedEmp.history.slice(0, 15).map((h) => (
                     <tr key={h._id}>
-                      <td>{h.date}</td>
-                      <td>{formatTime(h.checkInTime)}</td>
-                      <td>{formatTime(h.checkOutTime)}</td>
-                      <td>{h.totalHours ? `${h.totalHours}h` : "-"}</td>
+                      <td style={{ fontWeight: 500 }}>{h.date}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkInTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkOutTime)}</td>
+                      <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours}h` : "-"}</td>
                       <td>
                         <span className={`status-pill ${h.status}`}>{h.status}</span>
                       </td>
@@ -454,7 +457,7 @@ export default function AllEmployeesAttendance() {
 
             <div style={{ marginTop: "20px", textAlign: "right" }}>
               <button className="btn btn-outline" onClick={() => setSelectedEmp(null)}>
-                Close
+                Dismiss
               </button>
             </div>
           </div>

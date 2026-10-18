@@ -42,7 +42,7 @@ export default function ManagerCharts() {
   const dailyTrends = dashboardData?.dailyTrends || [];
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "48px" }}>
       {/* HEADER */}
       <div
         style={{
@@ -55,17 +55,17 @@ export default function ManagerCharts() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-cyan)", fontWeight: 700, textTransform: "uppercase" }}>
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Data Intelligence
           </span>
-          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Workforce Analytics & Trends</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Workforce Analytics & Trend Visualizer</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Visual analysis of shift durations, 7-day presence curves, and team workloads
+            Visual analysis of daily shift durations, 7-day presence curves, and departmental workloads
           </p>
         </div>
 
         <Link to="/manager" className="btn btn-outline" style={{ textDecoration: "none" }}>
-          ← Back to Command Center
+          ← Back to Operations Portal
         </Link>
       </div>
 
@@ -74,33 +74,34 @@ export default function ManagerCharts() {
         {/* CHART 1: TODAY'S HOURS BY EMPLOYEE */}
         <div className="card">
           <div style={{ marginBottom: "16px" }}>
-            <h2 style={{ fontSize: "18px" }}>Today: Working Hours per Employee</h2>
+            <h2 style={{ fontSize: "18px", color: "var(--text-main)" }}>Today: Working Hours per Employee</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-              Logged shift durations for all employees today
+              Active shift durations recorded for employees today
             </p>
           </div>
 
           <div style={{ width: "100%", height: 320 }}>
             {employeeHoursData.length === 0 ? (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-dim)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-muted)" }}>
                 {loading ? "Loading chart data..." : "No employee activity logged yet today."}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={employeeHoursData} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
-                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                  <YAxis stroke="#9ca3af" fontSize={12} unit="h" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
+                  <YAxis stroke="#64748b" fontSize={12} unit="h" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgba(17, 24, 39, 0.95)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "8px",
-                      color: "#fff",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      boxShadow: "var(--shadow-md)",
+                      color: "#0f172a",
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                  <Bar dataKey="hours" name="Hours Worked" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="hours" name="Hours Worked" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -110,29 +111,30 @@ export default function ManagerCharts() {
         {/* CHART 2: 7-DAY ATTENDANCE & HOURS TREND */}
         <div className="card">
           <div style={{ marginBottom: "16px" }}>
-            <h2 style={{ fontSize: "18px" }}>7-Day Team Trend: Presence & Total Hours</h2>
+            <h2 style={{ fontSize: "18px", color: "var(--text-main)" }}>7-Day Team Trend: Turnout & Aggregate Hours</h2>
             <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-              Aggregated daily present count and total company hours
+              Daily present staff count and combined company hours
             </p>
           </div>
 
           <div style={{ width: "100%", height: 320 }}>
             {dailyTrends.length === 0 ? (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-dim)" }}>
-                {loading ? "Loading trends..." : "No trend history recorded yet."}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-muted)" }}>
+                {loading ? "Loading trend series..." : "No trend history recorded yet."}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyTrends} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
-                  <XAxis dataKey="date" stroke="#9ca3af" fontSize={11} />
-                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
+                  <YAxis stroke="#64748b" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgba(17, 24, 39, 0.95)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "8px",
-                      color: "#fff",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      boxShadow: "var(--shadow-md)",
+                      color: "#0f172a",
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
@@ -140,15 +142,15 @@ export default function ManagerCharts() {
                     type="monotone"
                     dataKey="present"
                     name="Employees Present"
-                    stroke="#10b981"
-                    strokeWidth={3}
+                    stroke="#059669"
+                    strokeWidth={2.5}
                     dot={{ r: 4 }}
                   />
                   <Line
                     type="monotone"
                     dataKey="hours"
                     name="Total Team Hours"
-                    stroke="#06b6d4"
+                    stroke="#2563eb"
                     strokeWidth={2}
                     strokeDasharray="4 4"
                     dot={{ r: 3 }}

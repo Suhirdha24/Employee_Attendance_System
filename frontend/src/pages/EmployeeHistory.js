@@ -78,7 +78,7 @@ export default function EmployeeHistory() {
   }, [selectedCalendarDate, historyMap]);
 
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "1180px", margin: "0 auto", paddingBottom: "48px" }}>
       {/* HEADER BAR */}
       <div
         style={{
@@ -91,92 +91,97 @@ export default function EmployeeHistory() {
         }}
       >
         <div>
-          <h1 style={{ fontSize: "26px" }}>Attendance History & Calendar</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
-            Review past attendance records, shift durations, and monthly heatmaps
+          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            Personal Attendance Audit
+          </span>
+          <h1 style={{ fontSize: "26px", marginTop: "2px" }}>Attendance Log & Timesheet</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
+            Audit past punches, verified working durations, and monthly presence heatmaps
           </p>
         </div>
 
         {/* VIEW TOGGLE */}
-        <div style={{ display: "flex", gap: "8px", background: "var(--bg-surface)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border-subtle)" }}>
+        <div style={{ display: "flex", gap: "6px", background: "var(--bg-surface)", padding: "4px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
           <button
             className={`btn btn-sm ${view === "table" ? "btn-primary" : "btn-outline"}`}
-            style={{ border: "none" }}
+            style={{ border: view === "table" ? undefined : "none", background: view === "table" ? undefined : "transparent" }}
             onClick={() => setView("table")}
           >
-            📋 Table View
+            Tabular View
           </button>
           <button
             className={`btn btn-sm ${view === "calendar" ? "btn-primary" : "btn-outline"}`}
-            style={{ border: "none" }}
+            style={{ border: view === "calendar" ? undefined : "none", background: view === "calendar" ? undefined : "transparent" }}
             onClick={() => setView("calendar")}
           >
-            📅 Calendar Heatmap
+            Calendar Heatmap
           </button>
         </div>
       </div>
 
       {/* TABLE VIEW */}
       {view === "table" && (
-        <div className="card">
+        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
           <div
             style={{
+              padding: "18px 24px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
               gap: "14px",
-              marginBottom: "16px",
+              borderBottom: "1px solid var(--border-subtle)",
+              background: "#fafbfc",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <input
-                className="form-input"
+                className="input-field"
                 type="text"
-                placeholder="Filter by date (YYYY-MM)..."
+                placeholder="Filter by date (e.g. 2026-10)..."
                 value={searchDate}
                 onChange={(e) => setSearchDate(e.target.value)}
-                style={{ width: "240px", padding: "8px 12px" }}
+                style={{ width: "240px" }}
               />
               {searchDate && (
                 <button className="btn btn-outline btn-sm" onClick={() => setSearchDate("")}>
-                  Clear
+                  Reset
                 </button>
               )}
             </div>
 
             <div style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-              Showing {filteredHistory.length} of {history.length} records
+              Displaying <strong>{filteredHistory.length}</strong> of <strong>{history.length}</strong> logged entries
             </div>
           </div>
 
-          <div className="table-wrapper">
-            <table className="modern-table">
+          <div style={{ overflowX: "auto" }}>
+            <table className="custom-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Check-In</th>
-                  <th>Check-Out</th>
-                  <th>Working Hours</th>
-                  <th>Status</th>
+                  <th>Shift Date</th>
+                  <th>Check-In Time</th>
+                  <th>Check-Out Time</th>
+                  <th>Verified Duration</th>
+                  <th>Compliance Status</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: "center", padding: "30px", color: "var(--text-dim)" }}>
-                      {loading ? "Loading attendance records..." : "No attendance records match the filter."}
+                    <td colSpan="5" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
+                      {loading ? "Loading attendance records from directory..." : "No attendance logs match the specified filter."}
                     </td>
                   </tr>
                 ) : (
                   filteredHistory.map((h) => (
                     <tr key={h._id}>
-                      <td style={{ fontWeight: 600 }}>{h.date}</td>
-                      <td>{formatTime(h.checkInTime)}</td>
-                      <td>{formatTime(h.checkOutTime)}</td>
-                      <td>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
+                      <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{h.date}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkInTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkOutTime)}</td>
+                      <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
                       <td>
-                        <span className={`badge badge-${h.status}`}>
+                        <span className={`status-pill ${h.status}`}>
                           {h.status}
                         </span>
                       </td>
@@ -191,44 +196,45 @@ export default function EmployeeHistory() {
 
       {/* CALENDAR HEATMAP VIEW */}
       {view === "calendar" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "24px" }}>
           <div className="card">
-            <h2 style={{ fontSize: "18px", marginBottom: "16px" }}>Monthly Heatmap</h2>
+            <h2 style={{ fontSize: "18px", marginBottom: "16px" }}>Monthly Attendance Map</h2>
             <Calendar
               onChange={setSelectedCalendarDate}
               value={selectedCalendarDate}
               tileClassName={getTileClassName}
+              maxDate={new Date()}
             />
 
             {/* LEGEND */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-subtle)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
-                <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(16, 185, 129, 0.4)", border: "1px solid #34d399" }} />
+                <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "var(--status-present-border)", border: "1px solid var(--status-present-text)" }} />
                 <span>Present</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
-                <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(245, 158, 11, 0.4)", border: "1px solid #fbbf24" }} />
-                <span>Late (>09:30 AM)</span>
+                <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "var(--status-late-border)", border: "1px solid var(--status-late-text)" }} />
+                <span>Late (&gt;09:30)</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
-                <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(168, 85, 247, 0.4)", border: "1px solid #c084fc" }} />
-                <span>Half-Day (&lt; 4.5 hrs)</span>
+                <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "var(--status-half-border)", border: "1px solid var(--status-half-text)" }} />
+                <span>Half-Day (&lt;4.5h)</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
-                <div style={{ width: "12px", height: "12px", borderRadius: "3px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #f87171" }} />
+                <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "var(--status-absent-border)", border: "1px solid var(--status-absent-text)" }} />
                 <span>Absent</span>
               </div>
             </div>
           </div>
 
           {/* SELECTED DATE DETAILS DRAWER */}
-          <div className="card glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
-              <span style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>
-                Selected Date Log
+              <span style={{ fontSize: "12px", color: "var(--accent-blue)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
+                Selected Shift Log
               </span>
-              <h2 style={{ fontSize: "22px", marginTop: "4px", marginBottom: "16px" }}>
-                {selectedCalendarDate.toLocaleDateString(undefined, {
+              <h2 style={{ fontSize: "20px", marginTop: "4px", marginBottom: "18px" }}>
+                {selectedCalendarDate.toLocaleDateString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
@@ -237,49 +243,48 @@ export default function EmployeeHistory() {
               </h2>
 
               {selectedRecord ? (
-                <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "12px", border: "1px solid var(--border-subtle)" }}>
+                <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "8px", border: "1px solid var(--border-subtle)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                    <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>Status</span>
-                    <span className={`badge badge-${selectedRecord.status}`}>
+                    <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>Classification</span>
+                    <span className={`status-pill ${selectedRecord.status}`}>
                       {selectedRecord.status}
                     </span>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <div>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Check-In</span>
-                      <p style={{ fontSize: "16px", fontWeight: 700, color: "#fff", marginTop: "2px" }}>
+                    <div style={{ background: "#ffffff", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Check-In</span>
+                      <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginTop: "2px", fontFamily: "monospace" }}>
                         {formatTime(selectedRecord.checkInTime)}
                       </p>
                     </div>
 
-                    <div>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Check-Out</span>
-                      <p style={{ fontSize: "16px", fontWeight: 700, color: "#fff", marginTop: "2px" }}>
+                    <div style={{ background: "#ffffff", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Check-Out</span>
+                      <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginTop: "2px", fontFamily: "monospace" }}>
                         {formatTime(selectedRecord.checkOutTime)}
                       </p>
                     </div>
 
-                    <div style={{ gridColumn: "span 2", marginTop: "4px" }}>
-                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Hours Worked</span>
-                      <p style={{ fontSize: "20px", fontWeight: 800, color: "var(--accent-cyan)", marginTop: "2px" }}>
+                    <div style={{ gridColumn: "span 2", background: "#ffffff", padding: "14px", borderRadius: "6px", border: "1px solid var(--border-subtle)", marginTop: "4px" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Logged Work Duration</span>
+                      <p style={{ fontSize: "20px", fontWeight: 800, color: "var(--primary)", marginTop: "2px" }}>
                         {selectedRecord.totalHours ? `${selectedRecord.totalHours} hrs` : "In Progress"}
                       </p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div style={{ padding: "30px 16px", textAlign: "center", background: "var(--bg-surface)", borderRadius: "12px", color: "var(--text-dim)" }}>
-                  <div style={{ fontSize: "28px", marginBottom: "8px" }}>📅</div>
-                  <p style={{ fontSize: "14px" }}>No attendance record registered for this date.</p>
-                  <p style={{ fontSize: "12px", marginTop: "4px" }}>Select another date from the calendar to view its log.</p>
+                <div style={{ padding: "36px 16px", textAlign: "center", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}>
+                  <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>No Shift Entry Recorded</p>
+                  <p style={{ fontSize: "12px", marginTop: "4px" }}>Click on any active calendar day to inspect detailed punch timings.</p>
                 </div>
               )}
             </div>
 
             <div style={{ marginTop: "20px" }}>
               <Link to="/employee" className="btn btn-outline" style={{ width: "100%", textDecoration: "none" }}>
-                ← Back to Dashboard
+                ← Return to Dashboard
               </Link>
             </div>
           </div>

@@ -18,12 +18,12 @@ export default function LoginPage() {
 
     const res = await dispatch(login({ email, password }));
     if (res.meta.requestStatus === "fulfilled") {
-      addToast(`Welcome back, ${res.payload.user.name}!`, "success");
+      addToast(`Welcome back, ${res.payload.user.name}`, "success");
       const role = res.payload.user.role;
       if (role === "manager") nav("/manager");
       else nav("/employee");
     } else {
-      addToast(res.payload || "Login failed", "error");
+      addToast(res.payload || "Authentication failed", "error");
     }
   };
 
@@ -34,49 +34,54 @@ export default function LoginPage() {
 
   return (
     <div style={{ maxWidth: "440px", margin: "60px auto", padding: "0 16px" }}>
-      <div className="card glass-card">
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+      <div className="card" style={{ padding: "36px 32px" }}>
+        {/* LOGO & HEADING */}
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div
             style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "14px",
-              background: "var(--primary-gradient)",
+              width: "44px",
+              height: "44px",
+              borderRadius: "8px",
+              background: "var(--primary)",
+              color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "22px",
-              margin: "0 auto 12px",
-              boxShadow: "var(--glow-primary)",
+              fontSize: "18px",
+              fontWeight: 800,
+              margin: "0 auto 14px",
+              boxShadow: "var(--shadow-sm)",
             }}
           >
-            🔒
+            ST
           </div>
-          <h2 style={{ fontSize: "24px" }}>Welcome Back</h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
-            Sign in to access your attendance workspace
+          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>
+            Sign In to StaffTrack
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
+            Enter your official enterprise credentials to access your portal
           </p>
         </div>
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">Corporate Email</label>
             <input
               className="form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. alex@company.com"
+              placeholder="e.g. employee@company.com"
               required
             />
           </div>
 
           <div className="form-group">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <label className="form-label">Password</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
               <Link
                 to="/forget-password"
-                style={{ fontSize: "12px", color: "var(--primary)", textDecoration: "none" }}
+                style={{ fontSize: "12px", color: "var(--accent-blue)", textDecoration: "none" }}
               >
                 Forgot Password?
               </Link>
@@ -86,7 +91,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Enter your account password"
               required
             />
           </div>
@@ -94,22 +99,33 @@ export default function LoginPage() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", marginTop: "8px", padding: "12px" }}
+            style={{ width: "100%", marginTop: "10px", padding: "11px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Signing In..." : "Sign In"}
+            {auth.loading ? "Authenticating..." : "Sign In"}
           </button>
 
           {auth.error && (
-            <p style={{ color: "#f87171", fontSize: "13px", marginTop: "12px", textAlign: "center" }}>
+            <div
+              style={{
+                marginTop: "14px",
+                padding: "10px 12px",
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                borderRadius: "6px",
+                color: "#991b1b",
+                fontSize: "13px",
+                textAlign: "center",
+              }}
+            >
               {auth.error}
-            </p>
+            </div>
           )}
         </form>
 
         {/* QUICK DEMO CREDENTIALS */}
-        <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid var(--border-subtle)" }}>
-          <p style={{ fontSize: "12px", color: "var(--text-dim)", textAlign: "center", marginBottom: "10px" }}>
+        <div style={{ marginTop: "28px", paddingTop: "20px", borderTop: "1px solid var(--border-subtle)" }}>
+          <p style={{ fontSize: "12px", color: "var(--text-muted)", textAlign: "center", marginBottom: "10px", fontWeight: 500 }}>
             Quick Demo Autofill:
           </p>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -119,7 +135,7 @@ export default function LoginPage() {
               style={{ flex: 1, fontSize: "12px" }}
               onClick={() => autofill("alex@company.com", "password123")}
             >
-              👤 Employee
+              Employee Role
             </button>
             <button
               type="button"
@@ -127,15 +143,15 @@ export default function LoginPage() {
               style={{ flex: 1, fontSize: "12px" }}
               onClick={() => autofill("manager@company.com", "manager123")}
             >
-              📊 Manager
+              Manager Role
             </button>
           </div>
         </div>
 
-        <div style={{ marginTop: "20px", textAlign: "center", fontSize: "13px", color: "var(--text-muted)" }}>
-          Don't have an account?{" "}
-          <Link to="/register" style={{ fontWeight: 600 }}>
-            Create an Account
+        <div style={{ marginTop: "24px", textAlign: "center", fontSize: "13px", color: "var(--text-muted)" }}>
+          Need a workforce profile?{" "}
+          <Link to="/register" style={{ color: "var(--accent-blue)", fontWeight: 600 }}>
+            Register Account
           </Link>
         </div>
       </div>

@@ -15,11 +15,11 @@ export default function ForgetPassword() {
 
     try {
       const res = await API.post("/auth/request-reset", { email });
-      addToast("Email verified! Redirecting to password reset...", "success");
+      addToast("Email verified. Proceeding to password reset.", "success");
       localStorage.setItem("resetUserId", res.data.id);
-      setTimeout(() => nav("/reset-password"), 1000);
+      setTimeout(() => nav("/reset-password"), 800);
     } catch (err) {
-      addToast(err.response?.data?.message || "Email not registered", "error");
+      addToast(err.response?.data?.message || "Email not registered in directory", "error");
     } finally {
       setLoading(false);
     }
@@ -27,37 +27,39 @@ export default function ForgetPassword() {
 
   return (
     <div style={{ maxWidth: "420px", margin: "60px auto", padding: "0 16px" }}>
-      <div className="card glass-card">
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+      <div className="card" style={{ padding: "36px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <div
             style={{
               width: "44px",
               height: "44px",
-              borderRadius: "12px",
-              background: "rgba(245, 158, 11, 0.15)",
-              color: "#fbbf24",
+              borderRadius: "8px",
+              background: "var(--primary-light)",
+              color: "var(--primary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "20px",
-              margin: "0 auto 12px",
+              fontSize: "16px",
+              fontWeight: 800,
+              margin: "0 auto 14px",
+              border: "1px solid var(--primary-border)",
             }}
           >
-            🔑
+            PWD
           </div>
-          <h2 style={{ fontSize: "22px" }}>Forgot Password</h2>
+          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>Password Recovery</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
-            Enter your registered email to reset your account password
+            Enter your corporate email address to verify your account
           </p>
         </div>
 
         <form onSubmit={submit}>
           <div className="form-group">
-            <label className="form-label">Registered Email</label>
+            <label className="form-label">Corporate Email</label>
             <input
               className="form-input"
               type="email"
-              placeholder="e.g. alex@company.com"
+              placeholder="e.g. employee@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -67,16 +69,16 @@ export default function ForgetPassword() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", padding: "12px" }}
+            style={{ width: "100%", padding: "11px", marginTop: "4px" }}
             disabled={loading}
           >
-            {loading ? "Verifying..." : "Verify & Continue"}
+            {loading ? "Verifying Directory..." : "Verify & Continue"}
           </button>
         </form>
 
-        <div style={{ marginTop: "20px", textAlign: "center", fontSize: "13px" }}>
+        <div style={{ marginTop: "24px", textAlign: "center", fontSize: "13px" }}>
           <Link to="/login" style={{ color: "var(--text-muted)" }}>
-            ← Back to Sign In
+            ← Return to Sign In
           </Link>
         </div>
       </div>

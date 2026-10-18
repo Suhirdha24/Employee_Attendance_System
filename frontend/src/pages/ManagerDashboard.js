@@ -154,31 +154,31 @@ export default function ManagerDashboard() {
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-            <span style={{ fontSize: "12px", color: "var(--accent-cyan)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <span style={{ fontSize: "11px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Workforce Operations
             </span>
           </div>
-          <h1 style={{ fontSize: "28px" }}>Manager Command Center</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Real-time presence monitoring, smart shift audits, and team attendance metrics
+          <h1 style={{ fontSize: "26px", color: "#0f172a" }}>Manager Operations Portal</h1>
+          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "2px" }}>
+            Real-time presence monitoring, shift compliance audits, and team attendance records
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          <button className="btn btn-outline" onClick={handleExportCSV}>
-            📥 Export CSV
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button className="btn btn-outline btn-sm" onClick={handleExportCSV}>
+            Export CSV
           </button>
-          <Link to="/manager/all-attendance" className="btn btn-outline" style={{ textDecoration: "none" }}>
-            📋 All Records
+          <Link to="/manager/all-attendance" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            All Records
           </Link>
-          <Link to="/manager/calendar" className="btn btn-outline" style={{ textDecoration: "none" }}>
-            📅 Team Calendar
+          <Link to="/manager/calendar" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            Team Calendar
           </Link>
-          <Link to="/manager/reports" className="btn btn-outline" style={{ textDecoration: "none" }}>
-            📑 Reports
+          <Link to="/manager/reports" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            Reports
           </Link>
-          <Link to="/manager/charts" className="btn btn-primary" style={{ textDecoration: "none" }}>
-            📊 Analytics →
+          <Link to="/manager/charts" className="btn btn-primary btn-sm" style={{ textDecoration: "none" }}>
+            Analytics →
           </Link>
         </div>
       </div>
@@ -187,41 +187,37 @@ export default function ManagerDashboard() {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-header">
-            <span className="stat-title">Total Team Members</span>
-            <span className="stat-icon">👥</span>
+            <span className="stat-title">Total Staff</span>
           </div>
           <div className="stat-value">{summary?.totalEmployees || 0}</div>
-          <span className="stat-subtitle">Registered employees</span>
+          <span className="stat-subtitle">Enrolled employees</span>
         </div>
 
-        <div className="stat-card" style={{ borderColor: "rgba(16, 185, 129, 0.3)" }}>
+        <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Present Today</span>
-            <span className="stat-icon">✅</span>
           </div>
-          <div className="stat-value" style={{ color: "#34d399" }}>
+          <div className="stat-value" style={{ color: "#059669" }}>
             {summary?.presentToday || 0}
           </div>
-          <span className="stat-subtitle">{summary?.attendancePercentage || 0}% workforce active</span>
+          <span className="stat-subtitle">{summary?.attendancePercentage || 0}% active shift compliance</span>
         </div>
 
-        <div className="stat-card" style={{ borderColor: "rgba(245, 158, 11, 0.3)" }}>
+        <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Late Arrivals</span>
-            <span className="stat-icon">⏰</span>
           </div>
-          <div className="stat-value" style={{ color: "#fbbf24" }}>
+          <div className="stat-value" style={{ color: "#d97706" }}>
             {summary?.lateToday || 0}
           </div>
           <span className="stat-subtitle">Punched after 09:30 AM</span>
         </div>
 
-        <div className="stat-card" style={{ borderColor: "rgba(239, 68, 68, 0.3)" }}>
+        <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Absent Today</span>
-            <span className="stat-icon">⚠️</span>
           </div>
-          <div className="stat-value" style={{ color: "#f87171" }}>
+          <div className="stat-value" style={{ color: "#dc2626" }}>
             {summary?.absentToday || 0}
           </div>
           <span className="stat-subtitle">No punch recorded today</span>
@@ -357,31 +353,32 @@ export default function ManagerDashboard() {
                           style={{
                             width: "32px",
                             height: "32px",
-                            borderRadius: "8px",
-                            background: "var(--primary-gradient)",
+                            borderRadius: "6px",
+                            background: "var(--primary-light)",
+                            color: "var(--primary)",
+                            border: "1px solid var(--primary-border)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            fontSize: "14px",
+                            fontSize: "13px",
                             fontWeight: 700,
-                            color: "#fff",
                           }}
                         >
                           {item.name?.charAt(0) || "E"}
                         </div>
-                        <span style={{ fontWeight: 600 }}>{item.name || "-"}</span>
+                        <span style={{ fontWeight: 600, color: "var(--text-main)" }}>{item.name || "-"}</span>
                       </div>
                     </td>
-                    <td style={{ color: "var(--accent-cyan)", fontWeight: 600 }}>
+                    <td style={{ fontFamily: "monospace", fontWeight: 600, color: "var(--text-main)" }}>
                       {item.employeeId || "-"}
                     </td>
                     <td>{item.department || "General"}</td>
-                    <td>{item.date}</td>
-                    <td>{formatTime(item.checkInTime)}</td>
-                    <td>{formatTime(item.checkOutTime)}</td>
-                    <td>{item.totalHours ? `${item.totalHours} hrs` : "-"}</td>
+                    <td style={{ fontWeight: 500 }}>{item.date}</td>
+                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkInTime)}</td>
+                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkOutTime)}</td>
+                    <td style={{ fontWeight: 600 }}>{item.totalHours ? `${item.totalHours} hrs` : "-"}</td>
                     <td>
-                      <span className={`badge badge-${item.status}`}>
+                      <span className={`status-pill ${item.status}`}>
                         {item.status}
                       </span>
                     </td>
@@ -391,7 +388,7 @@ export default function ManagerDashboard() {
                         onClick={() => openEmployeeDrilldown(item.userId)}
                         disabled={!item.userId || item.userId.toString().startsWith("virtual-")}
                       >
-                        Inspect Log
+                        Audit
                       </button>
                     </td>
                   </tr>
@@ -404,42 +401,16 @@ export default function ManagerDashboard() {
 
       {/* EMPLOYEE DRILL-DOWN MODAL */}
       {selectedEmp && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.75)",
-            backdropFilter: "blur(6px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: "20px",
-          }}
-          onClick={() => setSelectedEmp(null)}
-        >
-          <div
-            className="card"
-            style={{
-              maxWidth: "700px",
-              width: "100%",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="modal-backdrop" onClick={() => setSelectedEmp(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "700px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
               <div>
-                <span style={{ fontSize: "12px", color: "var(--accent-cyan)", textTransform: "uppercase", fontWeight: 700 }}>
+                <span style={{ fontSize: "12px", color: "var(--primary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
                   Employee Attendance Profile
                 </span>
-                <h2 style={{ fontSize: "22px", marginTop: "4px" }}>{selectedEmp.employee?.name}</h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-                  {selectedEmp.employee?.employeeId} • {selectedEmp.employee?.department} Department
+                <h2 style={{ fontSize: "20px", marginTop: "2px", color: "var(--text-main)" }}>{selectedEmp.employee?.name}</h2>
+                <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
+                  Staff ID: <strong>{selectedEmp.employee?.employeeId}</strong> • {selectedEmp.employee?.department} Department
                 </p>
               </div>
               <button
@@ -451,37 +422,37 @@ export default function ManagerDashboard() {
             </div>
 
             {/* EMPLOYEE METRICS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "24px", textAlign: "center" }}>
-              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "10px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Present</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#34d399" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px", textAlign: "center" }}>
+              <div style={{ background: "var(--status-present-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-present-border)" }}>
+                <span style={{ fontSize: "11px", color: "var(--status-present-text)", textTransform: "uppercase" }}>Present</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-present-text)", marginTop: "2px" }}>
                   {selectedEmp.stats?.presentDays}
                 </p>
               </div>
-              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "10px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Late</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#fbbf24" }}>
+              <div style={{ background: "var(--status-late-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-late-border)" }}>
+                <span style={{ fontSize: "11px", color: "var(--status-late-text)", textTransform: "uppercase" }}>Late</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-late-text)", marginTop: "2px" }}>
                   {selectedEmp.stats?.lateDays}
                 </p>
               </div>
-              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "10px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Half-Day</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#c084fc" }}>
+              <div style={{ background: "var(--status-half-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-half-border)" }}>
+                <span style={{ fontSize: "11px", color: "var(--status-half-text)", textTransform: "uppercase" }}>Half-Day</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-half-text)", marginTop: "2px" }}>
                   {selectedEmp.stats?.halfDays}
                 </p>
               </div>
-              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "10px" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>Total Hours</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--accent-cyan)" }}>
+              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Total Logged</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--primary)", marginTop: "2px" }}>
                   {selectedEmp.stats?.totalHours}h
                 </p>
               </div>
             </div>
 
             {/* RECENT RECORDS */}
-            <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Recent Shifts</h3>
-            <div className="table-wrapper" style={{ maxHeight: "300px", overflowY: "auto" }}>
-              <table className="modern-table">
+            <h3 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "10px", color: "var(--text-main)" }}>Recent Shift Records</h3>
+            <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border-medium)", borderRadius: "6px" }}>
+              <table className="custom-table" style={{ fontSize: "13px" }}>
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -494,12 +465,12 @@ export default function ManagerDashboard() {
                 <tbody>
                   {selectedEmp.history?.slice(0, 15).map((h) => (
                     <tr key={h._id}>
-                      <td>{h.date}</td>
-                      <td>{formatTime(h.checkInTime)}</td>
-                      <td>{formatTime(h.checkOutTime)}</td>
-                      <td>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
+                      <td style={{ fontWeight: 500 }}>{h.date}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkInTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkOutTime)}</td>
+                      <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
                       <td>
-                        <span className={`badge badge-${h.status}`}>{h.status}</span>
+                        <span className={`status-pill ${h.status}`}>{h.status}</span>
                       </td>
                     </tr>
                   ))}
