@@ -1,3 +1,10 @@
+const dns = require('dns');
+// Ensure reliable SRV DNS resolution for MongoDB Atlas across Windows network providers
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore if custom dns servers cannot be set
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
