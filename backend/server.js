@@ -31,15 +31,38 @@ app.get('/api/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/attendanceDB';
+const LOCAL_MONGO_URI = 'mongodb://127.0.0.1:27017/attendanceDB';
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('MongoDB connected successfully');
-  app.listen(PORT, () => console.log(`Attendance Backend Server running on port ${PORT}`));
-})
-.catch(err => {
-  console.error('Mongo connection error:', err.message);
-});
+async function startServer() {
+  try {
+    const isAtlas = MONGO_URI.includes('mongodb+srv');
+    console.log(`Connecting to MongoDB (${isAtlas ? 'MongoDB Atlas' : 'Local'})...`);
+    await mongoose.connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log('✅ MongoDB connected successfully');
+  } catch (err) {
+    console.warn(`\n⚠️ Primary MongoDB connection failed: ${err.message}`);
+    if (MONGO_URI !== LOCAL_MONGO_URI) {
+      console.log('🔄 Attempting fallback to local MongoDB (127.0.0.1:27017)...');
+      try {
+        await mongoose.connect(LOCAL_MONGO_URI, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          serverSelectionTimeoutMS: 3000,
+        });
+        console.log('✅ Connected to local MongoDB fallback successfully!');
+      } catch (localErr) {
+        console.error('❌ Local MongoDB fallback failed:', localErr.message);
+      }
+    }
+  }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Attendance Backend Server running on port ${PORT}`);
+  });
+}
+
+startServer();
