@@ -13,44 +13,25 @@ export default function Header() {
   return (
     <header className="navbar">
       <div className="nav-container">
-        {/* CORPORATE BRAND LOGO */}
-        <Link to="/" className="brand-logo">
+        {/* ZONE 1: CORPORATE BRAND LOGO */}
+        <Link to="/" className="brand-logo" title="StaffTrack HRMS Home">
           <div className="brand-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
           </div>
-          <div>
+          <div className="brand-text">
             <span className="brand-title">StaffTrack HRMS</span>
             <span className="brand-sub">Workforce Attendance Management</span>
           </div>
         </Link>
 
-        {/* NAVIGATION LINKS */}
-        <nav className="nav-links">
+        {/* ZONE 2: NAVIGATION MENU LINKS */}
+        <nav className="nav-menu">
           <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`}>
             Home
           </Link>
-
-          {!auth.user && (
-            <>
-              <Link
-                to="/login"
-                className={`nav-link ${isActive("/login") ? "active" : ""}`}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className={`btn btn-primary btn-sm ${
-                  isActive("/register") ? "active" : ""
-                }`}
-              >
-                Register
-              </Link>
-            </>
-          )}
 
           {/* EMPLOYEE NAVIGATION */}
           {auth.user && auth.user.role === "employee" && (
@@ -131,12 +112,36 @@ export default function Header() {
               </Link>
             </>
           )}
+        </nav>
 
-          {/* USER INFO & LOGOUT */}
-          {auth.user && (
+        {/* ZONE 3: ACTIONS & USER PROFILE */}
+        <div className="nav-actions">
+          {!auth.user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Link
+                to="/login"
+                className={`nav-link ${isActive("/login") ? "active" : ""}`}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className={`btn btn-primary btn-sm ${
+                  isActive("/register") ? "active" : ""
+                }`}
+              >
+                Register
+              </Link>
+            </div>
+          ) : (
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div className="user-badge">
-                <span style={{ fontWeight: 600 }}>{auth.user.name}</span>
+                <div className="user-avatar-mini">
+                  {auth.user.name ? auth.user.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
+                  {auth.user.name}
+                </span>
                 <span className={`role-pill ${auth.user.role}`}>
                   {auth.user.role}
                 </span>
@@ -144,12 +149,13 @@ export default function Header() {
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => dispatch(logout())}
+                style={{ padding: "6px 14px", fontWeight: 600 }}
               >
                 Logout
               </button>
             </div>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );
