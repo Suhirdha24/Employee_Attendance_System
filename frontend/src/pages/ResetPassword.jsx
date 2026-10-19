@@ -69,7 +69,7 @@ export default function ResetPassword() {
           </p>
         </div>
 
-        <form onSubmit={submit}>
+        <form onSubmit={submit} autoComplete="off">
           <div className="form-group">
             <label className="form-label">New Password</label>
             <input
@@ -78,6 +78,7 @@ export default function ResetPassword() {
               placeholder="Minimum 6 characters"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>
@@ -90,6 +91,7 @@ export default function ResetPassword() {
               placeholder="Re-enter password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>

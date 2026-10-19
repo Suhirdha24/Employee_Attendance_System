@@ -60,7 +60,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleRegister} autoComplete="off">
           <div className="form-group">
             <label className="form-label">Full Legal Name</label>
             <input
@@ -68,6 +68,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Alex Johnson"
+              autoComplete="off"
               required
             />
           </div>
@@ -80,6 +81,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. alex.johnson@company.com"
+              autoComplete="off"
               required
             />
           </div>
@@ -92,6 +94,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
+              autoComplete="new-password"
               required
             />
           </div>

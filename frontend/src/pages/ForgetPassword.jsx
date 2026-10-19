@@ -53,7 +53,7 @@ export default function ForgetPassword() {
           </p>
         </div>
 
-        <form onSubmit={submit}>
+        <form onSubmit={submit} autoComplete="off">
           <div className="form-group">
             <label className="form-label">Corporate Email</label>
             <input
@@ -62,6 +62,7 @@ export default function ForgetPassword() {
               placeholder="e.g. employee@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
               required
             />
           </div>

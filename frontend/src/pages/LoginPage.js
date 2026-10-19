@@ -63,22 +63,31 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} autoComplete="off">
+          {/* Hidden fields to prevent aggressive browser autofill of unrelated saved localhost credentials */}
+          <div style={{ position: "absolute", opacity: 0, height: 0, width: 0, zIndex: -1, overflow: "hidden" }} aria-hidden="true">
+            <input type="text" name="dummy_email_prevent_autofill" tabIndex="-1" autoComplete="off" />
+            <input type="password" name="dummy_password_prevent_autofill" tabIndex="-1" autoComplete="new-password" />
+          </div>
+
           <div className="form-group">
-            <label className="form-label">Corporate Email</label>
+            <label className="form-label" htmlFor="corporate_email">Corporate Email</label>
             <input
+              id="corporate_email"
+              name="workforce_corporate_email"
               className="form-input"
               type="email"
+              autoComplete="off"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. employee@company.com"
+              placeholder="e.g. alex@company.com"
               required
             />
           </div>
 
           <div className="form-group">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
+              <label className="form-label" htmlFor="corporate_password" style={{ marginBottom: 0 }}>Password</label>
               <Link
                 to="/forget-password"
                 style={{ fontSize: "12px", color: "var(--accent-blue)", textDecoration: "none" }}
@@ -87,11 +96,14 @@ export default function LoginPage() {
               </Link>
             </div>
             <input
+              id="corporate_password"
+              name="workforce_account_password"
               className="form-input"
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your account password"
+              placeholder="•••••••• (e.g. password123)"
               required
             />
           </div>
@@ -125,9 +137,20 @@ export default function LoginPage() {
 
         {/* QUICK DEMO CREDENTIALS */}
         <div style={{ marginTop: "28px", paddingTop: "20px", borderTop: "1px solid var(--border-subtle)" }}>
-          <p style={{ fontSize: "12px", color: "var(--text-muted)", textAlign: "center", marginBottom: "10px", fontWeight: 500 }}>
-            Quick Demo Autofill:
-          </p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 500, margin: 0 }}>
+              Quick Demo Autofill:
+            </p>
+            {(email || password) && (
+              <button
+                type="button"
+                onClick={() => { setEmail(""); setPassword(""); }}
+                style={{ background: "none", border: "none", color: "var(--accent-blue)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
+              >
+                Clear to Placeholders
+              </button>
+            )}
+          </div>
           <div style={{ display: "flex", gap: "10px" }}>
             <button
               type="button"
