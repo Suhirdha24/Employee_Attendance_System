@@ -42,7 +42,7 @@ export default function ManagerCharts() {
   const dailyTrends = dashboardData?.dailyTrends || [];
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "48px" }}>
+    <div style={{ width: "100%", paddingBottom: "48px" }}>
       {/* HEADER */}
       <div
         style={{

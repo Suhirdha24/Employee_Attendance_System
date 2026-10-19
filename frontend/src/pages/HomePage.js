@@ -16,7 +16,7 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{ maxWidth: "1140px", margin: "20px auto 60px", padding: "0 16px" }}>
+    <div style={{ width: "100%", paddingBottom: "32px" }}>
       {/* CORPORATE HERO SECTION */}
       <div
         className="card"

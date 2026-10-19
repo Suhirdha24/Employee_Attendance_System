@@ -140,7 +140,7 @@ export default function ManagerDashboard() {
   };
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+    <div style={{ width: "100%", paddingBottom: "48px" }}>
       {/* HEADER & TOP CONTROLS */}
       <div
         style={{

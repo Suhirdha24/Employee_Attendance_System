@@ -99,7 +99,7 @@ export default function EmployeeDashboard() {
   const isCheckedOut = Boolean(todayData?.attendance?.checkOutTime);
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div style={{ width: "100%", paddingBottom: "32px" }}>
       {/* HEADER GREETING & DIGITAL CLOCK */}
       <div
         className="card"

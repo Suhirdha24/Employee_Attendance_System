@@ -133,7 +133,7 @@ export default function AllEmployeesAttendance() {
   };
 
   return (
-    <div style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "48px" }}>
+    <div style={{ width: "100%", paddingBottom: "48px" }}>
       {/* HEADER SECTION */}
       <div
         style={{

@@ -9,7 +9,7 @@ export default function EmployeeHistory() {
   const auth = useSelector((s) => s.auth);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("table"); // 'table' | 'calendar'
+  const [view, setView] = useState("calendar"); // Default to calendar view as shown in user flow
   const [searchDate, setSearchDate] = useState("");
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
 
@@ -78,7 +78,7 @@ export default function EmployeeHistory() {
   }, [selectedCalendarDate, historyMap]);
 
   return (
-    <div style={{ maxWidth: "1180px", margin: "0 auto", paddingBottom: "48px" }}>
+    <div style={{ width: "100%", paddingBottom: "48px" }}>
       {/* HEADER BAR */}
       <div
         style={{
@@ -91,10 +91,12 @@ export default function EmployeeHistory() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
             Personal Attendance Audit
           </span>
-          <h1 style={{ fontSize: "26px", marginTop: "2px" }}>Attendance Log & Timesheet</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px", color: "var(--text-main)" }}>
+            Attendance Log & Timesheet
+          </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
             Audit past punches, verified working durations, and monthly presence heatmaps
           </p>
@@ -196,15 +198,28 @@ export default function EmployeeHistory() {
 
       {/* CALENDAR HEATMAP VIEW */}
       {view === "calendar" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "24px" }}>
-          <div className="card">
-            <h2 style={{ fontSize: "18px", marginBottom: "16px" }}>Monthly Attendance Map</h2>
-            <Calendar
-              onChange={setSelectedCalendarDate}
-              value={selectedCalendarDate}
-              tileClassName={getTileClassName}
-              maxDate={new Date()}
-            />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))", gap: "24px", alignItems: "stretch" }}>
+          {/* LEFT COLUMN: MONTHLY HEATMAP */}
+          <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ marginBottom: "16px" }}>
+                <span style={{ fontSize: "12px", color: "var(--primary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
+                  Monthly Attendance Map
+                </span>
+                <h2 style={{ fontSize: "20px", marginTop: "2px", color: "var(--text-main)" }}>
+                  Shift Presence Calendar
+                </h2>
+              </div>
+
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <Calendar
+                  onChange={setSelectedCalendarDate}
+                  value={selectedCalendarDate}
+                  tileClassName={getTileClassName}
+                  maxDate={new Date()}
+                />
+              </div>
+            </div>
 
             {/* LEGEND */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-subtle)" }}>
@@ -227,63 +242,75 @@ export default function EmployeeHistory() {
             </div>
           </div>
 
-          {/* SELECTED DATE DETAILS DRAWER */}
+          {/* RIGHT COLUMN: SELECTED DATE DETAILS DRAWER */}
           <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div>
-              <span style={{ fontSize: "12px", color: "var(--accent-blue)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
-                Selected Shift Log
-              </span>
-              <h2 style={{ fontSize: "20px", marginTop: "4px", marginBottom: "18px" }}>
-                {selectedCalendarDate.toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </h2>
+              <div style={{ marginBottom: "16px" }}>
+                <span style={{ fontSize: "12px", color: "var(--primary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
+                  Selected Shift Log
+                </span>
+                <h2 style={{ fontSize: "20px", marginTop: "2px", color: "var(--text-main)" }}>
+                  {selectedCalendarDate.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </h2>
+              </div>
 
               {selectedRecord ? (
-                <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "8px", border: "1px solid var(--border-subtle)" }}>
+                <div style={{ background: "var(--bg-surface)", padding: "20px", borderRadius: "8px", border: "1px solid var(--border-subtle)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                    <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>Classification</span>
+                    <span style={{ color: "var(--text-muted)", fontSize: "13px", fontWeight: 600 }}>Classification Status</span>
                     <span className={`status-pill ${selectedRecord.status}`}>
                       {selectedRecord.status}
                     </span>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <div style={{ background: "#ffffff", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Check-In</span>
-                      <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginTop: "2px", fontFamily: "monospace" }}>
+                    <div style={{ background: "#ffffff", padding: "14px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Check-In Time</span>
+                      <p style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginTop: "3px", fontFamily: "monospace" }}>
                         {formatTime(selectedRecord.checkInTime)}
                       </p>
                     </div>
 
-                    <div style={{ background: "#ffffff", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Check-Out</span>
-                      <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginTop: "2px", fontFamily: "monospace" }}>
+                    <div style={{ background: "#ffffff", padding: "14px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Check-Out Time</span>
+                      <p style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginTop: "3px", fontFamily: "monospace" }}>
                         {formatTime(selectedRecord.checkOutTime)}
                       </p>
                     </div>
 
-                    <div style={{ gridColumn: "span 2", background: "#ffffff", padding: "14px", borderRadius: "6px", border: "1px solid var(--border-subtle)", marginTop: "4px" }}>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Logged Work Duration</span>
-                      <p style={{ fontSize: "20px", fontWeight: 800, color: "var(--primary)", marginTop: "2px" }}>
+                    <div style={{ gridColumn: "span 2", background: "#ffffff", padding: "16px", borderRadius: "6px", border: "1px solid var(--border-subtle)", marginTop: "4px" }}>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Logged Work Duration</span>
+                      <p style={{ fontSize: "22px", fontWeight: 800, color: "var(--primary)", marginTop: "3px" }}>
                         {selectedRecord.totalHours ? `${selectedRecord.totalHours} hrs` : "In Progress"}
                       </p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div style={{ padding: "36px 16px", textAlign: "center", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}>
-                  <p style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>No Shift Entry Recorded</p>
-                  <p style={{ fontSize: "12px", marginTop: "4px" }}>Click on any active calendar day to inspect detailed punch timings.</p>
+                <div style={{ padding: "48px 24px", textAlign: "center", background: "var(--bg-surface)", borderRadius: "8px", border: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}>
+                  <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "#ffffff", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", color: "var(--text-muted)" }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </div>
+                  <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)" }}>No Shift Entry Recorded</p>
+                  <p style={{ fontSize: "13px", marginTop: "4px", color: "var(--text-muted)" }}>
+                    Select an active calendar date to inspect punch times and hours logged.
+                  </p>
                 </div>
               )}
             </div>
 
-            <div style={{ marginTop: "20px" }}>
-              <Link to="/employee" className="btn btn-outline" style={{ width: "100%", textDecoration: "none" }}>
+            <div style={{ marginTop: "24px" }}>
+              <Link to="/employee" className="btn btn-outline" style={{ width: "100%", textDecoration: "none", padding: "10px" }}>
                 ← Return to Dashboard
               </Link>
             </div>

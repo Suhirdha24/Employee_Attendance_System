@@ -92,7 +92,7 @@ export default function MarkAttendance() {
     currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() > 30);
 
   return (
-    <div style={{ maxWidth: "880px", margin: "0 auto", paddingBottom: "48px" }}>
+    <div style={{ width: "100%", paddingBottom: "48px" }}>
       {/* HEADER SECTION */}
       <div
         style={{
