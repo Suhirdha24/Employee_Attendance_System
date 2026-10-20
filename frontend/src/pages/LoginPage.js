@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "../features/authSlice";
 import { useNavigate, Link } from "react-router-dom";
@@ -8,10 +8,35 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isEmailActive, setIsEmailActive] = useState(false);
+  const [isPasswordActive, setIsPasswordActive] = useState(false);
+
+  // Dynamic input names defeat browser saved-credential matching
+  const emailInputName = useMemo(() => `workforce_email_${Math.random().toString(36).substring(7)}`, []);
+  const passInputName = useMemo(() => `workforce_pass_${Math.random().toString(36).substring(7)}`, []);
+
   const dispatch = useDispatch();
   const auth = useSelector((s) => s.auth);
   const nav = useNavigate();
   const { addToast } = useToast();
+
+  // Force-reset fields on mount to prevent any delayed browser autofill
+  useEffect(() => {
+    setEmail("");
+    setPassword("");
+    const timer = setTimeout(() => {
+      setEmail("");
+      setPassword("");
+    }, 50);
+    const timer2 = setTimeout(() => {
+      setEmail("");
+      setPassword("");
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,8 +54,17 @@ export default function LoginPage() {
   };
 
   const autofill = (demoEmail, demoPass) => {
+    setIsEmailActive(true);
+    setIsPasswordActive(true);
     setEmail(demoEmail);
     setPassword(demoPass);
+  };
+
+  const clearToPlaceholders = () => {
+    setEmail("");
+    setPassword("");
+    setIsEmailActive(false);
+    setIsPasswordActive(false);
   };
 
   return (
@@ -75,10 +109,13 @@ export default function LoginPage() {
             <label className="form-label" htmlFor="corporate_email">Corporate Email</label>
             <input
               id="corporate_email"
-              name="workforce_corporate_email"
+              name={emailInputName}
               className="form-input"
               type="email"
               autoComplete="off"
+              readOnly={!isEmailActive}
+              onFocus={() => setIsEmailActive(true)}
+              onClick={() => setIsEmailActive(true)}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. alex@company.com"
@@ -99,10 +136,13 @@ export default function LoginPage() {
             <div style={{ position: "relative" }}>
               <input
                 id="corporate_password"
-                name="workforce_account_password"
+                name={passInputName}
                 className="form-input"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
+                readOnly={!isPasswordActive}
+                onFocus={() => setIsPasswordActive(true)}
+                onClick={() => setIsPasswordActive(true)}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="•••••••• (e.g. password123)"
@@ -181,7 +221,7 @@ export default function LoginPage() {
             {(email || password) && (
               <button
                 type="button"
-                onClick={() => { setEmail(""); setPassword(""); }}
+                onClick={clearToPlaceholders}
                 style={{ background: "none", border: "none", color: "var(--accent-blue)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
               >
                 Clear to Placeholders
