@@ -32,32 +32,32 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ maxWidth: "480px", margin: "50px auto", padding: "0 16px" }}>
-      <div className="card" style={{ padding: "36px 32px" }}>
+    <div style={{ maxWidth: "500px", margin: "40px auto 60px", padding: "0 16px" }}>
+      <div className="card" style={{ padding: "40px 36px", boxShadow: "var(--shadow-lg)" }}>
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div
             style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "8px",
-              background: "var(--primary)",
+              width: "48px",
+              height: "48px",
+              borderRadius: "var(--radius-md)",
+              background: "var(--primary-gradient)",
               color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px",
+              fontSize: "20px",
               fontWeight: 800,
-              margin: "0 auto 14px",
-              boxShadow: "var(--shadow-sm)",
+              margin: "0 auto 16px",
+              boxShadow: "0 4px 12px rgba(79, 70, 229, 0.35)",
             }}
           >
             ST
           </div>
-          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.02em" }}>
             Employee Registration
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
-            Provision a new workforce profile in the attendance management system
+          <p style={{ color: "var(--text-muted)", fontSize: "13.5px", marginTop: "4px" }}>
+            Provision a new profile in the workforce directory
           </p>
         </div>
 
@@ -116,10 +116,8 @@ export default function RegisterPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "4px",
                 }}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                title={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,7 +126,7 @@ export default function RegisterPage() {
                   </svg>
                 ) : (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
                   </svg>
                 )}
@@ -138,21 +136,9 @@ export default function RegisterPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
             <div className="form-group">
-              <label className="form-label">Assigned Role</label>
+              <label className="form-label">Assigned Unit</label>
               <select
-                className="input-field"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="employee">Employee</option>
-                <option value="manager">Manager / Admin</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Department</label>
-              <select
-                className="input-field"
+                className="form-select"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
               >
@@ -161,7 +147,20 @@ export default function RegisterPage() {
                 <option value="Human Resources">Human Resources</option>
                 <option value="Marketing">Marketing</option>
                 <option value="Finance">Finance</option>
+                <option value="Operations">Operations</option>
                 <option value="Management">Management</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">System Role</label>
+              <select
+                className="form-select"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="employee">Employee</option>
+                <option value="manager">Manager / Supervisor</option>
               </select>
             </div>
           </div>
@@ -169,33 +168,16 @@ export default function RegisterPage() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", marginTop: "12px", padding: "11px" }}
+            style={{ width: "100%", marginTop: "12px", padding: "12px", fontSize: "14.5px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Creating Profile..." : "Create Workforce Account"}
+            {auth.loading ? "Creating Profile..." : "Complete Enrollment"}
           </button>
-
-          {auth.error && (
-            <div
-              style={{
-                marginTop: "14px",
-                padding: "10px 12px",
-                background: "#fef2f2",
-                border: "1px solid #fecaca",
-                borderRadius: "6px",
-                color: "#991b1b",
-                fontSize: "13px",
-                textAlign: "center",
-              }}
-            >
-              {auth.error}
-            </div>
-          )}
         </form>
 
         <div style={{ marginTop: "24px", textAlign: "center", fontSize: "13px", color: "var(--text-muted)" }}>
           Already have an account?{" "}
-          <Link to="/login" style={{ color: "var(--accent-blue)", fontWeight: 600 }}>
+          <Link to="/login" style={{ color: "var(--primary)", fontWeight: 700 }}>
             Sign In
           </Link>
         </div>

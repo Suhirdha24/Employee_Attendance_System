@@ -14,6 +14,7 @@ export default function EmployeeDashboard() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [workMode, setWorkMode] = useState("Office");
 
   // Live clock
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function EmployeeDashboard() {
   const formatTime = (isoString) => {
     if (!isoString) return "-";
     const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
@@ -37,6 +39,9 @@ export default function EmployeeDashboard() {
       ]);
       setTodayData(todayRes.data);
       setSummary(summaryRes.data);
+      if (todayRes.data?.attendance?.workMode) {
+        setWorkMode(todayRes.data.attendance.workMode);
+      }
     } catch (err) {
       console.error("Dashboard load error:", err);
     } finally {
@@ -51,7 +56,7 @@ export default function EmployeeDashboard() {
   const handleCheckIn = async () => {
     setActionLoading(true);
     try {
-      const res = await API.post("/attendance/checkin", { workMode: "Office" });
+      const res = await API.post("/attendance/checkin", { workMode });
       addToast(res.data?.message || "Check-in recorded!", "success");
       loadData();
     } catch (err) {
@@ -99,7 +104,7 @@ export default function EmployeeDashboard() {
   const isCheckedOut = Boolean(todayData?.attendance?.checkOutTime);
 
   return (
-    <div style={{ width: "100%", paddingBottom: "32px" }}>
+    <div style={{ width: "100%", paddingBottom: "36px" }}>
       {/* HEADER GREETING & DIGITAL CLOCK */}
       <div
         className="card"
@@ -110,48 +115,50 @@ export default function EmployeeDashboard() {
           flexWrap: "wrap",
           gap: "20px",
           marginBottom: "24px",
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
+          background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)",
         }}
       >
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-            <span style={{ color: "var(--accent-blue)", fontSize: "13px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            <span style={{ color: "var(--primary)", fontSize: "12.5px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {user?.department || "General"} Department
             </span>
-            <span style={{ color: "#cbd5e1" }}>•</span>
-            <span style={{ color: "#64748b", fontSize: "13px" }}>ID: {user?.employeeId}</span>
+            <span style={{ color: "var(--border-medium)" }}>•</span>
+            <span style={{ color: "var(--text-muted)", fontSize: "13px", fontFamily: "var(--font-mono)", fontWeight: 600 }}>
+              {user?.employeeId}
+            </span>
           </div>
-          <h1 style={{ fontSize: "26px", color: "#0f172a" }}>
+          <h1 style={{ fontSize: "28px", color: "var(--text-main)", letterSpacing: "-0.02em" }}>
             {greeting}, {user?.name}
           </h1>
-          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "4px" }}>
-            Employee workstation & shift dashboard
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
+            Staff workstation attendance telemetry & shift portal
           </p>
         </div>
 
         {/* LIVE CLOCK DISPLAY */}
         <div
           style={{
-            background: "#f8fafc",
-            padding: "14px 22px",
-            borderRadius: "6px",
-            border: "1px solid #e2e8f0",
+            background: "#ffffff",
+            padding: "16px 24px",
+            borderRadius: "var(--radius-lg)",
+            border: "1px solid var(--border-subtle)",
+            boxShadow: "var(--shadow-sm)",
             textAlign: "right",
           }}
         >
           <div
             style={{
-              fontFamily: "monospace",
-              fontSize: "24px",
+              fontFamily: "var(--font-mono)",
+              fontSize: "26px",
               fontWeight: "700",
-              color: "#0f172a",
-              letterSpacing: "0.05em",
+              color: "var(--text-main)",
+              letterSpacing: "0.04em",
             }}
           >
             {currentTime.toLocaleTimeString([], { hour12: true })}
           </div>
-          <div style={{ color: "#64748b", fontSize: "12px", marginTop: "2px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", marginTop: "3px", fontWeight: 500 }}>
             {currentTime.toLocaleDateString(undefined, {
               weekday: "long",
               year: "numeric",
@@ -167,7 +174,7 @@ export default function EmployeeDashboard() {
         className="card"
         style={{
           marginBottom: "24px",
-          border: "1px solid #e2e8f0",
+          borderTop: "4px solid var(--primary)",
         }}
       >
         <div
@@ -181,20 +188,60 @@ export default function EmployeeDashboard() {
           }}
         >
           <div>
-            <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748b", fontWeight: 700, letterSpacing: "0.05em" }}>
-              Today's Shift Status
+            <span style={{ fontSize: "11.5px", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 700, letterSpacing: "0.06em" }}>
+              Workstation Shift Terminal
             </span>
-            <h2 style={{ fontSize: "18px", color: "#0f172a", marginTop: "2px" }}>Daily Attendance Record</h2>
+            <h2 style={{ fontSize: "20px", color: "var(--text-main)", marginTop: "2px" }}>
+              Today's Attendance Status
+            </h2>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            {todayData?.attendance?.workMode && (
-              <span className={`badge-workmode ${todayData.attendance.workMode.toLowerCase()}`}>
-                {todayData.attendance.workMode === "Remote" ? "🌐 Remote" : "🏢 In-Office"}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            {/* WORK MODE CHIPS (BEFORE CHECK IN) */}
+            {!isCheckedIn ? (
+              <div style={{ display: "inline-flex", background: "var(--bg-surface)", padding: "3px", borderRadius: "var(--radius-full)", border: "1px solid var(--border-medium)" }}>
+                <button
+                  type="button"
+                  onClick={() => setWorkMode("Office")}
+                  style={{
+                    padding: "4px 12px",
+                    borderRadius: "var(--radius-full)",
+                    border: "none",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    background: workMode === "Office" ? "var(--primary)" : "transparent",
+                    color: workMode === "Office" ? "#ffffff" : "var(--text-muted)",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  🏢 Office
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWorkMode("Remote")}
+                  style={{
+                    padding: "4px 12px",
+                    borderRadius: "var(--radius-full)",
+                    border: "none",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    background: workMode === "Remote" ? "var(--primary)" : "transparent",
+                    color: workMode === "Remote" ? "#ffffff" : "var(--text-muted)",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  🌐 Remote
+                </button>
+              </div>
+            ) : (
+              <span className={`badge-workmode ${(todayData?.attendance?.workMode || workMode).toLowerCase()}`}>
+                {(todayData?.attendance?.workMode || workMode) === "Remote" ? "🌐 Remote" : "🏢 In-Office"}
               </span>
             )}
 
-            {!isCheckedIn && <span className="badge badge-absent">Not Checked In</span>}
+            {!isCheckedIn && <span className="badge badge-absent">Not Clocked In</span>}
             {isCheckedIn && !isCheckedOut && (
               <span className={`badge ${todayData?.status === "late" ? "badge-late" : "badge-present"}`} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <span className="pulse-indicator"></span>
@@ -216,29 +263,29 @@ export default function EmployeeDashboard() {
             gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
             gap: "14px",
             marginBottom: "20px",
-            background: "#f8fafc",
-            padding: "16px",
-            borderRadius: "6px",
-            border: "1px solid #e2e8f0",
+            background: "var(--bg-surface)",
+            padding: "18px",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--border-subtle)",
           }}
         >
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Check-In Timestamp</span>
-            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Check-In Time</span>
+            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-main)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {formatTime(todayData?.attendance?.checkInTime)}
             </p>
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Check-Out Timestamp</span>
-            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Check-Out Time</span>
+            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-main)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {formatTime(todayData?.attendance?.checkOutTime)}
             </p>
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Shift Duration</span>
-            <p style={{ fontSize: "17px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Shift Duration</span>
+            <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--primary)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {activeDuration ? (
                 <span>{activeDuration}</span>
               ) : todayData?.attendance?.totalHours ? (
@@ -250,15 +297,15 @@ export default function EmployeeDashboard() {
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Policy Standard</span>
-            <p style={{ fontSize: "13px", color: "#64748b", marginTop: "4px" }}>
-              Grace punch: 09:30 AM
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Grace Standard</span>
+            <p style={{ fontSize: "13.5px", color: "var(--text-body)", marginTop: "4px", fontWeight: 500 }}>
+              Cutoff: 09:30 AM
             </p>
           </div>
         </div>
 
         {todayData?.attendance?.remarks && (
-          <div style={{ background: "#f1f5f9", padding: "10px 14px", borderRadius: "6px", fontSize: "13px", color: "#334155", marginBottom: "18px", border: "1px solid #e2e8f0" }}>
+          <div style={{ background: "#ffffff", padding: "12px 16px", borderRadius: "var(--radius-sm)", fontSize: "13px", color: "var(--text-body)", marginBottom: "20px", border: "1px solid var(--border-subtle)" }}>
             <strong>Shift Note:</strong> {todayData.attendance.remarks}
           </div>
         )}
@@ -266,8 +313,7 @@ export default function EmployeeDashboard() {
         {/* ACTION BUTTONS */}
         <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", alignItems: "center" }}>
           <button
-            className="btn btn-success"
-            style={{ padding: "12px 24px", minWidth: "160px" }}
+            className="btn btn-success btn-lg"
             onClick={handleCheckIn}
             disabled={isCheckedIn || actionLoading}
           >
@@ -275,8 +321,7 @@ export default function EmployeeDashboard() {
           </button>
 
           <button
-            className="btn btn-primary"
-            style={{ padding: "12px 24px", minWidth: "160px", background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)" }}
+            className="btn btn-primary btn-lg"
             onClick={handleCheckOut}
             disabled={!isCheckedIn || isCheckedOut || actionLoading}
           >
@@ -296,7 +341,7 @@ export default function EmployeeDashboard() {
               className="btn btn-outline"
               style={{ textDecoration: "none" }}
             >
-              📅 View History →
+              📅 View Timesheet →
             </Link>
           </div>
         </div>
@@ -307,36 +352,36 @@ export default function EmployeeDashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Attendance Rate</span>
-            <span className="stat-icon">📈</span>
+            <div className="stat-icon-wrap" style={{ background: "#ecfdf5", color: "#059669" }}>📈</div>
           </div>
           <div className="stat-value">{summary?.attendancePercentage || 100}%</div>
-          <span className="stat-subtitle">Calculated on recorded shifts</span>
+          <span className="stat-subtitle">Weighted compliance rating</span>
         </div>
 
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Days Present</span>
-            <span className="stat-icon">✅</span>
+            <div className="stat-icon-wrap" style={{ background: "#eef2ff", color: "#4f46e5" }}>✅</div>
           </div>
           <div className="stat-value">{summary?.presentCount || 0}</div>
-          <span className="stat-subtitle">Full working days</span>
+          <span className="stat-subtitle">Full working days completed</span>
         </div>
 
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Late Arrivals</span>
-            <span className="stat-icon">⏰</span>
+            <div className="stat-icon-wrap" style={{ background: "#fffbeb", color: "#d97706" }}>⏰</div>
           </div>
-          <div className="stat-value" style={{ color: "#fbbf24" }}>
+          <div className="stat-value" style={{ color: "#d97706" }}>
             {summary?.lateCount || 0}
           </div>
-          <span className="stat-subtitle">After 09:30 AM grace period</span>
+          <span className="stat-subtitle">Arrivals after 09:30 AM cutoff</span>
         </div>
 
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-title">Total Hours Worked</span>
-            <span className="stat-icon">⏱️</span>
+            <div className="stat-icon-wrap" style={{ background: "#f0f9ff", color: "#0284c7" }}>⏱️</div>
           </div>
           <div className="stat-value" style={{ color: "var(--accent-cyan)" }}>
             {summary?.totalHours || 0}h
@@ -346,15 +391,20 @@ export default function EmployeeDashboard() {
       </div>
 
       {/* RECENT ACTIVITY TABLE */}
-      <div className="card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <h2 style={{ fontSize: "18px" }}>Recent Attendance Logs</h2>
-          <Link to="/employee/history" style={{ fontSize: "13px", fontWeight: 600 }}>
-            See All Logs
+      <div className="card" style={{ padding: "0", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-subtle)" }}>
+          <div>
+            <h3 style={{ fontSize: "17px", color: "var(--text-main)" }}>Recent Shift Records</h3>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "2px" }}>
+              Latest 10 verified shift punches and calculated hours
+            </p>
+          </div>
+          <Link to="/employee/history" className="btn btn-outline btn-sm">
+            See All Logs →
           </Link>
         </div>
 
-        <div className="table-wrapper">
+        <div className="table-wrapper" style={{ border: "none" }}>
           <table className="modern-table">
             <thead>
               <tr>
@@ -369,22 +419,22 @@ export default function EmployeeDashboard() {
             <tbody>
               {!summary?.recentRecords || summary.recentRecords.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "var(--text-dim)" }}>
-                    No previous attendance records found. Check in today to start your record!
+                  <td colSpan="6" style={{ textAlign: "center", padding: "36px", color: "var(--text-muted)" }}>
+                    No previous attendance records found. Clock in today to begin your history!
                   </td>
                 </tr>
               ) : (
                 summary.recentRecords.map((r) => (
                   <tr key={r._id}>
-                    <td style={{ fontWeight: 600 }}>{r.date}</td>
+                    <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{r.date}</td>
                     <td>
                       <span className={`badge-workmode ${(r.workMode || "Office").toLowerCase()}`}>
                         {r.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
                       </span>
                     </td>
-                    <td>{formatTime(r.checkInTime)}</td>
-                    <td>{formatTime(r.checkOutTime)}</td>
-                    <td>{r.totalHours ? `${r.totalHours} hrs` : "-"}</td>
+                    <td style={{ fontFamily: "var(--font-mono)" }}>{formatTime(r.checkInTime)}</td>
+                    <td style={{ fontFamily: "var(--font-mono)" }}>{formatTime(r.checkOutTime)}</td>
+                    <td style={{ fontWeight: 700, color: "var(--text-main)" }}>{r.totalHours ? `${r.totalHours} hrs` : "-"}</td>
                     <td>
                       <span className={`badge badge-${r.status}`}>
                         {r.status}

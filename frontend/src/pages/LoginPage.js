@@ -11,7 +11,6 @@ export default function LoginPage() {
   const [isEmailActive, setIsEmailActive] = useState(false);
   const [isPasswordActive, setIsPasswordActive] = useState(false);
 
-  // Dynamic input names defeat browser saved-credential matching
   const emailInputName = useMemo(() => `workforce_email_${Math.random().toString(36).substring(7)}`, []);
   const passInputName = useMemo(() => `workforce_pass_${Math.random().toString(36).substring(7)}`, []);
 
@@ -20,7 +19,6 @@ export default function LoginPage() {
   const nav = useNavigate();
   const { addToast } = useToast();
 
-  // Force-reset fields on mount to prevent any delayed browser autofill
   useEffect(() => {
     setEmail("");
     setPassword("");
@@ -28,14 +26,7 @@ export default function LoginPage() {
       setEmail("");
       setPassword("");
     }, 50);
-    const timer2 = setTimeout(() => {
-      setEmail("");
-      setPassword("");
-    }, 200);
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(timer2);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLogin = async (e) => {
@@ -68,45 +59,44 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: "440px", margin: "60px auto", padding: "0 16px" }}>
-      <div className="card" style={{ padding: "36px 32px" }}>
+    <div style={{ maxWidth: "460px", margin: "40px auto 60px", padding: "0 16px" }}>
+      <div className="card" style={{ padding: "40px 36px", boxShadow: "var(--shadow-lg)" }}>
         {/* LOGO & HEADING */}
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div
             style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "8px",
-              background: "var(--primary)",
+              width: "48px",
+              height: "48px",
+              borderRadius: "var(--radius-md)",
+              background: "var(--primary-gradient)",
               color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px",
+              fontSize: "20px",
               fontWeight: 800,
-              margin: "0 auto 14px",
-              boxShadow: "var(--shadow-sm)",
+              margin: "0 auto 16px",
+              boxShadow: "0 4px 12px rgba(79, 70, 229, 0.35)",
             }}
           >
             ST
           </div>
-          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.02em" }}>
             Sign In to StaffTrack
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
-            Enter your official enterprise credentials to access your portal
+          <p style={{ color: "var(--text-muted)", fontSize: "13.5px", marginTop: "4px" }}>
+            Official enterprise workforce attendance management
           </p>
         </div>
 
         <form onSubmit={handleLogin} autoComplete="off">
-          {/* Hidden fields to prevent aggressive browser autofill of unrelated saved localhost credentials */}
           <div style={{ position: "absolute", opacity: 0, height: 0, width: 0, zIndex: -1, overflow: "hidden" }} aria-hidden="true">
             <input type="text" name="dummy_email_prevent_autofill" tabIndex="-1" autoComplete="off" />
             <input type="password" name="dummy_password_prevent_autofill" tabIndex="-1" autoComplete="new-password" />
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="corporate_email">Corporate Email</label>
+            <label className="form-label" htmlFor="corporate_email">Corporate Work Email</label>
             <input
               id="corporate_email"
               name={emailInputName}
@@ -128,7 +118,7 @@ export default function LoginPage() {
               <label className="form-label" htmlFor="corporate_password" style={{ marginBottom: 0 }}>Password</label>
               <Link
                 to="/forget-password"
-                style={{ fontSize: "12px", color: "var(--accent-blue)", textDecoration: "none" }}
+                style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 600 }}
               >
                 Forgot Password?
               </Link>
@@ -145,7 +135,7 @@ export default function LoginPage() {
                 onClick={() => setIsPasswordActive(true)}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="•••••••• (e.g. password123)"
+                placeholder="••••••••"
                 required
                 style={{ paddingRight: "42px" }}
               />
@@ -188,20 +178,20 @@ export default function LoginPage() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", marginTop: "10px", padding: "11px" }}
+            style={{ width: "100%", marginTop: "10px", padding: "12px", fontSize: "14.5px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Authenticating..." : "Sign In"}
+            {auth.loading ? "Authenticating..." : "Sign In to Workstation"}
           </button>
 
           {auth.error && (
             <div
               style={{
                 marginTop: "14px",
-                padding: "10px 12px",
+                padding: "10px 14px",
                 background: "#fef2f2",
                 border: "1px solid #fecaca",
-                borderRadius: "6px",
+                borderRadius: "var(--radius-md)",
                 color: "#991b1b",
                 fontSize: "13px",
                 textAlign: "center",
@@ -215,16 +205,16 @@ export default function LoginPage() {
         {/* QUICK DEMO CREDENTIALS */}
         <div style={{ marginTop: "28px", paddingTop: "20px", borderTop: "1px solid var(--border-subtle)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 500, margin: 0 }}>
-              Quick Demo Autofill:
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, margin: 0, textTransform: "uppercase" }}>
+              Quick Evaluation Fill:
             </p>
             {(email || password) && (
               <button
                 type="button"
                 onClick={clearToPlaceholders}
-                style={{ background: "none", border: "none", color: "var(--accent-blue)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
               >
-                Clear to Placeholders
+                Clear Inputs
               </button>
             )}
           </div>
@@ -232,25 +222,25 @@ export default function LoginPage() {
             <button
               type="button"
               className="btn btn-outline btn-sm"
-              style={{ flex: 1, fontSize: "12px" }}
+              style={{ flex: 1, fontSize: "12px", background: "#f8fafc" }}
               onClick={() => autofill("alex@company.com", "password123")}
             >
-              Employee Role
+              👨‍💼 Alex (Employee)
             </button>
             <button
               type="button"
               className="btn btn-outline btn-sm"
-              style={{ flex: 1, fontSize: "12px" }}
+              style={{ flex: 1, fontSize: "12px", background: "#f8fafc" }}
               onClick={() => autofill("manager@company.com", "manager123")}
             >
-              Manager Role
+              👩‍💼 Eleanor (Manager)
             </button>
           </div>
         </div>
 
         <div style={{ marginTop: "24px", textAlign: "center", fontSize: "13px", color: "var(--text-muted)" }}>
-          Need a workforce profile?{" "}
-          <Link to="/register" style={{ color: "var(--accent-blue)", fontWeight: 600 }}>
+          New team member?{" "}
+          <Link to="/register" style={{ color: "var(--primary)", fontWeight: 700 }}>
             Register Account
           </Link>
         </div>

@@ -13,7 +13,7 @@ export default function MarkAttendance() {
   const [todayData, setTodayData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [workMode, setWorkMode] = useState("Office"); // 'Office' | 'Remote' | 'On-Site'
+  const [workMode, setWorkMode] = useState("Office"); // 'Office' | 'Remote'
   const [remarks, setRemarks] = useState("");
 
   // Live clock timer
@@ -98,7 +98,7 @@ export default function MarkAttendance() {
     currentTime.getHours() > 9 || (currentTime.getHours() === 9 && currentTime.getMinutes() > 30);
 
   return (
-    <div style={{ width: "100%", paddingBottom: "48px" }}>
+    <div style={{ maxWidth: "800px", margin: "0 auto", paddingBottom: "48px" }}>
       {/* HEADER SECTION */}
       <div
         style={{
@@ -111,12 +111,14 @@ export default function MarkAttendance() {
         }}
       >
         <div>
-          <span style={{ fontSize: "12px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Staff Workstation
+          <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Biometric Punch Terminal
           </span>
-          <h1 style={{ fontSize: "28px", color: "#0f172a", marginTop: "2px" }}>Mark Attendance</h1>
-          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "2px" }}>
-            Record official daily punch in and punch out for shift tracking
+          <h1 style={{ fontSize: "28px", color: "var(--text-main)", marginTop: "2px", letterSpacing: "-0.02em" }}>
+            Mark Shift Attendance
+          </h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
+            Official workstation punch system with automated compliance classification
           </p>
         </div>
 
@@ -125,7 +127,7 @@ export default function MarkAttendance() {
             ← Dashboard
           </Link>
           <Link to="/employee/history" className="btn btn-primary btn-sm">
-            View My History →
+            View Timesheet →
           </Link>
         </div>
       </div>
@@ -135,23 +137,24 @@ export default function MarkAttendance() {
         className="card"
         style={{
           textAlign: "center",
-          padding: "36px 28px",
+          padding: "44px 32px 36px",
           marginBottom: "24px",
-          border: "1px solid #e2e8f0",
+          boxShadow: "var(--shadow-md)",
+          borderTop: "4px solid var(--primary)",
         }}
       >
         {/* WORK MODE SELECTOR */}
-        <div style={{ marginBottom: "20px" }}>
-          <span style={{ display: "block", fontSize: "12px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", marginBottom: "8px" }}>
-            Select Today's Work Mode
+        <div style={{ marginBottom: "24px" }}>
+          <span style={{ display: "block", fontSize: "12px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "10px" }}>
+            Choose Work Mode
           </span>
           <div
             style={{
               display: "inline-flex",
-              background: "#f1f5f9",
+              background: "var(--bg-surface)",
               padding: "4px",
-              borderRadius: "6px",
-              border: "1px solid #cbd5e1",
+              borderRadius: "var(--radius-full)",
+              border: "1px solid var(--border-medium)",
             }}
           >
             <button
@@ -159,14 +162,14 @@ export default function MarkAttendance() {
               disabled={isCheckedIn}
               onClick={() => setWorkMode("Office")}
               style={{
-                padding: "8px 18px",
-                borderRadius: "4px",
-                fontSize: "13px",
+                padding: "8px 22px",
+                borderRadius: "var(--radius-full)",
+                fontSize: "13.5px",
                 fontWeight: 600,
-                background: workMode === "Office" ? "#ffffff" : "transparent",
-                color: workMode === "Office" ? "#0f172a" : "#64748b",
-                border: workMode === "Office" ? "1px solid #cbd5e1" : "none",
-                boxShadow: workMode === "Office" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+                background: workMode === "Office" ? "var(--primary)" : "transparent",
+                color: workMode === "Office" ? "#ffffff" : "var(--text-body)",
+                border: "none",
+                boxShadow: workMode === "Office" ? "0 2px 4px rgba(79, 70, 229, 0.3)" : "none",
                 cursor: isCheckedIn ? "default" : "pointer",
                 transition: "all 0.15s ease",
               }}
@@ -178,14 +181,14 @@ export default function MarkAttendance() {
               disabled={isCheckedIn}
               onClick={() => setWorkMode("Remote")}
               style={{
-                padding: "8px 18px",
-                borderRadius: "4px",
-                fontSize: "13px",
+                padding: "8px 22px",
+                borderRadius: "var(--radius-full)",
+                fontSize: "13.5px",
                 fontWeight: 600,
-                background: workMode === "Remote" ? "#ffffff" : "transparent",
-                color: workMode === "Remote" ? "#0f172a" : "#64748b",
-                border: workMode === "Remote" ? "1px solid #cbd5e1" : "none",
-                boxShadow: workMode === "Remote" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+                background: workMode === "Remote" ? "var(--primary)" : "transparent",
+                color: workMode === "Remote" ? "#ffffff" : "var(--text-body)",
+                border: "none",
+                boxShadow: workMode === "Remote" ? "0 2px 4px rgba(79, 70, 229, 0.3)" : "none",
                 cursor: isCheckedIn ? "default" : "pointer",
                 transition: "all 0.15s ease",
               }}
@@ -195,42 +198,42 @@ export default function MarkAttendance() {
           </div>
         </div>
 
-        {/* CURRENT DATE & LIVE DIGITAL CLOCK */}
-        <div style={{ color: "#64748b", fontSize: "14px", fontWeight: 500, marginBottom: "4px" }}>
+        {/* DATE & LARGE DIGITAL CLOCK */}
+        <div style={{ color: "var(--text-muted)", fontSize: "14px", fontWeight: 600, marginBottom: "6px" }}>
           {currentTime.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </div>
 
         <div
           style={{
-            fontSize: "48px",
+            fontSize: "clamp(40px, 8vw, 56px)",
             fontWeight: "800",
-            fontFamily: "monospace",
-            color: "#0f172a",
-            letterSpacing: "1px",
-            marginBottom: "16px",
+            fontFamily: "var(--font-mono)",
+            color: "var(--text-main)",
+            letterSpacing: "0.04em",
+            marginBottom: "18px",
           }}
         >
           {currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
         </div>
 
         {/* CURRENT STATUS CHIP */}
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "24px" }}>
           {!isCheckedIn && (
             <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "5px 14px",
-                background: "#fef2f2",
-                color: "#991b1b",
-                border: "1px solid #fecaca",
-                borderRadius: "4px",
+                padding: "6px 16px",
+                background: "var(--status-absent-bg)",
+                color: "var(--status-absent-text)",
+                border: "1px solid var(--status-absent-border)",
+                borderRadius: "var(--radius-full)",
                 fontSize: "13px",
-                fontWeight: 600,
+                fontWeight: 700,
               }}
             >
-              Not Punched In Today
+              ✕ Not Punched In Today
             </span>
           )}
 
@@ -240,17 +243,17 @@ export default function MarkAttendance() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
-                padding: "6px 16px",
-                background: "#ecfdf5",
-                color: "#065f46",
-                border: "1px solid #a7f3d0",
-                borderRadius: "4px",
-                fontSize: "13px",
-                fontWeight: 600,
+                padding: "7px 18px",
+                background: "var(--status-present-bg)",
+                color: "var(--status-present-text)",
+                border: "1px solid var(--status-present-border)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "13.5px",
+                fontWeight: 700,
               }}
             >
               <span className="pulse-indicator"></span>
-              Active Shift ({todayData?.status}) • Elapsed: {activeDuration} • Mode: {todayData?.attendance?.workMode || workMode}
+              Active Shift ({todayData?.status}) • Duration: {activeDuration} • {todayData?.attendance?.workMode || workMode}
             </span>
           )}
 
@@ -260,36 +263,36 @@ export default function MarkAttendance() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "6px 16px",
-                background: "#eff6ff",
-                color: "#1d4ed8",
-                border: "1px solid #bfdbfe",
-                borderRadius: "4px",
-                fontSize: "13px",
-                fontWeight: 600,
+                padding: "7px 18px",
+                background: "var(--primary-light)",
+                color: "var(--primary)",
+                border: "1px solid var(--primary-border)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "13.5px",
+                fontWeight: 700,
               }}
             >
-              ✓ Shift Completed ({todayData?.attendance?.totalHours || 0} hrs logged) • Mode: {todayData?.attendance?.workMode || "Office"}
+              ✓ Shift Finalized ({todayData?.attendance?.totalHours || 0} hrs logged)
             </span>
           )}
         </div>
 
         {/* REMARKS INPUT (IF NOT COMPLETED) */}
         {!isCheckedOut && (
-          <div style={{ maxWidth: "420px", margin: "0 auto 20px" }}>
+          <div style={{ maxWidth: "440px", margin: "0 auto 24px" }}>
             <input
               type="text"
               className="form-input"
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Optional remarks (e.g. transit delay, sprint deliverables, doctor visit)..."
-              style={{ fontSize: "13px", padding: "10px 14px", textAlign: "center" }}
+              style={{ fontSize: "13px", padding: "11px 16px", textAlign: "center" }}
             />
           </div>
         )}
 
         {/* PUNCH ACTION BUTTONS */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
           {!isCheckedIn && (
             <div>
               <button
@@ -297,16 +300,17 @@ export default function MarkAttendance() {
                 onClick={handleCheckIn}
                 disabled={actionLoading || loading}
                 style={{
-                  fontSize: "15px",
-                  padding: "14px 36px",
-                  borderRadius: "6px",
+                  fontSize: "16px",
+                  padding: "16px 44px",
+                  borderRadius: "var(--radius-lg)",
+                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
                 }}
               >
-                {actionLoading ? "Recording Punch..." : "▶ Record Check-In"}
+                {actionLoading ? "Recording Punch..." : "▶ Punch Check-In Now"}
               </button>
               {isAfterLateCutoff && (
-                <div style={{ color: "#b45309", fontSize: "13px", marginTop: "10px", background: "#fffbeb", padding: "6px 12px", borderRadius: "4px", border: "1px solid #fde68a", display: "inline-block" }}>
-                  Notice: Current time is after 09:30 AM grace cutoff. This check-in will be audited as <strong>Late</strong>.
+                <div style={{ color: "#b45309", fontSize: "13px", marginTop: "12px", background: "#fffbeb", padding: "8px 16px", borderRadius: "var(--radius-sm)", border: "1px solid #fde68a", display: "inline-block" }}>
+                  ⚠️ Notice: Current time is after 09:30 AM cutoff. Shift will be classified as <strong>Late</strong>.
                 </div>
               )}
             </div>
@@ -319,16 +323,16 @@ export default function MarkAttendance() {
                 onClick={handleCheckOut}
                 disabled={actionLoading || loading}
                 style={{
-                  fontSize: "15px",
-                  padding: "14px 36px",
-                  borderRadius: "6px",
-                  background: "#dc2626",
+                  fontSize: "16px",
+                  padding: "16px 44px",
+                  borderRadius: "var(--radius-lg)",
+                  boxShadow: "0 4px 14px rgba(239, 68, 68, 0.35)",
                 }}
               >
-                {actionLoading ? "Recording Punch..." : "⏹ Record Check-Out"}
+                {actionLoading ? "Recording Punch..." : "⏹ Punch Check-Out Now"}
               </button>
-              <div style={{ color: "#64748b", fontSize: "13px", marginTop: "10px" }}>
-                Active shift duration: <strong>{activeDuration}</strong>. Shifts under 4.5 hrs are audited as Half-Day.
+              <div style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "12px" }}>
+                Active shift duration: <strong style={{ color: "var(--text-main)" }}>{activeDuration}</strong>. Shifts under 4.5 hrs are classified as Half-Day.
               </div>
             </div>
           )}
@@ -336,18 +340,18 @@ export default function MarkAttendance() {
           {isCheckedOut && (
             <div
               style={{
-                padding: "12px 24px",
+                padding: "16px 28px",
                 background: "#f0fdf4",
                 border: "1px solid #bbf7d0",
-                borderRadius: "6px",
+                borderRadius: "var(--radius-md)",
                 color: "#166534",
                 fontSize: "14px",
-                fontWeight: 500,
+                fontWeight: 600,
               }}
             >
-              Your daily attendance has been recorded and finalized for today.
+              Daily punch records finalized. Thank you for your work today!
               {todayData?.attendance?.remarks && (
-                <div style={{ fontSize: "12px", color: "#4b5563", marginTop: "4px" }}>
+                <div style={{ fontSize: "12.5px", color: "#4b5563", marginTop: "6px", fontWeight: 400 }}>
                   Note: "{todayData.attendance.remarks}"
                 </div>
               )}
@@ -361,28 +365,28 @@ export default function MarkAttendance() {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
             gap: "12px",
-            borderTop: "1px solid #e2e8f0",
-            paddingTop: "20px",
+            borderTop: "1px solid var(--border-subtle)",
+            paddingTop: "24px",
             textAlign: "left",
           }}
         >
-          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Check-In Timestamp</div>
-            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ background: "var(--bg-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Check-In Time</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {isCheckedIn ? formatTime(todayData?.attendance?.checkInTime) : "--:--"}
             </div>
           </div>
 
-          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Check-Out Timestamp</div>
-            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ background: "var(--bg-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Check-Out Time</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {isCheckedOut ? formatTime(todayData?.attendance?.checkOutTime) : "--:--"}
             </div>
           </div>
 
-          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Shift Duration</div>
-            <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "4px" }}>
+          <div style={{ background: "var(--bg-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Shift Duration</div>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--primary)", marginTop: "4px", fontFamily: "var(--font-mono)" }}>
               {isCheckedOut
                 ? `${todayData?.attendance?.totalHours || 0} hrs`
                 : activeDuration
@@ -391,8 +395,8 @@ export default function MarkAttendance() {
             </div>
           </div>
 
-          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Work Mode</div>
+          <div style={{ background: "var(--bg-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Work Mode</div>
             <div style={{ marginTop: "4px" }}>
               <span className={`badge-workmode ${(todayData?.attendance?.workMode || workMode).toLowerCase()}`}>
                 {(todayData?.attendance?.workMode || workMode) === "Remote" ? "🌐 Remote" : "🏢 Office"}
@@ -400,8 +404,8 @@ export default function MarkAttendance() {
             </div>
           </div>
 
-          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Audit Status</div>
+          <div style={{ background: "var(--bg-surface)", padding: "14px 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-subtle)" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Audit Status</div>
             <div style={{ marginTop: "4px" }}>
               {todayData?.attendance?.status ? (
                 <span className={`status-pill ${todayData.attendance.status}`}>
@@ -419,22 +423,22 @@ export default function MarkAttendance() {
       <div
         className="card"
         style={{
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--border-subtle)",
         }}
       >
-        <h3 style={{ fontSize: "15px", color: "#0f172a", marginBottom: "10px" }}>Company Attendance Guidelines</h3>
-        <ul style={{ color: "#475569", fontSize: "13px", lineHeight: "1.7", paddingLeft: "18px" }}>
+        <h3 style={{ fontSize: "16px", color: "var(--text-main)", marginBottom: "10px" }}>Corporate Attendance Policy</h3>
+        <ul style={{ color: "var(--text-body)", fontSize: "13.5px", lineHeight: "1.7", paddingLeft: "20px" }}>
           <li>
-            <strong>Standard Work Shift:</strong> 09:00 AM – 05:30 PM (8.5 Hours standard).
+            <strong>Standard Shift Target:</strong> 8.5 Hours standard working day (09:00 AM – 05:30 PM).
           </li>
           <li>
-            <strong>Grace Period:</strong> Punches recorded before 09:30 AM are audited as <strong>Present</strong>. Punches after 09:30 AM are automatically flagged as <strong>Late</strong>.
+            <strong>Grace Cutoff:</strong> Punches recorded before 09:30 AM are audited as <strong>Present</strong>. Punches after 09:30 AM are classified as <strong>Late</strong>.
           </li>
           <li>
-            <strong>Half-Day Threshold:</strong> If total logged hours at punch-out are less than 4.5 hours, status is recorded as <strong>Half-Day</strong>.
+            <strong>Half-Day Policy:</strong> Shifts with total logged duration under 4.5 hours are classified as <strong>Half-Day</strong>.
           </li>
           <li>
-            <strong>Remote / Hybrid Work:</strong> Employees working remotely must select <em>Authorized Remote</em> when recording their punch.
+            <strong>Remote Work Verification:</strong> Employees operating away from office workstations must select <em>Authorized Remote</em> when recording their shift.
           </li>
         </ul>
       </div>
