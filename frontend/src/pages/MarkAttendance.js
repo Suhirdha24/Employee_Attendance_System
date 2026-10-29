@@ -13,7 +13,8 @@ export default function MarkAttendance() {
   const [todayData, setTodayData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [workMode, setWorkMode] = useState("Office"); // 'Office' | 'Remote'
+  const [workMode, setWorkMode] = useState("Office"); // 'Office' | 'Remote' | 'On-Site'
+  const [remarks, setRemarks] = useState("");
 
   // Live clock timer
   useEffect(() => {
@@ -33,6 +34,9 @@ export default function MarkAttendance() {
       setLoading(true);
       const res = await API.get("/attendance/today");
       setTodayData(res.data);
+      if (res.data?.attendance?.workMode) {
+        setWorkMode(res.data.attendance.workMode);
+      }
     } catch (err) {
       console.error("Error loading today's status:", err);
       addToast("Failed to fetch today's attendance status", "error");
@@ -48,8 +52,9 @@ export default function MarkAttendance() {
   const handleCheckIn = async () => {
     setActionLoading(true);
     try {
-      const res = await API.post("/attendance/checkin", { workMode });
+      const res = await API.post("/attendance/checkin", { workMode, remarks });
       addToast(res.data?.message || "Check-In recorded successfully!", "success");
+      setRemarks("");
       await loadTodayStatus();
     } catch (err) {
       addToast(err.response?.data?.message || "Check-In failed. Please try again.", "error");
@@ -61,8 +66,9 @@ export default function MarkAttendance() {
   const handleCheckOut = async () => {
     setActionLoading(true);
     try {
-      const res = await API.post("/attendance/checkout");
+      const res = await API.post("/attendance/checkout", { remarks });
       addToast(res.data?.message || "Check-Out recorded successfully!", "success");
+      setRemarks("");
       await loadTodayStatus();
     } catch (err) {
       addToast(err.response?.data?.message || "Check-Out failed. Please try again.", "error");
@@ -136,6 +142,9 @@ export default function MarkAttendance() {
       >
         {/* WORK MODE SELECTOR */}
         <div style={{ marginBottom: "20px" }}>
+          <span style={{ display: "block", fontSize: "12px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", marginBottom: "8px" }}>
+            Select Today's Work Mode
+          </span>
           <div
             style={{
               display: "inline-flex",
@@ -147,9 +156,10 @@ export default function MarkAttendance() {
           >
             <button
               type="button"
+              disabled={isCheckedIn}
               onClick={() => setWorkMode("Office")}
               style={{
-                padding: "6px 16px",
+                padding: "8px 18px",
                 borderRadius: "4px",
                 fontSize: "13px",
                 fontWeight: 600,
@@ -157,17 +167,18 @@ export default function MarkAttendance() {
                 color: workMode === "Office" ? "#0f172a" : "#64748b",
                 border: workMode === "Office" ? "1px solid #cbd5e1" : "none",
                 boxShadow: workMode === "Office" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
-                cursor: "pointer",
+                cursor: isCheckedIn ? "default" : "pointer",
                 transition: "all 0.15s ease",
               }}
             >
-              In-Office Station
+              🏢 In-Office Station
             </button>
             <button
               type="button"
+              disabled={isCheckedIn}
               onClick={() => setWorkMode("Remote")}
               style={{
-                padding: "6px 16px",
+                padding: "8px 18px",
                 borderRadius: "4px",
                 fontSize: "13px",
                 fontWeight: 600,
@@ -175,11 +186,11 @@ export default function MarkAttendance() {
                 color: workMode === "Remote" ? "#0f172a" : "#64748b",
                 border: workMode === "Remote" ? "1px solid #cbd5e1" : "none",
                 boxShadow: workMode === "Remote" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
-                cursor: "pointer",
+                cursor: isCheckedIn ? "default" : "pointer",
                 transition: "all 0.15s ease",
               }}
             >
-              Authorized Remote / WFH
+              🌐 Authorized Remote / WFH
             </button>
           </div>
         </div>
@@ -203,7 +214,7 @@ export default function MarkAttendance() {
         </div>
 
         {/* CURRENT STATUS CHIP */}
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: "20px" }}>
           {!isCheckedIn && (
             <span
               style={{
@@ -228,8 +239,8 @@ export default function MarkAttendance() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "6px",
-                padding: "5px 14px",
+                gap: "8px",
+                padding: "6px 16px",
                 background: "#ecfdf5",
                 color: "#065f46",
                 border: "1px solid #a7f3d0",
@@ -238,7 +249,8 @@ export default function MarkAttendance() {
                 fontWeight: 600,
               }}
             >
-              ● Active Shift ({todayData?.status}) • Elapsed: {activeDuration}
+              <span className="pulse-indicator"></span>
+              Active Shift ({todayData?.status}) • Elapsed: {activeDuration} • Mode: {todayData?.attendance?.workMode || workMode}
             </span>
           )}
 
@@ -248,7 +260,7 @@ export default function MarkAttendance() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
-                padding: "5px 14px",
+                padding: "6px 16px",
                 background: "#eff6ff",
                 color: "#1d4ed8",
                 border: "1px solid #bfdbfe",
@@ -257,10 +269,24 @@ export default function MarkAttendance() {
                 fontWeight: 600,
               }}
             >
-              ✓ Shift Completed ({todayData?.attendance?.totalHours || 0} hrs logged)
+              ✓ Shift Completed ({todayData?.attendance?.totalHours || 0} hrs logged) • Mode: {todayData?.attendance?.workMode || "Office"}
             </span>
           )}
         </div>
+
+        {/* REMARKS INPUT (IF NOT COMPLETED) */}
+        {!isCheckedOut && (
+          <div style={{ maxWidth: "420px", margin: "0 auto 20px" }}>
+            <input
+              type="text"
+              className="form-input"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              placeholder="Optional remarks (e.g. transit delay, sprint deliverables, doctor visit)..."
+              style={{ fontSize: "13px", padding: "10px 14px", textAlign: "center" }}
+            />
+          </div>
+        )}
 
         {/* PUNCH ACTION BUTTONS */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
@@ -276,7 +302,7 @@ export default function MarkAttendance() {
                   borderRadius: "6px",
                 }}
               >
-                {actionLoading ? "Recording Punch..." : "Record Check-In"}
+                {actionLoading ? "Recording Punch..." : "▶ Record Check-In"}
               </button>
               {isAfterLateCutoff && (
                 <div style={{ color: "#b45309", fontSize: "13px", marginTop: "10px", background: "#fffbeb", padding: "6px 12px", borderRadius: "4px", border: "1px solid #fde68a", display: "inline-block" }}>
@@ -296,9 +322,10 @@ export default function MarkAttendance() {
                   fontSize: "15px",
                   padding: "14px 36px",
                   borderRadius: "6px",
+                  background: "#dc2626",
                 }}
               >
-                {actionLoading ? "Recording Punch..." : "Record Check-Out"}
+                {actionLoading ? "Recording Punch..." : "⏹ Record Check-Out"}
               </button>
               <div style={{ color: "#64748b", fontSize: "13px", marginTop: "10px" }}>
                 Active shift duration: <strong>{activeDuration}</strong>. Shifts under 4.5 hrs are audited as Half-Day.
@@ -319,6 +346,11 @@ export default function MarkAttendance() {
               }}
             >
               Your daily attendance has been recorded and finalized for today.
+              {todayData?.attendance?.remarks && (
+                <div style={{ fontSize: "12px", color: "#4b5563", marginTop: "4px" }}>
+                  Note: "{todayData.attendance.remarks}"
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -327,7 +359,7 @@ export default function MarkAttendance() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
             gap: "12px",
             borderTop: "1px solid #e2e8f0",
             paddingTop: "20px",
@@ -356,6 +388,15 @@ export default function MarkAttendance() {
                 : activeDuration
                 ? activeDuration
                 : "--"}
+            </div>
+          </div>
+
+          <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Work Mode</div>
+            <div style={{ marginTop: "4px" }}>
+              <span className={`badge-workmode ${(todayData?.attendance?.workMode || workMode).toLowerCase()}`}>
+                {(todayData?.attendance?.workMode || workMode) === "Remote" ? "🌐 Remote" : "🏢 Office"}
+              </span>
             </div>
           </div>
 
@@ -391,6 +432,9 @@ export default function MarkAttendance() {
           </li>
           <li>
             <strong>Half-Day Threshold:</strong> If total logged hours at punch-out are less than 4.5 hours, status is recorded as <strong>Half-Day</strong>.
+          </li>
+          <li>
+            <strong>Remote / Hybrid Work:</strong> Employees working remotely must select <em>Authorized Remote</em> when recording their punch.
           </li>
         </ul>
       </div>

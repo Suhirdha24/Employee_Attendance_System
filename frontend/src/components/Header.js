@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../features/authSlice";
@@ -7,14 +7,16 @@ export default function Header() {
   const auth = useSelector((s) => s.auth);
   const dispatch = useDispatch();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
+  const closeMenu = () => setMobileMenuOpen(false);
 
   return (
     <header className="navbar">
       <div className="nav-container">
         {/* ZONE 1: CORPORATE BRAND LOGO */}
-        <Link to="/" className="brand-logo" title="StaffTrack HRMS Home">
+        <Link to="/" className="brand-logo" title="StaffTrack HRMS Home" onClick={closeMenu}>
           <div className="brand-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -27,9 +29,31 @@ export default function Header() {
           </div>
         </Link>
 
+        {/* MOBILE HAMBURGER BUTTON */}
+        <button
+          className="nav-toggle-btn"
+          aria-label="Toggle navigation menu"
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {mobileMenuOpen ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </>
+            ) : (
+              <>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </>
+            )}
+          </svg>
+        </button>
+
         {/* ZONE 2: NAVIGATION MENU LINKS */}
-        <nav className="nav-menu">
-          <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`}>
+        <nav className={`nav-menu ${mobileMenuOpen ? "open" : ""}`}>
+          <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`} onClick={closeMenu}>
             Home
           </Link>
 
@@ -39,6 +63,7 @@ export default function Header() {
               <Link
                 to="/employee"
                 className={`nav-link ${isActive("/employee") ? "active" : ""}`}
+                onClick={closeMenu}
               >
                 Dashboard
               </Link>
@@ -47,6 +72,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/employee/mark-attendance") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Mark Attendance
               </Link>
@@ -55,6 +81,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/employee/history") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 History
               </Link>
@@ -63,6 +90,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/employee/profile") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Profile
               </Link>
@@ -75,6 +103,7 @@ export default function Header() {
               <Link
                 to="/manager"
                 className={`nav-link ${isActive("/manager") ? "active" : ""}`}
+                onClick={closeMenu}
               >
                 Dashboard
               </Link>
@@ -83,6 +112,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/manager/all-attendance") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 All Attendance
               </Link>
@@ -91,6 +121,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/manager/calendar") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Team Calendar
               </Link>
@@ -99,6 +130,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/manager/reports") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Reports
               </Link>
@@ -107,6 +139,7 @@ export default function Header() {
                 className={`nav-link ${
                   isActive("/manager/charts") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Analytics
               </Link>
@@ -121,6 +154,7 @@ export default function Header() {
               <Link
                 to="/login"
                 className={`nav-link ${isActive("/login") ? "active" : ""}`}
+                onClick={closeMenu}
               >
                 Sign In
               </Link>
@@ -129,6 +163,7 @@ export default function Header() {
                 className={`btn btn-primary btn-sm ${
                   isActive("/register") ? "active" : ""
                 }`}
+                onClick={closeMenu}
               >
                 Register
               </Link>
@@ -148,7 +183,10 @@ export default function Header() {
               </div>
               <button
                 className="btn btn-outline btn-sm"
-                onClick={() => dispatch(logout())}
+                onClick={() => {
+                  closeMenu();
+                  dispatch(logout());
+                }}
                 style={{ padding: "6px 14px", fontWeight: 600 }}
               >
                 Logout

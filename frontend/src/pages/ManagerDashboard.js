@@ -18,16 +18,44 @@ export default function ManagerDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDept, setSelectedDept] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedWorkMode, setSelectedWorkMode] = useState("all");
 
   // Selected Employee for Drill-down Modal
   const [selectedEmp, setSelectedEmp] = useState(null);
   const [empModalLoading, setEmpModalLoading] = useState(false);
+
+  // Rectify Modal State
+  const [rectifyRecord, setRectifyRecord] = useState(null);
+  const [rectifyStatus, setRectifyStatus] = useState("present");
+  const [rectifyHours, setRectifyHours] = useState("8.0");
+  const [rectifyWorkMode, setRectifyWorkMode] = useState("Office");
+  const [rectifyRemarks, setRectifyRemarks] = useState("");
+  const [rectifySaving, setRectifySaving] = useState(false);
+
+  // Live timer for active shifts
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const formatTime = (isoString) => {
     if (!isoString || isoString === "-") return "-";
     const d = new Date(isoString);
     if (isNaN(d.getTime())) return isoString;
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const getActiveDuration = (checkInIso, checkOutIso) => {
+    if (checkInIso && checkInIso !== "-" && (!checkOutIso || checkOutIso === "-")) {
+      const start = new Date(checkInIso);
+      const diffMs = Math.max(0, currentTime - start);
+      const totalMins = Math.floor(diffMs / (1000 * 60));
+      const hours = Math.floor(totalMins / 60);
+      const mins = totalMins % 60;
+      return `${hours}h ${mins}m`;
+    }
+    return null;
   };
 
   const loadData = async () => {
@@ -76,9 +104,14 @@ export default function ManagerDashboard() {
         selectedStatus === "all" ||
         (item.status && item.status.toLowerCase() === selectedStatus.toLowerCase());
 
-      return matchSearch && matchDept && matchStatus;
+      // Work mode match
+      const matchWorkMode =
+        selectedWorkMode === "all" ||
+        (item.workMode && item.workMode.toLowerCase() === selectedWorkMode.toLowerCase());
+
+      return matchSearch && matchDept && matchStatus && matchWorkMode;
     });
-  }, [activeTab, todayList, allList, searchTerm, selectedDept, selectedStatus]);
+  }, [activeTab, todayList, allList, searchTerm, selectedDept, selectedStatus, selectedWorkMode]);
 
   // Export CSV
   const handleExportCSV = () => {
@@ -91,10 +124,12 @@ export default function ManagerDashboard() {
       "Employee ID",
       "Department",
       "Date",
+      "Work Mode",
       "Check-In",
       "Check-Out",
       "Hours Worked",
       "Status",
+      "Remarks",
     ];
 
     const rows = displayedList.map((item) => [
@@ -102,10 +137,12 @@ export default function ManagerDashboard() {
       `"${item.employeeId || "-"}"`,
       `"${item.department || "General"}"`,
       item.date,
+      `"${item.workMode || "Office"}"`,
       `"${formatTime(item.checkInTime)}"`,
       `"${formatTime(item.checkOutTime)}"`,
       item.totalHours || "0",
       `"${item.status}"`,
+      `"${(item.remarks || "").replace(/"/g, '""')}"`,
     ]);
 
     const csvContent =
@@ -127,7 +164,9 @@ export default function ManagerDashboard() {
 
   // Open Employee Details Modal
   const openEmployeeDrilldown = async (userId) => {
-    if (!userId || userId.toString().startsWith("virtual-")) return;
+    if (!userId || userId.toString().startsWith("virtual-")) {
+      return addToast("Virtual record (not yet clocked in today)", "info");
+    }
     try {
       setEmpModalLoading(true);
       const res = await API.get(`/attendance/employee/${userId}`);
@@ -136,6 +175,39 @@ export default function ManagerDashboard() {
       addToast("Could not load employee details", "error");
     } finally {
       setEmpModalLoading(false);
+    }
+  };
+
+  // Open Rectify Modal
+  const openRectify = (record) => {
+    if (!record._id || record._id.toString().startsWith("virtual-")) {
+      return addToast("Please select an existing attendance log to rectify", "info");
+    }
+    setRectifyRecord(record);
+    setRectifyStatus(record.status || "present");
+    setRectifyHours(record.totalHours !== "-" ? record.totalHours : "8.0");
+    setRectifyWorkMode(record.workMode || "Office");
+    setRectifyRemarks(record.remarks || "");
+  };
+
+  const handleSaveRectify = async (e) => {
+    e.preventDefault();
+    if (!rectifyRecord) return;
+    setRectifySaving(true);
+    try {
+      await API.put(`/attendance/${rectifyRecord._id}`, {
+        status: rectifyStatus,
+        totalHours: parseFloat(rectifyHours) || 0,
+        workMode: rectifyWorkMode,
+        remarks: rectifyRemarks,
+      });
+      addToast("Attendance adjusted successfully!", "success");
+      setRectifyRecord(null);
+      await loadData();
+    } catch (err) {
+      addToast(err.response?.data?.message || "Failed to adjust record", "error");
+    } finally {
+      setRectifySaving(false);
     }
   };
 
@@ -166,7 +238,7 @@ export default function ManagerDashboard() {
 
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <button className="btn btn-outline btn-sm" onClick={handleExportCSV}>
-            Export CSV
+            📥 Export CSV
           </button>
           <Link to="/manager/all-attendance" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
             All Records
@@ -190,7 +262,7 @@ export default function ManagerDashboard() {
             <span className="stat-title">Total Staff</span>
           </div>
           <div className="stat-value">{summary?.totalEmployees || 0}</div>
-          <span className="stat-subtitle">Enrolled employees</span>
+          <span className="stat-subtitle">Enrolled workforce members</span>
         </div>
 
         <div className="stat-card">
@@ -200,7 +272,9 @@ export default function ManagerDashboard() {
           <div className="stat-value" style={{ color: "#059669" }}>
             {summary?.presentToday || 0}
           </div>
-          <span className="stat-subtitle">{summary?.attendancePercentage || 0}% active shift compliance</span>
+          <span className="stat-subtitle">
+            {summary?.officeToday || 0} Office • {summary?.remoteToday || 0} Remote
+          </span>
         </div>
 
         <div className="stat-card">
@@ -260,7 +334,7 @@ export default function ManagerDashboard() {
         </div>
 
         {/* SEARCH & FILTERS ROW */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "14px" }}>
           <div>
             <label className="form-label">Search Employee</label>
             <input
@@ -304,6 +378,19 @@ export default function ManagerDashboard() {
             </select>
           </div>
 
+          <div>
+            <label className="form-label">Filter Work Mode</label>
+            <select
+              className="form-select"
+              value={selectedWorkMode}
+              onChange={(e) => setSelectedWorkMode(e.target.value)}
+            >
+              <option value="all">All Modes</option>
+              <option value="Office">🏢 Office</option>
+              <option value="Remote">🌐 Remote</option>
+            </select>
+          </div>
+
           <div style={{ display: "flex", alignItems: "flex-end" }}>
             <button
               className="btn btn-outline"
@@ -312,6 +399,7 @@ export default function ManagerDashboard() {
                 setSearchTerm("");
                 setSelectedDept("all");
                 setSelectedStatus("all");
+                setSelectedWorkMode("all");
               }}
             >
               Reset Filters
@@ -330,6 +418,7 @@ export default function ManagerDashboard() {
                 <th>Employee ID</th>
                 <th>Department</th>
                 <th>Date</th>
+                <th>Work Mode</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
                 <th>Duration</th>
@@ -340,142 +429,305 @@ export default function ManagerDashboard() {
             <tbody>
               {displayedList.length === 0 ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
+                  <td colSpan="10" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
                     {loading ? "Loading attendance records..." : "No attendance records match your current filter."}
                   </td>
                 </tr>
               ) : (
-                displayedList.map((item) => (
-                  <tr key={item._id}>
-                    <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <div
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "6px",
-                            background: "var(--primary-light)",
-                            color: "var(--primary)",
-                            border: "1px solid var(--primary-border)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "13px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {item.name?.charAt(0) || "E"}
+                displayedList.map((item) => {
+                  const activeDuration = getActiveDuration(item.checkInTime, item.checkOutTime);
+
+                  return (
+                    <tr key={item._id}>
+                      <td>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div
+                            style={{
+                              width: "32px",
+                              height: "32px",
+                              borderRadius: "6px",
+                              background: "var(--primary-light)",
+                              color: "var(--primary)",
+                              border: "1px solid var(--primary-border)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "13px",
+                              fontWeight: 700,
+                            }}
+                          >
+                            {item.name?.charAt(0) || "E"}
+                          </div>
+                          <span style={{ fontWeight: 600, color: "var(--text-main)" }}>{item.name || "-"}</span>
                         </div>
-                        <span style={{ fontWeight: 600, color: "var(--text-main)" }}>{item.name || "-"}</span>
-                      </div>
-                    </td>
-                    <td style={{ fontFamily: "monospace", fontWeight: 600, color: "var(--text-main)" }}>
-                      {item.employeeId || "-"}
-                    </td>
-                    <td>{item.department || "General"}</td>
-                    <td style={{ fontWeight: 500 }}>{item.date}</td>
-                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkInTime)}</td>
-                    <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkOutTime)}</td>
-                    <td style={{ fontWeight: 600 }}>{item.totalHours ? `${item.totalHours} hrs` : "-"}</td>
-                    <td>
-                      <span className={`status-pill ${item.status}`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline btn-sm"
-                        onClick={() => openEmployeeDrilldown(item.userId)}
-                        disabled={!item.userId || item.userId.toString().startsWith("virtual-")}
-                      >
-                        Audit
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td style={{ fontFamily: "monospace", fontWeight: 600, color: "var(--text-main)" }}>
+                        {item.employeeId || "-"}
+                      </td>
+                      <td>{item.department || "General"}</td>
+                      <td style={{ fontWeight: 500 }}>{item.date}</td>
+                      <td>
+                        <span className={`badge-workmode ${(item.workMode || "Office").toLowerCase()}`}>
+                          {item.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                        </span>
+                      </td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkInTime)}</td>
+                      <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkOutTime)}</td>
+                      <td style={{ fontWeight: 600 }}>
+                        {activeDuration ? (
+                          <span style={{ color: "#059669", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                            <span className="pulse-indicator"></span>
+                            {activeDuration}
+                          </span>
+                        ) : item.totalHours && item.totalHours !== "-" ? (
+                          `${item.totalHours} hrs`
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td>
+                        <span className={`badge badge-${item.status}`}>
+                          {item.status}
+                        </span>
+                        {item.modifiedByManager && (
+                          <span style={{ display: "block", fontSize: "10px", color: "var(--accent-blue)", fontWeight: 600, marginTop: "2px" }}>
+                            Adjusted
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <div style={{ display: "flex", gap: "6px" }}>
+                          <button
+                            className="btn btn-outline btn-sm"
+                            onClick={() => openEmployeeDrilldown(item.userId)}
+                          >
+                            Details
+                          </button>
+                          {!item._id.toString().startsWith("virtual-") && (
+                            <button
+                              className="btn btn-outline btn-sm"
+                              style={{ background: "#f8fafc" }}
+                              onClick={() => openRectify(item)}
+                            >
+                              ✏️
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* EMPLOYEE DRILL-DOWN MODAL */}
-      {selectedEmp && (
-        <div className="modal-backdrop" onClick={() => setSelectedEmp(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "700px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+      {/* RECTIFY / ADJUST MODAL */}
+      {rectifyRecord && (
+        <div className="rectify-modal-backdrop" onClick={() => setRectifyRecord(null)}>
+          <div className="rectify-modal" onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <span style={{ fontSize: "12px", color: "var(--primary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
-                  Employee Attendance Profile
-                </span>
-                <h2 style={{ fontSize: "20px", marginTop: "2px", color: "var(--text-main)" }}>{selectedEmp.employee?.name}</h2>
-                <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
-                  Staff ID: <strong>{selectedEmp.employee?.employeeId}</strong> • {selectedEmp.employee?.department} Department
+                <h3 style={{ fontSize: "17px", color: "#0f172a" }}>Adjust Shift Attendance</h3>
+                <p style={{ color: "#64748b", fontSize: "13px", marginTop: "2px" }}>
+                  {rectifyRecord.name} ({rectifyRecord.employeeId}) • Shift: {rectifyRecord.date}
+                </p>
+              </div>
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setRectifyRecord(null)}
+                style={{ width: "28px", height: "28px", padding: 0 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveRectify} style={{ padding: "20px 24px" }}>
+              <div className="form-group">
+                <label className="form-label">Classification Status</label>
+                <select
+                  className="form-select"
+                  value={rectifyStatus}
+                  onChange={(e) => setRectifyStatus(e.target.value)}
+                >
+                  <option value="present">Present</option>
+                  <option value="late">Late</option>
+                  <option value="half-day">Half-Day</option>
+                  <option value="absent">Absent</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Total Working Hours</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="24"
+                  className="form-input"
+                  value={rectifyHours}
+                  onChange={(e) => setRectifyHours(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Work Mode</label>
+                <select
+                  className="form-select"
+                  value={rectifyWorkMode}
+                  onChange={(e) => setRectifyWorkMode(e.target.value)}
+                >
+                  <option value="Office">In-Office</option>
+                  <option value="Remote">Authorized Remote</option>
+                  <option value="On-Site">Client On-Site</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Manager Audit Note / Justification</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Approved medical leave, transit delay excuse, manual shift log"
+                  value={rectifyRemarks}
+                  onChange={(e) => setRectifyRemarks(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => setRectifyRecord(null)}
+                  style={{ flex: 1 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={rectifySaving}
+                  style={{ flex: 1 }}
+                >
+                  {rectifySaving ? "Saving..." : "Confirm Adjustment"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DRILL-DOWN MODAL */}
+      {selectedEmp && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setSelectedEmp(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.45)",
+            backdropFilter: "blur(2px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "16px",
+          }}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#ffffff",
+              borderRadius: "8px",
+              padding: "24px",
+              maxWidth: "680px",
+              width: "100%",
+              boxShadow: "var(--shadow-lg)",
+              border: "1px solid #cbd5e1",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <div>
+                <h2 style={{ fontSize: "20px", color: "#0f172a" }}>{selectedEmp.employee.name}</h2>
+                <p style={{ color: "#64748b", fontSize: "13px", marginTop: "2px" }}>
+                  Staff ID: <strong>{selectedEmp.employee.employeeId}</strong> • {selectedEmp.employee.department} • {selectedEmp.employee.email}
                 </p>
               </div>
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => setSelectedEmp(null)}
+                style={{ width: "28px", height: "28px", padding: 0 }}
               >
-                ✕ Close
+                ✕
               </button>
             </div>
 
-            {/* EMPLOYEE METRICS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px", textAlign: "center" }}>
-              <div style={{ background: "var(--status-present-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-present-border)" }}>
-                <span style={{ fontSize: "11px", color: "var(--status-present-text)", textTransform: "uppercase" }}>Present</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-present-text)", marginTop: "2px" }}>
-                  {selectedEmp.stats?.presentDays}
-                </p>
+            {/* QUICK STATS */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
+              <div style={{ background: "#f8fafc", padding: "12px", borderRadius: "6px", textAlign: "center", border: "1px solid #e2e8f0" }}>
+                <span style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Shifts</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginTop: "2px" }}>{selectedEmp.stats.totalDays}</p>
               </div>
-              <div style={{ background: "var(--status-late-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-late-border)" }}>
-                <span style={{ fontSize: "11px", color: "var(--status-late-text)", textTransform: "uppercase" }}>Late</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-late-text)", marginTop: "2px" }}>
-                  {selectedEmp.stats?.lateDays}
-                </p>
+              <div style={{ background: "#ecfdf5", padding: "12px", borderRadius: "6px", textAlign: "center", border: "1px solid #a7f3d0" }}>
+                <span style={{ fontSize: "11px", color: "#065f46", textTransform: "uppercase" }}>Present</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "#065f46", marginTop: "2px" }}>{selectedEmp.stats.presentDays}</p>
               </div>
-              <div style={{ background: "var(--status-half-bg)", padding: "12px", borderRadius: "6px", border: "1px solid var(--status-half-border)" }}>
-                <span style={{ fontSize: "11px", color: "var(--status-half-text)", textTransform: "uppercase" }}>Half-Day</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--status-half-text)", marginTop: "2px" }}>
-                  {selectedEmp.stats?.halfDays}
-                </p>
+              <div style={{ background: "#fffbeb", padding: "12px", borderRadius: "6px", textAlign: "center", border: "1px solid #fde68a" }}>
+                <span style={{ fontSize: "11px", color: "#92400e", textTransform: "uppercase" }}>Late</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "#92400e", marginTop: "2px" }}>{selectedEmp.stats.lateDays}</p>
               </div>
-              <div style={{ background: "var(--bg-surface)", padding: "12px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Total Logged</span>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--primary)", marginTop: "2px" }}>
-                  {selectedEmp.stats?.totalHours}h
-                </p>
+              <div style={{ background: "#f8fafc", padding: "12px", borderRadius: "6px", textAlign: "center", border: "1px solid #e2e8f0" }}>
+                <span style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Total Hours</span>
+                <p style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginTop: "2px" }}>{selectedEmp.stats.totalHours}h</p>
               </div>
             </div>
 
-            {/* RECENT RECORDS */}
-            <h3 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "10px", color: "var(--text-main)" }}>Recent Shift Records</h3>
-            <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border-medium)", borderRadius: "6px" }}>
-              <table className="custom-table" style={{ fontSize: "13px" }}>
+            {/* HISTORY LIST */}
+            <h3 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "8px", color: "#0f172a" }}>Recent Shift Logs</h3>
+            <div style={{ maxHeight: "240px", overflowY: "auto", border: "1px solid #e2e8f0", borderRadius: "6px" }}>
+              <table className="modern-table" style={{ fontSize: "12.5px" }}>
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>In</th>
-                    <th>Out</th>
+                    <th>Mode</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
                     <th>Hours</th>
                     <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedEmp.history?.slice(0, 15).map((h) => (
+                  {selectedEmp.history.slice(0, 10).map((h) => (
                     <tr key={h._id}>
                       <td style={{ fontWeight: 500 }}>{h.date}</td>
+                      <td>
+                        <span className={`badge-workmode ${(h.workMode || "Office").toLowerCase()}`}>
+                          {h.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                        </span>
+                      </td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkInTime)}</td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkOutTime)}</td>
-                      <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
+                      <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours}h` : "-"}</td>
                       <td>
-                        <span className={`status-pill ${h.status}`}>{h.status}</span>
+                        <span className={`badge badge-${h.status}`}>{h.status}</span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            <div style={{ marginTop: "16px", textAlign: "right" }}>
+              <button className="btn btn-outline" onClick={() => setSelectedEmp(null)}>
+                Dismiss
+              </button>
             </div>
           </div>
         </div>

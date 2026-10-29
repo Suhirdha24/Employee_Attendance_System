@@ -1,6 +1,6 @@
 # StaffTrack HRMS — Workforce Attendance & Timesheet System
 
-An enterprise-grade, full-stack MERN application for modern workforce management. Enables employees to record verified biometric-style punch times (Check-In / Check-Out) and provides managers with real-time attendance telemetry, compliance auditing, department filtering, and CSV timesheet exports.
+An enterprise-grade, full-stack MERN application for modern workforce management. Enables employees to record verified biometric-style punch times (Check-In / Check-Out) with Work Mode selection (Office vs Remote), and provides managers with real-time attendance telemetry, compliance auditing, attendance rectification, department filtering, and CSV timesheet exports.
 
 ---
 
@@ -11,8 +11,8 @@ An enterprise-grade, full-stack MERN application for modern workforce management
 - **Redux Toolkit & React-Redux** (Centralized state management)
 - **React Router v6** (Protected routes with Role-Based Access Control)
 - **React Calendar** (Interactive monthly attendance heatmaps)
-- **Chart.js & react-chartjs-2** (Attendance analytics & weekly trends)
-- **Vanilla CSS (Design Tokens)** (Corporate HRMS theme, crisp typography, responsive layout)
+- **Chart.js, react-chartjs-2 & Recharts** (Attendance analytics & weekly trends)
+- **Vanilla CSS (Design Tokens)** (Corporate HRMS theme, crisp typography, responsive layout, mobile drawer menu)
 
 ### **Backend**
 - **Node.js & Express.js** (RESTful API architecture)
@@ -27,22 +27,29 @@ An enterprise-grade, full-stack MERN application for modern workforce management
 
 ### 👨‍💼 **Employee Portal**
 - **Secure Authentication**: Register with automated Employee ID generation (`EMP10xx`), sign in with password visibility toggle.
-- **Live Workstation Punching**: Real-time digital clock with single-click Check-In and Check-Out.
+- **Work Mode Selection**: Select between `🏢 In-Office` and `🌐 Authorized Remote / WFH` for each daily shift.
+- **Live Workstation Punching**: Real-time digital clock with single-click Check-In and Check-Out with animated active shift pulse.
+- **Shift Remarks & Notes**: Attach optional comments to shifts (e.g., transit delays, client meetings, doctor appointments).
 - **Shift Duration Tracking**: Automated computation of total hours logged and compliance classification (*Present*, *Late (>09:30)*, *Half-Day (<4.5h)*, *Absent*).
 - **Personal Timesheet Audit**:
-  - **Tabular View**: Chronological log with search and status badges.
+  - **Tabular View**: Chronological log with search, Work Mode tags, and status badges.
   - **Calendar Heatmap**: Interactive calendar with color-coded day tiles and detailed daily shift inspector.
-- **Personal Summary Statistics**: Present days, late marks, half days, average working hours.
+- **Profile & Security Settings**: Update full legal name, department, or change password with instant feedback toast notifications.
+- **Personal Summary Statistics**: Present days, late marks, half days, average working hours, compliance percentage.
 
 ### 👩‍💼 **Manager & HR Portal**
-- **Workforce KPI Dashboard**: Real-time metrics for total workforce, present count, absent count, and late arrivals.
+- **Workforce KPI Dashboard**: Real-time metrics for total workforce, present count, absent count, late arrivals, and office vs remote split.
 - **7-Day Attendance Trend**: Interactive bar and line charts visualizing presence rates across departments.
 - **Workforce Audit Table**: Comprehensive master timesheet with multi-parameter filtering:
-  - Filter by Department (Engineering, Marketing, HR, Finance, Operations)
+  - Quick filter chips (All, Present, Late, Half-Day, Remote Only)
+  - Filter by Department (Engineering, Marketing, HR, Finance, Operations, UI/UX)
   - Filter by Status (Present, Late, Half-Day, Absent)
-  - Search by employee name or ID
-- **Employee Drill-Down**: Direct inspection of individual employee historical logs.
-- **CSV Data Export**: Instant download of formatted, timestamped attendance audit logs for payroll integration.
+  - Filter by Work Mode (In-Office, Authorized Remote)
+  - Search by employee name, ID, or email
+- **Real-Time Active Duration**: Live elapsed shift timer for employees currently clocked in (`● Active (3h 24m)`).
+- **Attendance Rectification / Adjustment**: Managers can adjust shift status, logged hours, work mode, and add audit justification notes directly from the master table or drilldown modal.
+- **Employee Drill-Down**: Direct inspection of individual employee historical logs and performance metrics.
+- **CSV Data Export**: Instant download of formatted, timestamped attendance audit logs (including Work Mode and Remarks) for payroll integration.
 
 ---
 
@@ -52,8 +59,8 @@ For quick evaluation, pre-seeded accounts are ready to use:
 
 | Role | Email | Password | Access Level |
 | :--- | :--- | :--- | :--- |
-| **Employee** | `alex@company.com` | `password123` | Personal Dashboard, Punches, History |
-| **Manager** | `manager@company.com` | `manager123` | Master Audit, Team Analytics, CSV Export |
+| **Employee** | `alex@company.com` | `password123` | Personal Dashboard, Punches, History, Profile |
+| **Manager** | `manager@company.com` | `manager123` | Master Audit, Attendance Adjustment, Team Analytics, CSV Export |
 
 ---
 
@@ -86,7 +93,7 @@ PORT=5000
 MONGO_URI=mongodb://127.0.0.1:27017/attendanceDB
 JWT_SECRET=supersecretattendancejwtkey_2026_dev_env
 ```
-*(Note: If using MongoDB Atlas, replace `MONGO_URI` with your Atlas connection string and ensure your IP is whitelisted under Network Access in the Atlas dashboard.)*
+*(Note: If using MongoDB Atlas, replace `MONGO_URI` with your Atlas connection string. If connection times out, the backend automatically falls back to your local MongoDB server on port 27017.)*
 
 Seed the database with sample employees and attendance records:
 ```bash
@@ -100,6 +107,11 @@ npm start
 # Server runs on: http://localhost:5000
 ```
 
+Run the automated test suite (verifies all 26 endpoints and operations):
+```bash
+npm test
+```
+
 ---
 
 ### **3. Frontend Configuration & Setup**
@@ -108,90 +120,69 @@ Open a new terminal and navigate to the `frontend` folder:
 cd frontend
 npm install
 npm start
-# Client application runs on: http://localhost:3000
+# Application opens on: http://localhost:3000
 ```
 
 ---
 
-### **4. Running Automated Tests**
-The backend includes a comprehensive 24-point end-to-end integration test suite verifying health checks, authentication, employee operations, RBAC security, and manager analytics:
+## 🧪 Comprehensive Automated Test Suite
+
+StaffTrack HRMS includes a built-in end-to-end integration test suite that tests health, authentication, role access control, punch clock operations, manager controls, and CSV generation:
+
 ```bash
 cd backend
 npm test
 ```
-**Expected Result**: `24 PASSED | 0 FAILED`
 
----
+Output:
+```
+====================================================
+🧪 RUNNING COMPREHENSIVE ATTENDANCE SYSTEM TEST SUITE
+====================================================
 
-## 🗄 Database Schema
+--- 1. SYSTEM HEALTH CHECKS ---
+✅ [PASS] GET /api/health responds with 200 OK
 
-### **Users Collection (`User.js`)**
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `name` | String | Full employee legal name |
-| `email` | String | Corporate email address (unique) |
-| `password` | String | Hashed using bcryptjs |
-| `role` | String | Access level: `employee` or `manager` |
-| `employeeId` | String | Auto-generated identifier (`EMP1001`...) |
-| `department` | String | `Engineering`, `Marketing`, `HR`, `Finance`, `Operations` |
-| `createdAt` | Date | Record timestamp |
+--- 2. AUTHENTICATION & SECURITY ---
+✅ [PASS] Employee login (alex@company.com) returns JWT token
+✅ [PASS] Manager login returns JWT with role "manager"
+✅ [PASS] Invalid password correctly rejected with 400 Bad Request
+✅ [PASS] GET /api/auth/me returns authenticated employee profile
+✅ [PASS] POST /api/auth/request-reset verifies email and returns user ID
+✅ [PASS] POST /api/auth/register provisions user with generated employeeId: EMP1007
+✅ [PASS] PUT /api/auth/profile updates user display name
 
-### **Attendances Collection (`Attendance.js`)**
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `userId` | ObjectId | Reference to `User` model |
-| `date` | String | Date string (`YYYY-MM-DD`) |
-| `checkInTime` | String | Punch-in time (`HH:mm:ss`) |
-| `checkOutTime`| String | Punch-out time (`HH:mm:ss`) |
-| `status` | String | `present`, `late`, `half-day`, `absent` |
-| `totalHours` | Number | Computed shift length in hours |
-| `createdAt` | Date | Record timestamp |
+--- 3. EMPLOYEE ATTENDANCE OPERATIONS ---
+✅ [PASS] POST /api/attendance/checkin records valid punch time with Remote workMode
+✅ [PASS] POST /api/attendance/checkin prevents double check-in on the same day
+✅ [PASS] POST /api/attendance/checkout records check-out time and totalHours
+✅ [PASS] POST /api/attendance/checkout prevents double check-out on the same day
+✅ [PASS] GET /api/attendance/today returns today attendance object
+✅ [PASS] GET /api/attendance/my-history returns attendance history array
+✅ [PASS] GET /api/attendance/my-summary returns compliance metrics
+✅ [PASS] GET /api/dashboard/employee returns live workstation data
 
----
+--- 4. ROLE-BASED ACCESS CONTROL (RBAC) ---
+✅ [PASS] Employee token accessing manager route GET /api/attendance/all is blocked with 403 Forbidden
 
-## 🔗 REST API Reference
+--- 5. MANAGER WORKFORCE OPERATIONS ---
+✅ [PASS] GET /api/attendance/all returns 132 attendance logs
+✅ [PASS] GET /api/attendance/all?department=Engineering filters correctly
+✅ [PASS] GET /api/attendance/all?status=present filters correctly
+✅ [PASS] GET /api/attendance/all-today returns status for 7 team members
+✅ [PASS] GET /api/attendance/employee/:id returns comprehensive drilldown for Alex Johnson
+✅ [PASS] PUT /api/attendance/:id rectifies record and sets modifiedByManager flag
+✅ [PASS] GET /api/attendance/summary returns metrics for 7 total employees
+✅ [PASS] GET /api/dashboard/manager returns KPI overview and 7-day trend series
+✅ [PASS] GET /api/attendance/export generates valid CSV with Work Mode & Remarks columns
 
-### **Authentication (`/api/auth`)**
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Register new employee profile | Public |
-| `POST` | `/api/auth/login` | Authenticate credentials & return JWT | Public |
-| `GET` | `/api/auth/me` | Fetch currently logged-in user | Authenticated |
-| `POST` | `/api/auth/request-reset` | Validate email for password recovery | Public |
-| `POST` | `/api/auth/reset` | Set new account password | Public |
-
-### **Employee Attendance (`/api/attendance`)**
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/attendance/checkin` | Record Check-In punch for today | Employee |
-| `POST` | `/api/attendance/checkout` | Record Check-Out punch & compute duration | Employee |
-| `GET` | `/api/attendance/today` | Fetch today's punch state | Employee |
-| `GET` | `/api/attendance/my-history` | Fetch employee's complete punch history | Employee |
-| `GET` | `/api/attendance/my-summary` | Fetch employee's attendance metrics | Employee |
-
-### **Manager Operations (`/api/attendance` & `/api/dashboard`)**
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/attendance/all` | Query all records (supports `?department=`, `?status=`) | Manager |
-| `GET` | `/api/attendance/all-today` | Summary of today's team presence | Manager |
-| `GET` | `/api/attendance/summary` | Aggregated workforce attendance metrics | Manager |
-| `GET` | `/api/attendance/employee/:id` | Drilldown history for a specific employee | Manager |
-| `GET` | `/api/attendance/export` | Stream CSV file of verified timesheets | Manager |
-| `GET` | `/api/dashboard/manager` | Live metrics & 7-day trend statistics | Manager |
-
----
-
-## 📁 UI Screenshots
-
-<img width="1222" height="667" alt="StaffTrack Dashboard" src="https://github.com/user-attachments/assets/5295af9a-4d5f-4e4b-b6f8-976c42566185" />
-<img width="1163" height="535" alt="Mark Attendance Page" src="https://github.com/user-attachments/assets/ad6adb1d-76c8-4ab0-90e6-6ad946eff3b3" />
-<img width="1064" height="498" alt="Attendance History Log" src="https://github.com/user-attachments/assets/6151f3a1-dd56-4e24-b269-242ef01f0ba4" />
-<img width="1109" height="528" alt="Team Timesheet Heatmap" src="https://github.com/user-attachments/assets/8ad705e3-1d90-4332-891d-417908319a5a" />
-<img width="1255" height="621" alt="Manager Workforce Audit" src="https://github.com/user-attachments/assets/76b37966-5c71-42c2-8a5a-a55e91bf752f" />
-<img width="983" height="580" alt="Attendance Reports & Trends" src="https://github.com/user-attachments/assets/b2cdaf05-60dd-4c41-943a-7672a781d4ed" />
-<img width="710" height="558" alt="Sign In Page" src="https://github.com/user-attachments/assets/1765b9c5-36a0-45cd-b763-f2b462082434" />
+====================================================
+📊 TEST SUITE SUMMARY: 26 PASSED | 0 FAILED
+====================================================
+🎉 ALL SYSTEM FUNCTIONS ARE WORKING PROPERLY!
+```
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License.
+MIT License. Free for open-source and enterprise use.

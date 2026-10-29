@@ -11,6 +11,7 @@ const {
   allEmployeesToday,
   employeeHistoryById,
   teamSummary,
+  updateAttendanceRecord,
   exportCSV,
 } = require("../controllers/attendance.controller.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
@@ -28,6 +29,7 @@ router.get("/all-today", protect, authorize("manager"), allEmployeesToday);
 router.get("/today-status", protect, authorize("manager"), allEmployeesToday);
 router.get("/employee/:id", protect, authorize("manager"), employeeHistoryById);
 router.get("/summary", protect, authorize("manager"), teamSummary);
+router.put("/:id", protect, authorize("manager"), updateAttendanceRecord);
 router.get("/export", protect, authorize("manager"), exportCSV);
 
 module.exports = router;

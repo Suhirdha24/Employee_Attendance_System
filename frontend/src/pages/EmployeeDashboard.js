@@ -51,7 +51,7 @@ export default function EmployeeDashboard() {
   const handleCheckIn = async () => {
     setActionLoading(true);
     try {
-      const res = await API.post("/attendance/checkin");
+      const res = await API.post("/attendance/checkin", { workMode: "Office" });
       addToast(res.data?.message || "Check-in recorded!", "success");
       loadData();
     } catch (err) {
@@ -187,11 +187,18 @@ export default function EmployeeDashboard() {
             <h2 style={{ fontSize: "18px", color: "#0f172a", marginTop: "2px" }}>Daily Attendance Record</h2>
           </div>
 
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {todayData?.attendance?.workMode && (
+              <span className={`badge-workmode ${todayData.attendance.workMode.toLowerCase()}`}>
+                {todayData.attendance.workMode === "Remote" ? "🌐 Remote" : "🏢 In-Office"}
+              </span>
+            )}
+
             {!isCheckedIn && <span className="badge badge-absent">Not Checked In</span>}
             {isCheckedIn && !isCheckedOut && (
-              <span className={`badge ${todayData?.status === "late" ? "badge-late" : "badge-present"}`}>
-                ● Active Shift ({todayData?.status})
+              <span className={`badge ${todayData?.status === "late" ? "badge-late" : "badge-present"}`} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <span className="pulse-indicator"></span>
+                Active Shift ({todayData?.status})
               </span>
             )}
             {isCheckedOut && (
@@ -250,8 +257,14 @@ export default function EmployeeDashboard() {
           </div>
         </div>
 
+        {todayData?.attendance?.remarks && (
+          <div style={{ background: "#f1f5f9", padding: "10px 14px", borderRadius: "6px", fontSize: "13px", color: "#334155", marginBottom: "18px", border: "1px solid #e2e8f0" }}>
+            <strong>Shift Note:</strong> {todayData.attendance.remarks}
+          </div>
+        )}
+
         {/* ACTION BUTTONS */}
-        <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", alignItems: "center" }}>
           <button
             className="btn btn-success"
             style={{ padding: "12px 24px", minWidth: "160px" }}
@@ -346,6 +359,7 @@ export default function EmployeeDashboard() {
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Mode</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
                 <th>Working Hours</th>
@@ -355,7 +369,7 @@ export default function EmployeeDashboard() {
             <tbody>
               {!summary?.recentRecords || summary.recentRecords.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "30px", color: "var(--text-dim)" }}>
+                  <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "var(--text-dim)" }}>
                     No previous attendance records found. Check in today to start your record!
                   </td>
                 </tr>
@@ -363,6 +377,11 @@ export default function EmployeeDashboard() {
                 summary.recentRecords.map((r) => (
                   <tr key={r._id}>
                     <td style={{ fontWeight: 600 }}>{r.date}</td>
+                    <td>
+                      <span className={`badge-workmode ${(r.workMode || "Office").toLowerCase()}`}>
+                        {r.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                      </span>
+                    </td>
                     <td>{formatTime(r.checkInTime)}</td>
                     <td>{formatTime(r.checkOutTime)}</td>
                     <td>{r.totalHours ? `${r.totalHours} hrs` : "-"}</td>

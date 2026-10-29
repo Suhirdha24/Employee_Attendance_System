@@ -95,48 +95,55 @@ export default function TeamCalendarView() {
         checkOutTime: match ? match.checkOutTime : "-",
         totalHours: match ? match.totalHours : "-",
         status: match ? match.status : "absent",
+        workMode: match ? (match.workMode || "Office") : "Office",
+        remarks: match ? (match.remarks || "") : "",
       };
     });
   }, [dateMap, selectedDateStr, employees, deptFilter]);
 
-  // Metrics for selected day
+  // Daily stats for selected date
   const dayMetrics = useMemo(() => {
     const total = selectedDayRecords.length;
     const present = selectedDayRecords.filter((r) => r.status === "present").length;
     const late = selectedDayRecords.filter((r) => r.status === "late").length;
     const halfDay = selectedDayRecords.filter((r) => r.status === "half-day").length;
     const absent = selectedDayRecords.filter((r) => r.status === "absent").length;
-    const rate = total > 0 ? (((present + late + halfDay * 0.5) / total) * 100).toFixed(0) : 0;
+    const remote = selectedDayRecords.filter((r) => r.workMode === "Remote" && r.status !== "absent").length;
+    const active = present + late + halfDay;
+    const rate = total > 0 ? ((active / total) * 100).toFixed(0) : 0;
 
-    return { total, present, late, halfDay, absent, rate };
+    return { total, present, late, halfDay, absent, remote, rate };
   }, [selectedDayRecords]);
 
-  // Calendar tile decorator
+  // Tile summary content indicator
   const tileContent = ({ date, view }) => {
-    if (view === "month") {
-      const dStr = formatDateStr(date);
-      const recs = dateMap[dStr];
-      if (!recs || recs.length === 0) return null;
+    if (view !== "month") return null;
+    const dStr = formatDateStr(date);
+    const records = dateMap[dStr];
+    if (!records || records.length === 0) return null;
 
-      const presentCount = recs.filter((r) => r.status === "present" || r.status === "late").length;
-      const isHigh = presentCount >= 4;
-      const isMedium = presentCount >= 2;
+    const presentCount = records.filter((r) => r.status === "present" || r.status === "late").length;
+    const totalPossible = employees.length || 1;
+    const percentage = Math.round((presentCount / totalPossible) * 100);
 
-      return (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "3px" }}>
-          <span
-            style={{
-              width: "5px",
-              height: "5px",
-              borderRadius: "50%",
-              backgroundColor: isHigh ? "var(--status-present-text)" : isMedium ? "var(--status-late-text)" : "var(--status-absent-text)",
-              display: "inline-block",
-            }}
-          />
-        </div>
-      );
-    }
-    return null;
+    let dotColor = "#059669";
+    if (percentage < 50) dotColor = "#dc2626";
+    else if (percentage < 80) dotColor = "#d97706";
+
+    return (
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "2px" }}>
+        <span
+          style={{
+            display: "inline-block",
+            width: "6px",
+            height: "6px",
+            borderRadius: "50%",
+            backgroundColor: dotColor,
+          }}
+          title={`${presentCount} present on ${dStr}`}
+        />
+      </div>
+    );
   };
 
   return (
@@ -154,29 +161,26 @@ export default function TeamCalendarView() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Schedule & Availability
+            Operational Roster
           </span>
-          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Team Calendar & Daily Schedule</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Team Attendance Calendar</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Audit daily team turnout, departmental presence rates, and specific shift logs
+            Inspect daily shift presence, overall workforce turnout percentages, and unit schedules
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          <Link to="/manager" className="btn btn-outline">
-            ← Dashboard
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Link to="/manager" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            ← Operations Portal
           </Link>
-          <Link to="/manager/all-attendance" className="btn btn-outline">
-            Attendance Table
-          </Link>
-          <Link to="/manager/reports" className="btn btn-primary">
-            Audit Reports →
+          <Link to="/manager/all-attendance" className="btn btn-primary btn-sm" style={{ textDecoration: "none" }}>
+            All Attendance Table →
           </Link>
         </div>
       </div>
 
-      {/* MAIN TWO-COLUMN LAYOUT */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "24px" }}>
+      {/* TWO COLUMN CALENDAR & DRILLDOWN LAYOUT */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))", gap: "24px", alignItems: "stretch" }}>
         {/* LEFT COLUMN: INTERACTIVE CALENDAR */}
         <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
@@ -265,7 +269,7 @@ export default function TeamCalendarView() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
               gap: "8px",
               marginBottom: "20px",
             }}
@@ -300,6 +304,12 @@ export default function TeamCalendarView() {
                 {dayMetrics.absent}
               </div>
             </div>
+            <div style={{ background: "#eff6ff", padding: "10px", borderRadius: "6px", border: "1px solid #bfdbfe", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "#1d4ed8", textTransform: "uppercase" }}>Remote</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, marginTop: "2px", color: "#1d4ed8" }}>
+                {dayMetrics.remote}
+              </div>
+            </div>
           </div>
 
           {/* DAY ATTENDANCE LIST */}
@@ -309,6 +319,7 @@ export default function TeamCalendarView() {
                 <tr>
                   <th>Employee</th>
                   <th>Department</th>
+                  <th>Mode</th>
                   <th>In</th>
                   <th>Out</th>
                   <th>Duration</th>
@@ -318,13 +329,13 @@ export default function TeamCalendarView() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
                       Loading team attendance...
                     </td>
                   </tr>
                 ) : selectedDayRecords.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
                       No employee records found for this date.
                     </td>
                   </tr>
@@ -336,13 +347,20 @@ export default function TeamCalendarView() {
                         <div style={{ fontSize: "11px", color: "var(--text-muted)", fontFamily: "monospace" }}>{r.employeeId}</div>
                       </td>
                       <td>{r.department}</td>
+                      <td>
+                        <span className={`badge-workmode ${(r.workMode || "Office").toLowerCase()}`}>
+                          {r.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                        </span>
+                      </td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(r.checkInTime)}</td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(r.checkOutTime)}</td>
                       <td style={{ fontWeight: 600 }}>
                         {typeof r.totalHours === "number" ? `${r.totalHours}h` : r.totalHours}
                       </td>
                       <td>
-                        <span className={`status-pill ${r.status}`}>{r.status}</span>
+                        <span className={`status-pill ${r.status}`}>
+                          {r.status}
+                        </span>
                       </td>
                     </tr>
                   ))

@@ -75,6 +75,9 @@ export default function ReportsPage() {
     const present = filteredAttendance.filter((r) => r.status === "present").length;
     const late = filteredAttendance.filter((r) => r.status === "late").length;
     const halfDay = filteredAttendance.filter((r) => r.status === "half-day").length;
+    const remote = filteredAttendance.filter((r) => r.workMode === "Remote").length;
+    const office = filteredAttendance.filter((r) => r.workMode !== "Remote").length;
+
     const totalHours = filteredAttendance.reduce(
       (sum, r) => sum + (typeof r.totalHours === "number" ? r.totalHours : parseFloat(r.totalHours) || 0),
       0
@@ -89,6 +92,8 @@ export default function ReportsPage() {
       present,
       late,
       halfDay,
+      remote,
+      office,
       totalHours: parseFloat(totalHours.toFixed(1)),
       attendanceRate,
       punctualityRate,
@@ -140,6 +145,14 @@ export default function ReportsPage() {
     ].filter((item) => item.value > 0);
   }, [metrics]);
 
+  // Work Mode breakdown for Pie Chart
+  const workModePieData = useMemo(() => {
+    return [
+      { name: "In-Office", value: metrics.office, color: "#1e3a8a" },
+      { name: "Remote", value: metrics.remote, color: "#0284c7" },
+    ].filter((item) => item.value > 0);
+  }, [metrics]);
+
   // Export Report to CSV
   const handleExportReportCSV = () => {
     if (filteredAttendance.length === 0) {
@@ -151,10 +164,12 @@ export default function ReportsPage() {
       "Employee ID",
       "Department",
       "Date",
+      "Work Mode",
       "Check-In",
       "Check-Out",
       "Hours Logged",
       "Status",
+      "Remarks",
     ];
 
     const rows = filteredAttendance.map((r) => [
@@ -162,10 +177,12 @@ export default function ReportsPage() {
       `"${r.employeeId || ""}"`,
       `"${r.department || "General"}"`,
       r.date,
+      `"${r.workMode || "Office"}"`,
       r.checkInTime ? `"${new Date(r.checkInTime).toLocaleTimeString()}"` : `"-"`,
       r.checkOutTime ? `"${new Date(r.checkOutTime).toLocaleTimeString()}"` : `"-"`,
       r.totalHours || "0",
       `"${r.status || "absent"}"`,
+      `"${(r.remarks || "").replace(/"/g, '""')}"`,
     ]);
 
     const csv = [headers.join(","), ...rows.map((e) => e.join(","))].join("\r\n");
@@ -195,28 +212,25 @@ export default function ReportsPage() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Executive Reporting
+            Audit & Compliance Intelligence
           </span>
-          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Attendance Reports & Compliance Audits</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Executive Attendance Reports</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Comprehensive compliance scores, department evaluation, and verified timesheet exports
+            Consolidated timesheet audits, unit-level compliance benchmarking, and payroll verification
           </p>
         </div>
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          <button className="btn btn-primary" onClick={handleExportReportCSV}>
-            Download Report CSV
+          <button className="btn btn-primary btn-sm" onClick={handleExportReportCSV}>
+            📥 Export Report (CSV)
           </button>
-          <Link to="/manager" className="btn btn-outline">
-            Dashboard
-          </Link>
-          <Link to="/manager/charts" className="btn btn-outline">
-            Visual Analytics
+          <Link to="/manager" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            ← Operations Portal
           </Link>
         </div>
       </div>
 
-      {/* FILTER BAR */}
+      {/* TIMEFRAME & DEPT FILTERS BAR */}
       <div
         className="card"
         style={{
@@ -226,7 +240,6 @@ export default function ReportsPage() {
           flexWrap: "wrap",
           gap: "16px",
           marginBottom: "24px",
-          padding: "16px 20px",
         }}
       >
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
@@ -275,7 +288,7 @@ export default function ReportsPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
           gap: "16px",
           marginBottom: "24px",
         }}
@@ -293,112 +306,121 @@ export default function ReportsPage() {
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#059669", marginTop: "6px" }}>
             {metrics.punctualityRate}%
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Punched in before 09:30 AM</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>On-time arrivals (&le; 09:30 AM)</div>
         </div>
 
         <div className="card" style={{ borderLeft: "4px solid #2563eb" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Avg Daily Shift</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "#2563eb", marginTop: "6px" }}>
-            {metrics.avgHours} hrs
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Work Mode Split</div>
+          <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)", marginTop: "6px" }}>
+            {metrics.office} / {metrics.remote}
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Per active employee daily</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>🏢 Office vs 🌐 Remote shifts</div>
         </div>
 
-        <div className="card" style={{ borderLeft: "4px solid #4f46e5" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Total Logged Hours</div>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: "#4f46e5", marginTop: "6px" }}>
-            {metrics.totalHours} h
+        <div className="card" style={{ borderLeft: "4px solid var(--accent-blue)" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Total Verified Hours</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--accent-blue)", marginTop: "6px" }}>
+            {metrics.totalHours}h
           </div>
-          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Total workforce output</div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Cumulative workforce time</div>
+        </div>
+
+        <div className="card" style={{ borderLeft: "4px solid #d97706" }}>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Daily Avg Hours</div>
+          <div style={{ fontSize: "28px", fontWeight: 800, color: "#d97706", marginTop: "6px" }}>
+            {metrics.avgHours}h
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-dim)", marginTop: "4px" }}>Average hours per shift</div>
         </div>
       </div>
 
-      {/* CHARTS ROW */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
-          gap: "24px",
-          marginBottom: "24px",
-        }}
-      >
-        {/* CHART: DEPARTMENT ATTENDANCE RATE */}
+      {/* CHARTS SECTION */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))", gap: "24px", marginBottom: "24px" }}>
+        {/* CHART 1: ATTENDANCE CLASSIFICATION BREAKDOWN */}
         <div className="card">
-          <h2 style={{ fontSize: "18px", marginBottom: "4px", color: "var(--text-main)" }}>Department Attendance Compliance (%)</h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "16px" }}>
-            Turnout compliance rates compared across departments
+          <h3 style={{ fontSize: "16px", marginBottom: "4px", color: "var(--text-main)" }}>Shift Classification Breakdown</h3>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "16px" }}>
+            Proportion of present, late arrivals, and half-day shifts
           </p>
 
-          <div style={{ width: "100%", height: 260 }}>
+          <div style={{ width: "100%", height: "260px" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={departmentStats} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} unit="%" />
+              <PieChart>
+                <Pie
+                  data={statusPieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={50}
+                  paddingAngle={4}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {statusPieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#ffffff",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--border-medium)",
                     borderRadius: "6px",
                     boxShadow: "var(--shadow-md)",
-                    color: "#0f172a",
+                    fontSize: "12px",
                   }}
                 />
-                <Bar dataKey="attendanceRate" name="Attendance %" fill="#1e3a8a" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Legend />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* CHART: STATUS BREAKDOWN PIE */}
+        {/* CHART 2: WORK MODE DISTRIBUTION */}
         <div className="card">
-          <h2 style={{ fontSize: "18px", marginBottom: "4px", color: "var(--text-main)" }}>Shift Classification Distribution</h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "16px" }}>
-            Breakdown of Present, Late, and Half-day occurrences
+          <h3 style={{ fontSize: "16px", marginBottom: "4px", color: "var(--text-main)" }}>Work Mode Distribution</h3>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "16px" }}>
+            Office workstation vs authorized remote attendance
           </p>
 
-          <div style={{ width: "100%", height: 260, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {statusPieData.length === 0 ? (
-              <div style={{ color: "var(--text-muted)" }}>No attendance records in selected timeframe.</div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={statusPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={85}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {statusPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#ffffff",
-                      border: "1px solid #cbd5e1",
-                      borderRadius: "6px",
-                      boxShadow: "var(--shadow-md)",
-                    }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
+          <div style={{ width: "100%", height: "260px" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={workModePieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={50}
+                  paddingAngle={4}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {workModePieData.map((entry, index) => (
+                    <Cell key={`cell-wm-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid var(--border-medium)",
+                    borderRadius: "6px",
+                    boxShadow: "var(--shadow-md)",
+                    fontSize: "12px",
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      {/* DEPARTMENT AUDIT SUMMARY TABLE */}
+      {/* DEPARTMENT-WISE BENCHMARK AUDIT TABLE */}
       <div className="card" style={{ padding: "0", overflow: "hidden" }}>
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid var(--border-subtle)", background: "#fafbfc" }}>
-          <h2 style={{ fontSize: "18px", color: "var(--text-main)" }}>Department Audit Performance Summary</h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "2px" }}>
-            Headcount breakdown, total logged shifts, and departmental rating
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-subtle)" }}>
+          <h3 style={{ fontSize: "16px", color: "var(--text-main)" }}>Department Performance Benchmarks</h3>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "2px" }}>
+            Detailed breakdown of headcount, shift logs, compliance percentage, and productive hours
           </p>
         </div>
 
@@ -406,43 +428,40 @@ export default function ReportsPage() {
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Department</th>
+                <th>Unit / Department</th>
                 <th>Headcount</th>
                 <th>Audited Shifts</th>
-                <th>Attendance Rate</th>
                 <th>Avg Working Hours</th>
-                <th>Total Hours</th>
-                <th style={{ textAlign: "right" }}>Compliance Status</th>
+                <th>Total Production Hours</th>
+                <th>Compliance Rate</th>
               </tr>
             </thead>
             <tbody>
-              {departmentStats.map((dept, idx) => {
-                const isHealthy = dept.attendanceRate >= 80;
-                return (
-                  <tr key={idx}>
-                    <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{dept.name}</td>
-                    <td>{dept.headcount} members</td>
-                    <td>{dept.totalRecords} shifts</td>
-                    <td style={{ fontWeight: 700, color: isHealthy ? "#059669" : "#d97706" }}>
-                      {dept.attendanceRate}%
-                    </td>
-                    <td>{dept.avgHours} hrs/day</td>
-                    <td>{dept.totalHours} hrs</td>
-                    <td style={{ textAlign: "right" }}>
-                      <span
-                        className="badge-pill"
-                        style={{
-                          background: isHealthy ? "var(--status-present-bg)" : "var(--status-late-bg)",
-                          color: isHealthy ? "var(--status-present-text)" : "var(--status-late-text)",
-                          borderColor: isHealthy ? "var(--status-present-border)" : "var(--status-late-border)",
-                        }}
-                      >
-                        {isHealthy ? "Optimal" : "Needs Review"}
+              {departmentStats.map((dept) => (
+                <tr key={dept.name}>
+                  <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{dept.name}</td>
+                  <td>{dept.headcount} employees</td>
+                  <td>{dept.totalRecords} shifts</td>
+                  <td>{dept.avgHours} hrs/day</td>
+                  <td style={{ fontWeight: 600, color: "var(--primary)" }}>{dept.totalHours} hrs</td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div style={{ flex: 1, height: "6px", background: "var(--bg-surface)", borderRadius: "3px", overflow: "hidden" }}>
+                        <div
+                          style={{
+                            width: `${Math.min(100, dept.attendanceRate)}%`,
+                            height: "100%",
+                            background: dept.attendanceRate >= 90 ? "#059669" : dept.attendanceRate >= 75 ? "#d97706" : "#dc2626",
+                          }}
+                        />
+                      </div>
+                      <span style={{ fontSize: "12px", fontWeight: 700, width: "42px" }}>
+                        {dept.attendanceRate}%
                       </span>
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

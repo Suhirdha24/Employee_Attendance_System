@@ -10,15 +10,34 @@ const User = require("./src/models/User");
 const Attendance = require("./src/models/Attendance");
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/attendanceDB";
+const LOCAL_MONGO_URI = "mongodb://127.0.0.1:27017/attendanceDB";
 
 const seedDatabase = async () => {
   try {
-    console.log("Connecting to MongoDB for seeding...");
-    await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("Connected to MongoDB.");
+    const isAtlas = MONGO_URI.includes("mongodb+srv");
+    console.log(`Connecting to MongoDB (${isAtlas ? "MongoDB Atlas" : "Local"})...`);
+
+    try {
+      await mongoose.connect(MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 4000,
+      });
+      console.log("Connected to MongoDB.");
+    } catch (connErr) {
+      console.warn(`Primary connection failed: ${connErr.message}`);
+      if (MONGO_URI !== LOCAL_MONGO_URI) {
+        console.log("Attempting fallback to local MongoDB (127.0.0.1:27017)...");
+        await mongoose.connect(LOCAL_MONGO_URI, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          serverSelectionTimeoutMS: 3000,
+        });
+        console.log("Connected to local MongoDB fallback successfully!");
+      } else {
+        throw connErr;
+      }
+    }
 
     // Clear existing data
     console.log("Clearing old collections...");
@@ -120,17 +139,21 @@ const seedDatabase = async () => {
         let checkInHour = 9;
         let checkInMinute = 5 + (rand % 20); // 9:05 - 9:25
         let totalHours = 8.5;
+        let remarks = "";
+        let workMode = (i + dayOffset) % 4 === 0 ? "Remote" : "Office";
 
         if (rand > 85) {
           status = "late";
           checkInHour = 9;
           checkInMinute = 45 + (rand % 15); // 9:45 - 10:00
           totalHours = 7.8;
+          remarks = "Transit delay / heavy traffic";
         } else if (rand > 78) {
           status = "half-day";
           checkInHour = 9;
           checkInMinute = 15;
           totalHours = 4.2;
+          remarks = "Personal emergency / early exit approved";
         } else if (rand < 5 && !isToday) {
           // Absent on that day (skip creating check-in)
           continue;
@@ -152,13 +175,18 @@ const seedDatabase = async () => {
         const checkOutMinutes = Math.round((totalHours - checkOutHours) * 60);
         checkOutDate.setHours(checkInHour + checkOutHours, checkInMinute + checkOutMinutes, 0, 0);
 
+        const isStillCheckedInToday =
+          isToday && (emp.email === "alex@company.com" || emp.email === "priya@company.com");
+
         attendanceRecords.push({
           userId: emp._id,
           date: dateStr,
           checkInTime: checkInDate.toISOString(),
-          checkOutTime: isToday && (emp.email === "alex@company.com" || emp.email === "priya@company.com") ? null : checkOutDate.toISOString(),
+          checkOutTime: isStillCheckedInToday ? null : checkOutDate.toISOString(),
           status,
-          totalHours: isToday && (emp.email === "alex@company.com" || emp.email === "priya@company.com") ? 0 : totalHours,
+          workMode,
+          remarks,
+          totalHours: isStillCheckedInToday ? 0 : totalHours,
         });
       }
     }

@@ -16,6 +16,7 @@ export default function EmployeeHistory() {
   const formatTime = (isoString) => {
     if (!isoString) return "-";
     const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
@@ -98,52 +99,55 @@ export default function EmployeeHistory() {
             Attendance Log & Timesheet
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Audit past punches, verified working durations, and monthly presence heatmaps
+            Review verified shift punches, monthly attendance calendar, and working hours
           </p>
         </div>
 
-        {/* VIEW TOGGLE */}
-        <div style={{ display: "flex", gap: "6px", background: "var(--bg-surface)", padding: "4px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
-          <button
-            className={`btn btn-sm ${view === "table" ? "btn-primary" : "btn-outline"}`}
-            style={{ border: view === "table" ? undefined : "none", background: view === "table" ? undefined : "transparent" }}
-            onClick={() => setView("table")}
-          >
-            Tabular View
-          </button>
-          <button
-            className={`btn btn-sm ${view === "calendar" ? "btn-primary" : "btn-outline"}`}
-            style={{ border: view === "calendar" ? undefined : "none", background: view === "calendar" ? undefined : "transparent" }}
-            onClick={() => setView("calendar")}
-          >
-            Calendar Heatmap
-          </button>
+        {/* VIEW TOGGLE BUTTONS */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "inline-flex", background: "var(--bg-surface)", padding: "3px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+            <button
+              onClick={() => setView("calendar")}
+              className={`btn btn-sm ${view === "calendar" ? "btn-primary" : "btn-outline"}`}
+              style={{ border: "none", boxShadow: view === "calendar" ? "var(--shadow-sm)" : "none" }}
+            >
+              📅 Calendar Heatmap
+            </button>
+            <button
+              onClick={() => setView("table")}
+              className={`btn btn-sm ${view === "table" ? "btn-primary" : "btn-outline"}`}
+              style={{ border: "none", boxShadow: view === "table" ? "var(--shadow-sm)" : "none" }}
+            >
+              📋 Chronological Table
+            </button>
+          </div>
+
+          <Link to="/employee" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
+            ← Dashboard
+          </Link>
         </div>
       </div>
 
       {/* TABLE VIEW */}
       {view === "table" && (
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="card">
           <div
             style={{
-              padding: "18px 24px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
               gap: "14px",
-              borderBottom: "1px solid var(--border-subtle)",
-              background: "#fafbfc",
+              marginBottom: "20px",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <input
-                className="input-field"
-                type="text"
-                placeholder="Filter by date (e.g. 2026-10)..."
+                type="date"
+                className="form-input"
+                style={{ width: "200px" }}
                 value={searchDate}
                 onChange={(e) => setSearchDate(e.target.value)}
-                style={{ width: "240px" }}
               />
               {searchDate && (
                 <button className="btn btn-outline btn-sm" onClick={() => setSearchDate("")}>
@@ -162,16 +166,18 @@ export default function EmployeeHistory() {
               <thead>
                 <tr>
                   <th>Shift Date</th>
+                  <th>Work Mode</th>
                   <th>Check-In Time</th>
                   <th>Check-Out Time</th>
-                  <th>Verified Duration</th>
+                  <th>Duration</th>
                   <th>Compliance Status</th>
+                  <th>Remarks</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
                       {loading ? "Loading attendance records from directory..." : "No attendance logs match the specified filter."}
                     </td>
                   </tr>
@@ -179,6 +185,11 @@ export default function EmployeeHistory() {
                   filteredHistory.map((h) => (
                     <tr key={h._id}>
                       <td style={{ fontWeight: 600, color: "var(--text-main)" }}>{h.date}</td>
+                      <td>
+                        <span className={`badge-workmode ${(h.workMode || "Office").toLowerCase()}`}>
+                          {h.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                        </span>
+                      </td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkInTime)}</td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(h.checkOutTime)}</td>
                       <td style={{ fontWeight: 600 }}>{h.totalHours ? `${h.totalHours} hrs` : "-"}</td>
@@ -186,6 +197,14 @@ export default function EmployeeHistory() {
                         <span className={`status-pill ${h.status}`}>
                           {h.status}
                         </span>
+                      </td>
+                      <td style={{ fontSize: "12.5px", color: "var(--text-muted)" }}>
+                        {h.remarks || "-"}
+                        {h.modifiedByManager && (
+                          <span style={{ display: "block", fontSize: "10.5px", color: "var(--accent-blue)", fontWeight: 600 }}>
+                            (Manager Adjusted)
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -263,9 +282,14 @@ export default function EmployeeHistory() {
                 <div style={{ background: "var(--bg-surface)", padding: "20px", borderRadius: "8px", border: "1px solid var(--border-subtle)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                     <span style={{ color: "var(--text-muted)", fontSize: "13px", fontWeight: 600 }}>Classification Status</span>
-                    <span className={`status-pill ${selectedRecord.status}`}>
-                      {selectedRecord.status}
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span className={`badge-workmode ${(selectedRecord.workMode || "Office").toLowerCase()}`}>
+                        {selectedRecord.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
+                      </span>
+                      <span className={`status-pill ${selectedRecord.status}`}>
+                        {selectedRecord.status}
+                      </span>
+                    </div>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
@@ -289,6 +313,15 @@ export default function EmployeeHistory() {
                         {selectedRecord.totalHours ? `${selectedRecord.totalHours} hrs` : "In Progress"}
                       </p>
                     </div>
+
+                    {selectedRecord.remarks && (
+                      <div style={{ gridColumn: "span 2", background: "#ffffff", padding: "12px 16px", borderRadius: "6px", border: "1px solid var(--border-subtle)" }}>
+                        <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>Shift Remarks</span>
+                        <p style={{ fontSize: "13px", color: "var(--text-main)", marginTop: "3px" }}>
+                          {selectedRecord.remarks}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

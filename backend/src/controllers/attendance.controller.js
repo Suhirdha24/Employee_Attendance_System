@@ -16,6 +16,7 @@ exports.checkIn = async (req, res) => {
     const userId = req.user?._id || req.body.userId;
     if (!userId) return res.status(400).json({ message: "userId required" });
 
+    const { workMode, remarks } = req.body;
     const date = todayStr();
     let att = await Attendance.findOne({ userId, date });
     const now = new Date();
@@ -33,6 +34,8 @@ exports.checkIn = async (req, res) => {
         date,
         checkInTime: nowIso,
         status: initialStatus,
+        workMode: workMode || "Office",
+        remarks: remarks || "",
       });
       return res.json({
         message: isLate ? "Checked in (Marked Late: after 09:30 AM)" : "Check-in successful",
@@ -48,6 +51,8 @@ exports.checkIn = async (req, res) => {
 
     att.checkInTime = nowIso;
     att.status = initialStatus;
+    if (workMode) att.workMode = workMode;
+    if (remarks) att.remarks = remarks;
     await att.save();
 
     res.json({
@@ -66,6 +71,7 @@ exports.checkOut = async (req, res) => {
     const userId = req.user?._id || req.body.userId;
     if (!userId) return res.status(400).json({ message: "userId required" });
 
+    const { remarks } = req.body;
     const date = todayStr();
     let att = await Attendance.findOne({ userId, date });
 
@@ -88,6 +94,10 @@ exports.checkOut = async (req, res) => {
     // Smart status adjustment: if working hours < 4.5 hours -> half-day
     if (att.totalHours < 4.5) {
       att.status = "half-day";
+    }
+
+    if (remarks) {
+      att.remarks = att.remarks ? `${att.remarks} | ${remarks}` : remarks;
     }
 
     await att.save();
@@ -184,7 +194,7 @@ exports.mySummary = async (req, res) => {
 // MANAGER — ALL ATTENDANCE RECORDS (WITH SEARCH & FILTER)
 exports.allAttendance = async (req, res) => {
   try {
-    const { search, department, status, startDate, endDate } = req.query;
+    const { search, department, status, startDate, endDate, workMode } = req.query;
 
     let query = {};
     if (startDate && endDate) {
@@ -195,6 +205,10 @@ exports.allAttendance = async (req, res) => {
 
     if (status && status !== "all") {
       query.status = status;
+    }
+
+    if (workMode && workMode !== "all") {
+      query.workMode = workMode;
     }
 
     let records = await Attendance.find(query)
@@ -232,6 +246,9 @@ exports.allAttendance = async (req, res) => {
       checkOutTime: r.checkOutTime || "-",
       totalHours: r.totalHours || "-",
       status: r.status,
+      workMode: r.workMode || "Office",
+      remarks: r.remarks || "",
+      modifiedByManager: Boolean(r.modifiedByManager),
     }));
 
     res.json(formatted);
@@ -286,6 +303,9 @@ exports.allEmployeesToday = async (req, res) => {
         checkOutTime: rec ? rec.checkOutTime : "-",
         totalHours: rec ? rec.totalHours : "-",
         status: rec ? rec.status : "absent",
+        workMode: rec ? (rec.workMode || "Office") : "Office",
+        remarks: rec ? (rec.remarks || "") : "",
+        modifiedByManager: rec ? Boolean(rec.modifiedByManager) : false,
       };
     });
 
@@ -355,7 +375,13 @@ exports.teamSummary = async (req, res) => {
     const totalPresentOrActive = presentToday + lateToday + halfDayToday;
     const absentToday = Math.max(0, totalEmployees - totalPresentOrActive);
 
-    const totalHoursToday = validToday.reduce((sum, r) => sum + (typeof r.totalHours === "number" ? r.totalHours : 0), 0);
+    const remoteToday = validToday.filter((r) => r.workMode === "Remote").length;
+    const officeToday = validToday.filter((r) => r.workMode !== "Remote").length;
+
+    const totalHoursToday = validToday.reduce(
+      (sum, r) => sum + (typeof r.totalHours === "number" ? r.totalHours : 0),
+      0
+    );
 
     // Department-wise distribution
     const employees = await User.find({ role: "employee" }, "department");
@@ -372,7 +398,12 @@ exports.teamSummary = async (req, res) => {
       lateToday,
       halfDayToday,
       absentToday,
-      attendancePercentage: totalEmployees > 0 ? parseFloat(((totalPresentOrActive / totalEmployees) * 100).toFixed(1)) : 0,
+      remoteToday,
+      officeToday,
+      attendancePercentage:
+        totalEmployees > 0
+          ? parseFloat(((totalPresentOrActive / totalEmployees) * 100).toFixed(1))
+          : 0,
       totalHoursToday: parseFloat(totalHoursToday.toFixed(1)),
       departmentDistribution,
     });
@@ -382,10 +413,42 @@ exports.teamSummary = async (req, res) => {
   }
 };
 
+// MANAGER — UPDATE / RECTIFY ATTENDANCE RECORD
+exports.updateAttendanceRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, totalHours, remarks, workMode } = req.body;
+
+    const record = await Attendance.findById(id);
+    if (!record) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
+
+    if (status) record.status = status;
+    if (totalHours !== undefined) {
+      record.totalHours = parseFloat(totalHours);
+    }
+    if (workMode) record.workMode = workMode;
+    if (remarks !== undefined) {
+      record.remarks = remarks;
+    }
+    record.modifiedByManager = true;
+
+    await record.save();
+    return res.json({
+      message: "Attendance record updated successfully by manager",
+      attendance: record,
+    });
+  } catch (err) {
+    console.error("Update attendance error:", err);
+    res.status(500).json({ message: "Server error updating attendance record" });
+  }
+};
+
 // MANAGER — EXPORT ATTENDANCE CSV
 exports.exportCSV = async (req, res) => {
   try {
-    const { startDate, endDate, department, status, employeeId } = req.query;
+    const { startDate, endDate, department, status, employeeId, workMode } = req.query;
     let query = {};
 
     if (startDate && endDate) {
@@ -396,6 +459,10 @@ exports.exportCSV = async (req, res) => {
 
     if (status && status !== "all") {
       query.status = status;
+    }
+
+    if (workMode && workMode !== "all") {
+      query.workMode = workMode;
     }
 
     let records = await Attendance.find(query)
@@ -416,22 +483,39 @@ exports.exportCSV = async (req, res) => {
       );
     }
 
-    const headers = ["Employee Name", "Employee ID", "Department", "Date", "Check-In", "Check-Out", "Hours Worked", "Status"];
+    const headers = [
+      "Employee Name",
+      "Employee ID",
+      "Department",
+      "Date",
+      "Work Mode",
+      "Check-In",
+      "Check-Out",
+      "Hours Worked",
+      "Status",
+      "Remarks",
+    ];
+
     const rows = records.map((r) => [
       `"${r.userId.name.replace(/"/g, '""')}"`,
       `"${r.userId.employeeId}"`,
-      `"${r.userId.department || 'General'}"`,
+      `"${r.userId.department || "General"}"`,
       r.date,
+      `"${r.workMode || "Office"}"`,
       r.checkInTime ? `"${new Date(r.checkInTime).toLocaleTimeString()}"` : `"-"`,
       r.checkOutTime ? `"${new Date(r.checkOutTime).toLocaleTimeString()}"` : `"-"`,
       r.totalHours || "0",
       `"${r.status}"`,
+      `"${(r.remarks || "").replace(/"/g, '""')}"`,
     ]);
 
     const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\r\n");
 
     res.setHeader("Content-Type", "text/csv");
-    res.setHeader("Content-Disposition", `attachment; filename=attendance_export_${todayStr()}.csv`);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=attendance_export_${todayStr()}.csv`
+    );
     res.status(200).send(csvContent);
   } catch (err) {
     console.error("Export CSV error:", err);
