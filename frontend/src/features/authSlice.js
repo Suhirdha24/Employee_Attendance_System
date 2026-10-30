@@ -1,9 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import API from '../api/api';
 
-// Initial state from localStorage
-const initUser = JSON.parse(localStorage.getItem('user') || 'null');
-const initToken = localStorage.getItem('token') || null;
+// Safe initial state extraction from localStorage
+let initUser = null;
+let initToken = null;
+try {
+  const rawUser = localStorage.getItem('user');
+  if (rawUser && rawUser !== 'undefined' && rawUser !== 'null') {
+    initUser = JSON.parse(rawUser);
+  }
+  initToken = localStorage.getItem('token') || null;
+} catch (e) {
+  console.warn('Invalid user state in localStorage, resetting:', e);
+  try {
+    localStorage.removeItem('user');
+  } catch (_) {}
+  initUser = null;
+  initToken = null;
+}
 
 // ----------------------
 // LOGIN
@@ -67,9 +81,14 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      try {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      } catch (e) {
+        console.warn('Could not clear storage:', e);
+      }
+      const isSubpath = window.location.pathname.startsWith('/Employee_Attendance_System');
+      window.location.href = isSubpath ? '/Employee_Attendance_System/login' : '/login';
     },
     clearError(state) {
       state.error = null;
@@ -87,11 +106,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        if (action.payload.user) {
-          localStorage.setItem('user', JSON.stringify(action.payload.user));
-        }
-        if (action.payload.token) {
-          localStorage.setItem('token', action.payload.token);
+        try {
+          if (action.payload && action.payload.user) {
+            localStorage.setItem('user', JSON.stringify(action.payload.user));
+          }
+          if (action.payload && action.payload.token) {
+            localStorage.setItem('token', action.payload.token);
+          }
+        } catch (e) {
+          console.warn('Could not persist session to localStorage:', e);
         }
       })
       .addCase(login.rejected, (state, action) => {
@@ -108,11 +131,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        if (action.payload.user) {
-          localStorage.setItem('user', JSON.stringify(action.payload.user));
-        }
-        if (action.payload.token) {
-          localStorage.setItem('token', action.payload.token);
+        try {
+          if (action.payload && action.payload.user) {
+            localStorage.setItem('user', JSON.stringify(action.payload.user));
+          }
+          if (action.payload && action.payload.token) {
+            localStorage.setItem('token', action.payload.token);
+          }
+        } catch (e) {
+          console.warn('Could not persist registration to localStorage:', e);
         }
       })
       .addCase(register.rejected, (state, action) => {
@@ -123,13 +150,23 @@ const authSlice = createSlice({
       // GET ME
       .addCase(getMe.fulfilled, (state, action) => {
         state.user = action.payload.user;
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        try {
+          if (action.payload && action.payload.user) {
+            localStorage.setItem('user', JSON.stringify(action.payload.user));
+          }
+        } catch (e) {
+          console.warn('Could not refresh user in localStorage:', e);
+        }
       })
       .addCase(getMe.rejected, (state) => {
         state.user = null;
         state.token = null;
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        try {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        } catch (e) {
+          console.warn('Could not clear token from localStorage:', e);
+        }
       });
   },
 });

@@ -63,7 +63,7 @@ async function ensureServerRunning() {
     stdio: 'ignore',
   });
 
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 45; i++) {
     await new Promise((r) => setTimeout(r, 600));
     try {
       const health = await request('GET', '/api/health');

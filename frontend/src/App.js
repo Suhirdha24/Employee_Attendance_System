@@ -20,7 +20,7 @@ import HomePage from "./pages/HomePage";
 import Header from "./components/Header";
 import { ToastProvider } from "./components/Toast";
 
-// PRIVATE ROUTE HANDLER
+// PRIVATE ROUTE HANDLER WITH ROLE-BASED ACCESS CONTROL
 function PrivateRoute({ children, roles }) {
   const auth = useSelector((s) => s.auth);
 
@@ -34,28 +34,39 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      dispatch(getMe());
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        dispatch(getMe());
+      }
+    } catch (e) {
+      console.warn("Could not retrieve authentication token from storage:", e);
     }
   }, [dispatch]);
 
+  // Compute basename dynamically for root hosting (Vercel, Netlify) or subdirectory hosting (GitHub Pages)
+  const basename =
+    process.env.PUBLIC_URL ||
+    (typeof window !== "undefined" && window.location.pathname.startsWith("/Employee_Attendance_System")
+      ? "/Employee_Attendance_System"
+      : "");
+
   return (
     <ToastProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <div className="app-wrapper">
           <Header />
 
           <main className="main-container">
             <Routes>
-              {/* PUBLIC ROUTES */}
+              {/* PUBLIC ACCESSIBLE ROUTES */}
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* EMPLOYEE ROUTES (SPECIFIED IN README) */}
+              {/* EMPLOYEE WORKSTATION ROUTES */}
               <Route
                 path="/employee"
                 element={
@@ -89,7 +100,7 @@ export default function App() {
                 }
               />
 
-              {/* MANAGER ROUTES (SPECIFIED IN README) */}
+              {/* MANAGER OPERATIONS ROUTES */}
               <Route
                 path="/manager"
                 element={
@@ -131,7 +142,7 @@ export default function App() {
                 }
               />
 
-              {/* FALLBACK */}
+              {/* FALLBACK REDIRECT TO HOME */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>

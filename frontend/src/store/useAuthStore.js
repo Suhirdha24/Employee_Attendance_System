@@ -1,9 +1,23 @@
 import { create } from "zustand";
 import API from "../api/api";
 
+// Safe initial state extraction
+let initUser = null;
+let initToken = null;
+try {
+  const rawUser = localStorage.getItem("user");
+  if (rawUser && rawUser !== "undefined" && rawUser !== "null") {
+    initUser = JSON.parse(rawUser);
+  }
+  initToken = localStorage.getItem("token") || null;
+} catch (e) {
+  initUser = null;
+  initToken = null;
+}
+
 export const useAuthStore = create((set, get) => ({
-  user: JSON.parse(localStorage.getItem("user") || "null"),
-  token: localStorage.getItem("token") || null,
+  user: initUser,
+  token: initToken,
   loading: false,
   error: null,
 
@@ -13,8 +27,10 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await API.post("/auth/login", { email, password });
       const { token, user } = res.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      try {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+      } catch (e) {}
       set({ user, token, loading: false });
       return { success: true, user };
     } catch (err) {
@@ -30,8 +46,10 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await API.post("/auth/register", userData);
       const { token, user } = res.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      try {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+      } catch (e) {}
       set({ user, token, loading: false });
       return { success: true, user };
     } catch (err) {
@@ -48,24 +66,25 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await API.get("/auth/me");
       const user = res.data;
-      localStorage.setItem("user", JSON.stringify(user));
-      set({ user, token });
+      try {
+        localStorage.setItem("user", JSON.stringify(user));
+      } catch (e) {}
+      set({ user });
     } catch (err) {
-      console.error("fetchMe error:", err);
       get().logout();
     }
   },
 
   // Logout
   logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    set({ user: null, token: null, error: null });
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    } catch (e) {}
+    set({ user: null, token: null });
+    const isSubpath = window.location.pathname.startsWith('/Employee_Attendance_System');
+    window.location.href = isSubpath ? '/Employee_Attendance_System/login' : '/login';
   },
 
-  // Set User
-  setUser: (user) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    set({ user });
-  },
+  clearError: () => set({ error: null }),
 }));
