@@ -44,12 +44,11 @@ export default function App() {
     }
   }, [dispatch]);
 
-  // Compute basename dynamically for root hosting (Vercel, Netlify) or subdirectory hosting (GitHub Pages)
+  // Compute basename dynamically: only use subpath for GitHub Pages subdirectory hosting
   const basename =
-    process.env.PUBLIC_URL ||
-    (typeof window !== "undefined" && window.location.pathname.startsWith("/Employee_Attendance_System")
+    typeof window !== "undefined" && window.location.pathname.startsWith("/Employee_Attendance_System")
       ? "/Employee_Attendance_System"
-      : "");
+      : undefined;
 
   return (
     <ToastProvider>
