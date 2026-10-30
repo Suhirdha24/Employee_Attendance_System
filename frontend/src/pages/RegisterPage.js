@@ -54,16 +54,16 @@ export default function RegisterPage() {
             ST
           </div>
           <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)", letterSpacing: "-0.02em" }}>
-            Employee Registration
+            Register New Account
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13.5px", marginTop: "4px" }}>
-            Provision a new profile in the workforce directory
+            Create your account to start tracking your attendance.
           </p>
         </div>
 
         <form onSubmit={handleRegister} autoComplete="off">
           <div className="form-group">
-            <label className="form-label">Full Legal Name</label>
+            <label className="form-label">Full Name</label>
             <input
               className="form-input"
               value={name}
@@ -75,7 +75,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Corporate Email Address</label>
+            <label className="form-label">Email Address</label>
             <input
               className="form-input"
               type="email"

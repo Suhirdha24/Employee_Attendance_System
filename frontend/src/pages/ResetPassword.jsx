@@ -67,7 +67,7 @@ export default function ResetPassword() {
           </div>
           <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>Set New Password</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
-            Enter and confirm your new corporate account password
+            Enter and confirm your new password below.
           </p>
         </div>
 

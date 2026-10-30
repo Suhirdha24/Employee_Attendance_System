@@ -161,20 +161,20 @@ export default function TeamCalendarView() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Operational Roster
+            Team Schedule
           </span>
           <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Team Attendance Calendar</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Inspect daily shift presence, overall workforce turnout percentages, and unit schedules
+            View daily team attendance and presence on a monthly calendar.
           </p>
         </div>
 
         <div style={{ display: "flex", gap: "10px" }}>
           <Link to="/manager" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
-            ← Operations Portal
+            ← Back to Dashboard
           </Link>
           <Link to="/manager/all-attendance" className="btn btn-primary btn-sm" style={{ textDecoration: "none" }}>
-            All Attendance Table →
+            All Records →
           </Link>
         </div>
       </div>

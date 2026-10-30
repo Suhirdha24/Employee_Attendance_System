@@ -47,15 +47,15 @@ export default function ForgetPassword() {
           >
             PWD
           </div>
-          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>Password Recovery</h2>
+          <h2 style={{ fontSize: "22px", fontWeight: 700, color: "var(--text-main)" }}>Forgot Password</h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
-            Enter your corporate email address to verify your account
+            Enter your email address to reset your password.
           </p>
         </div>
 
         <form onSubmit={submit} autoComplete="off">
           <div className="form-group">
-            <label className="form-label">Corporate Email</label>
+            <label className="form-label">Email Address</label>
             <input
               className="form-input"
               type="email"

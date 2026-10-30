@@ -212,11 +212,11 @@ export default function ReportsPage() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Audit & Compliance Intelligence
+            Reports & Analytics
           </span>
-          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Executive Attendance Reports</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Attendance Reports</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Consolidated timesheet audits, unit-level compliance benchmarking, and payroll verification
+            Department summaries, attendance breakdown, and exportable reports.
           </p>
         </div>
 

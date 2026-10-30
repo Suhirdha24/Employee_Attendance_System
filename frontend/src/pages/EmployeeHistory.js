@@ -93,13 +93,13 @@ export default function EmployeeHistory() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Personal Attendance Audit
+            My Attendance
           </span>
           <h1 style={{ fontSize: "28px", marginTop: "2px", color: "var(--text-main)" }}>
-            Attendance Log & Timesheet
+            Attendance History
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Review verified shift punches, monthly attendance calendar, and working hours
+            Review your past attendance records and monthly timesheets.
           </p>
         </div>
 
@@ -111,14 +111,14 @@ export default function EmployeeHistory() {
               className={`btn btn-sm ${view === "calendar" ? "btn-primary" : "btn-outline"}`}
               style={{ border: "none", boxShadow: view === "calendar" ? "var(--shadow-sm)" : "none" }}
             >
-              📅 Calendar Heatmap
+              📅 Calendar
             </button>
             <button
               onClick={() => setView("table")}
               className={`btn btn-sm ${view === "table" ? "btn-primary" : "btn-outline"}`}
               style={{ border: "none", boxShadow: view === "table" ? "var(--shadow-sm)" : "none" }}
             >
-              📋 Chronological Table
+              📋 Table
             </button>
           </div>
 

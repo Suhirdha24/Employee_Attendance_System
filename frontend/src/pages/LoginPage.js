@@ -85,7 +85,7 @@ export default function LoginPage() {
             Sign In to StaffTrack
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "13.5px", marginTop: "4px" }}>
-            Official enterprise workforce attendance management
+            Enter your email and password to access your account.
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="corporate_email">Corporate Work Email</label>
+            <label className="form-label" htmlFor="corporate_email">Email Address</label>
             <input
               id="corporate_email"
               name={emailInputName}

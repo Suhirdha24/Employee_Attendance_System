@@ -27,12 +27,12 @@ export default function HomePage() {
       <div
         style={{
           textAlign: "center",
-          padding: "54px 24px 44px",
+          padding: "48px 24px 40px",
           borderRadius: "var(--radius-xl)",
           background: "linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)",
           border: "1px solid var(--border-subtle)",
           boxShadow: "var(--shadow-sm)",
-          marginBottom: "36px",
+          marginBottom: "32px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -43,35 +43,34 @@ export default function HomePage() {
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
-            padding: "6px 16px",
+            padding: "5px 14px",
             borderRadius: "var(--radius-full)",
             background: "#eff6ff",
             border: "1px solid #bfdbfe",
             color: "#1d4ed8",
-            fontSize: "12.5px",
+            fontSize: "12px",
             fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            marginBottom: "20px",
+            letterSpacing: "0.03em",
+            marginBottom: "18px",
           }}
         >
           <span style={{ display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", background: "#2563eb" }}></span>
-          Enterprise Workforce Intelligence Platform
+          Smart Attendance System
         </div>
 
         {/* HERO TITLE */}
         <h1
           style={{
-            fontSize: "clamp(32px, 5vw, 48px)",
+            fontSize: "clamp(28px, 4.5vw, 42px)",
             fontWeight: 800,
             color: "#0f172a",
-            maxWidth: "840px",
-            margin: "0 auto 16px",
-            letterSpacing: "-0.03em",
-            lineHeight: 1.18,
+            maxWidth: "780px",
+            margin: "0 auto 14px",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.22,
           }}
         >
-          Transform Workforce Attendance Into{" "}
+          Simple & Reliable Attendance Tracking{" "}
           <span
             style={{
               background: "linear-gradient(135deg, #4f46e5 0%, #0284c7 100%)",
@@ -79,30 +78,30 @@ export default function HomePage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Actionable Telemetry
+            for Your Team
           </span>
         </h1>
 
         <p
           style={{
-            fontSize: "16px",
+            fontSize: "15px",
             color: "#475569",
-            maxWidth: "680px",
-            margin: "0 auto 32px",
+            maxWidth: "600px",
+            margin: "0 auto 28px",
             lineHeight: 1.6,
           }}
         >
-          StaffTrack HRMS provides verified workstation punch-in tracking, automated punctuality compliance, interactive monthly heatmap timesheets, and instant payroll-ready CSV exports.
+          Easily mark attendance, track work hours, manage office and remote shifts, and view monthly timesheets in one clean dashboard.
         </p>
 
         {/* CTA BUTTONS */}
-        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginBottom: "28px" }}>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginBottom: "24px" }}>
           {auth.user ? (
             <button
               className="btn btn-primary btn-lg"
               onClick={() => nav(auth.user.role === "manager" ? "/manager" : "/employee")}
             >
-              Open Your Workstation Dashboard →
+              Open Your Dashboard →
             </button>
           ) : (
             <>
@@ -110,13 +109,13 @@ export default function HomePage() {
                 className="btn btn-primary btn-lg"
                 onClick={() => nav("/login")}
               >
-                Sign In to Workstation
+                Sign In
               </button>
               <button
                 className="btn btn-outline btn-lg"
                 onClick={() => nav("/register")}
               >
-                Enroll New Employee
+                Register Employee
               </button>
             </>
           )}
@@ -129,7 +128,7 @@ export default function HomePage() {
               display: "inline-flex",
               alignItems: "center",
               gap: "10px",
-              padding: "10px 18px",
+              padding: "8px 16px",
               borderRadius: "var(--radius-full)",
               background: "#ffffff",
               border: "1px solid var(--border-medium)",
@@ -138,8 +137,8 @@ export default function HomePage() {
               justifyContent: "center",
             }}
           >
-            <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>
-              Quick Evaluation Demo:
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-muted)" }}>
+              Try Demo:
             </span>
             <button
               className="btn btn-sm"
@@ -160,22 +159,22 @@ export default function HomePage() {
       </div>
 
       {/* TWO WORKSPACE ROLE CARDS */}
-      <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontSize: "20px", color: "var(--text-main)" }}>Select Workspace Experience</h2>
+      <div style={{ marginBottom: "16px" }}>
+        <h2 style={{ fontSize: "19px", color: "var(--text-main)" }}>Choose Your Portal</h2>
         <p style={{ color: "var(--text-muted)", fontSize: "13.5px" }}>
-          Dedicated role-based portals tailored for day-to-day work or team supervision
+          Log in as an employee to record your attendance, or as a manager to oversee your team.
         </p>
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
-          gap: "24px",
-          marginBottom: "40px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gap: "20px",
+          marginBottom: "36px",
         }}
       >
-        {/* EMPLOYEE WORKSTATION CARD */}
+        {/* EMPLOYEE PORTAL CARD */}
         <div
           className="card"
           style={{
@@ -186,11 +185,11 @@ export default function HomePage() {
           }}
         >
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
               <div
                 style={{
-                  width: "44px",
-                  height: "44px",
+                  width: "42px",
+                  height: "42px",
                   borderRadius: "var(--radius-md)",
                   background: "#eef2ff",
                   color: "#4f46e5",
@@ -203,41 +202,41 @@ export default function HomePage() {
                 👨‍💼
               </div>
               <div>
-                <h3 style={{ fontSize: "18px", color: "#0f172a" }}>Employee Self-Service (ESS)</h3>
-                <span style={{ fontSize: "12px", color: "#64748b" }}>Workstation & Shift Punching</span>
+                <h3 style={{ fontSize: "17px", color: "#0f172a" }}>Employee Portal</h3>
+                <span style={{ fontSize: "12px", color: "#64748b" }}>Mark Attendance & View History</span>
               </div>
             </div>
 
-            <p style={{ color: "#475569", fontSize: "14px", lineHeight: "1.6", marginBottom: "18px" }}>
-              Clock in and clock out with live biometric-style timestamps, select your work mode (In-Office or Remote), and audit your personal shift hours.
+            <p style={{ color: "#475569", fontSize: "13.5px", lineHeight: "1.5", marginBottom: "16px" }}>
+              Check in and check out each day, choose whether you are in the office or working remotely, and track your working hours.
             </p>
 
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "13px", color: "#334155" }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", fontSize: "13px", color: "#334155" }}>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> One-Click Digital Shift Punch (Check-In / Out)
+                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> One-click check-in and check-out
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> Hybrid Work Mode: 🏢 Office vs 🌐 Remote
+                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> Select work mode: 🏢 Office or 🌐 Remote
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> Interactive Monthly Calendar Heatmap Timesheet
+                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> Monthly calendar view with color codes
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> Personal Compliance & Punctuality Auditing
+                <span style={{ color: "#10b981", fontWeight: 700 }}>✓</span> See total hours and on-time status
               </li>
             </ul>
           </div>
 
           <button
             className="btn btn-outline"
-            style={{ width: "100%", padding: "12px", fontWeight: 700 }}
+            style={{ width: "100%", padding: "11px", fontWeight: 600 }}
             onClick={() => nav(auth.user?.role === "employee" ? "/employee" : "/login")}
           >
-            Launch Employee Workstation →
+            Go to Employee Portal →
           </button>
         </div>
 
-        {/* MANAGER OPERATIONS PORTAL CARD */}
+        {/* MANAGER PORTAL CARD */}
         <div
           className="card"
           style={{
@@ -248,11 +247,11 @@ export default function HomePage() {
           }}
         >
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
               <div
                 style={{
-                  width: "44px",
-                  height: "44px",
+                  width: "42px",
+                  height: "42px",
                   borderRadius: "var(--radius-md)",
                   background: "#f0f9ff",
                   color: "#0284c7",
@@ -265,85 +264,85 @@ export default function HomePage() {
                 👩‍💼
               </div>
               <div>
-                <h3 style={{ fontSize: "18px", color: "#0f172a" }}>Manager & Operations Portal</h3>
-                <span style={{ fontSize: "12px", color: "#64748b" }}>Workforce Telemetry & Compliance</span>
+                <h3 style={{ fontSize: "17px", color: "#0f172a" }}>Manager Portal</h3>
+                <span style={{ fontSize: "12px", color: "#64748b" }}>Team Attendance & Reports</span>
               </div>
             </div>
 
-            <p style={{ color: "#475569", fontSize: "14px", lineHeight: "1.6", marginBottom: "18px" }}>
-              Real-time team presence roster, shift duration inspection, manual attendance rectification, department compliance analytics, and payroll exports.
+            <p style={{ color: "#475569", fontSize: "13.5px", lineHeight: "1.5", marginBottom: "16px" }}>
+              See who is present today, review team hours, adjust attendance when needed, and export records for payroll.
             </p>
 
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", fontSize: "13px", color: "#334155" }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", fontSize: "13px", color: "#334155" }}>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Live Workforce Headcount & Presence Metrics
+                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Today's attendance summary at a glance
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Multi-Filter Master Audit Table with Quick Chips
+                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Filter by department, status, and work mode
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Manager Attendance Rectification & Adjustment Modal
+                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Edit or adjust records with notes
               </li>
               <li style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Automated Payroll-Formatted CSV Timesheet Export
+                <span style={{ color: "#0284c7", fontWeight: 700 }}>✓</span> Download attendance reports as CSV
               </li>
             </ul>
           </div>
 
           <button
             className="btn btn-outline"
-            style={{ width: "100%", padding: "12px", fontWeight: 700 }}
+            style={{ width: "100%", padding: "11px", fontWeight: 600 }}
             onClick={() => nav(auth.user?.role === "manager" ? "/manager" : "/login")}
           >
-            Launch Operations Portal →
+            Go to Manager Portal →
           </button>
         </div>
       </div>
 
-      {/* ENTERPRISE CAPABILITY HIGHLIGHTS */}
-      <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontSize: "20px", color: "var(--text-main)" }}>Engineered for Operational Accuracy</h2>
+      {/* KEY FEATURES */}
+      <div style={{ marginBottom: "16px" }}>
+        <h2 style={{ fontSize: "19px", color: "var(--text-main)" }}>Key Features</h2>
         <p style={{ color: "var(--text-muted)", fontSize: "13.5px" }}>
-          Built to enforce enterprise compliance and eliminate timesheet disputes
+          Everything you need to track and manage everyday attendance smoothly.
         </p>
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "18px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: "16px",
         }}
       >
         <div className="card">
-          <div style={{ fontSize: "24px", marginBottom: "10px" }}>⏱️</div>
-          <h4 style={{ fontSize: "15px", marginBottom: "6px" }}>Automated Compliance Cutoffs</h4>
+          <div style={{ fontSize: "22px", marginBottom: "8px" }}>⏱️</div>
+          <h4 style={{ fontSize: "14.5px", marginBottom: "4px" }}>Quick Check-In & Out</h4>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
-            Enforces 09:30 AM arrival cutoff with automatic Late classification, and 4.5-hour threshold for Half-Day audits.
+            Record arrival and departure times with a single click. Arrival after 09:30 AM is marked as late.
           </p>
         </div>
 
         <div className="card">
-          <div style={{ fontSize: "24px", marginBottom: "10px" }}>🌐</div>
-          <h4 style={{ fontSize: "15px", marginBottom: "6px" }}>Hybrid Work Tracking</h4>
+          <div style={{ fontSize: "22px", marginBottom: "8px" }}>🌐</div>
+          <h4 style={{ fontSize: "14.5px", marginBottom: "4px" }}>Office & Remote Mode</h4>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
-            Track in-office vs authorized remote shifts with full departmental reporting and ratio metrics.
+            Easily choose whether you are working in the office or working from home for the day.
           </p>
         </div>
 
         <div className="card">
-          <div style={{ fontSize: "24px", marginBottom: "10px" }}>📊</div>
-          <h4 style={{ fontSize: "15px", marginBottom: "6px" }}>Real-Time Elapsed Shift Telemetry</h4>
+          <div style={{ fontSize: "22px", marginBottom: "8px" }}>📊</div>
+          <h4 style={{ fontSize: "14.5px", marginBottom: "4px" }}>Live Work Hours</h4>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
-            Live shift duration counters compute active hours on the fly with animated pulse indicators for clocked-in staff.
+            Active shifts display real-time elapsed hours so employees always know their daily progress.
           </p>
         </div>
 
         <div className="card">
-          <div style={{ fontSize: "24px", marginBottom: "10px" }}>📥</div>
-          <h4 style={{ fontSize: "15px", marginBottom: "6px" }}>Instant Payroll Integration</h4>
+          <div style={{ fontSize: "22px", marginBottom: "8px" }}>📥</div>
+          <h4 style={{ fontSize: "14.5px", marginBottom: "4px" }}>Download CSV Reports</h4>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
-            Download timestamped, formatted CSV audit logs filtered by unit, date range, or individual employee ID.
+            Export attendance records filtered by date, department, or individual employee.
           </p>
         </div>
       </div>

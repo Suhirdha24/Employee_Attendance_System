@@ -112,13 +112,13 @@ export default function MarkAttendance() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            Biometric Punch Terminal
+            Daily Attendance
           </span>
           <h1 style={{ fontSize: "28px", color: "var(--text-main)", marginTop: "2px", letterSpacing: "-0.02em" }}>
-            Mark Shift Attendance
+            Mark Attendance
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Official workstation punch system with automated compliance classification
+            Check in and check out for today's work shift.
           </p>
         </div>
 

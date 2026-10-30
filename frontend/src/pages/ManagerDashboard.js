@@ -227,12 +227,12 @@ export default function ManagerDashboard() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
             <span style={{ fontSize: "11px", color: "var(--accent-blue)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Workforce Operations
+              Team Overview
             </span>
           </div>
-          <h1 style={{ fontSize: "26px", color: "#0f172a" }}>Manager Operations Portal</h1>
+          <h1 style={{ fontSize: "26px", color: "#0f172a" }}>Manager Dashboard</h1>
           <p style={{ color: "#64748b", fontSize: "14px", marginTop: "2px" }}>
-            Real-time presence monitoring, shift compliance audits, and team attendance records
+            Overview of team attendance, today's presence, and employee records.
           </p>
         </div>
 

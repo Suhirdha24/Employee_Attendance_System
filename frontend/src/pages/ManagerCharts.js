@@ -56,16 +56,16 @@ export default function ManagerCharts() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Data Intelligence
+            Analytics
           </span>
-          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Workforce Analytics & Trend Visualizer</h1>
+          <h1 style={{ fontSize: "28px", marginTop: "2px" }}>Attendance Analytics</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Visual analysis of daily shift durations, 7-day presence curves, and departmental workloads
+            Charts showing daily work hours, 7-day attendance trends, and department activity.
           </p>
         </div>
 
         <Link to="/manager" className="btn btn-outline" style={{ textDecoration: "none" }}>
-          ← Back to Operations Portal
+          ← Back to Dashboard
         </Link>
       </div>
 

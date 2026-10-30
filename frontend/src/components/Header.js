@@ -15,8 +15,8 @@ export default function Header() {
   return (
     <header className="navbar">
       <div className="nav-container">
-        {/* ZONE 1: CORPORATE BRAND LOGO */}
-        <Link to="/" className="brand-logo" title="StaffTrack HRMS Home" onClick={closeMenu}>
+        {/* BRAND LOGO */}
+        <Link to="/" className="brand-logo" title="StaffTrack Home" onClick={closeMenu}>
           <div className="brand-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -24,8 +24,8 @@ export default function Header() {
             </svg>
           </div>
           <div className="brand-text">
-            <span className="brand-title">StaffTrack HRMS</span>
-            <span className="brand-sub">Workforce Attendance Management</span>
+            <span className="brand-title">StaffTrack</span>
+            <span className="brand-sub">Attendance System</span>
           </div>
         </Link>
 

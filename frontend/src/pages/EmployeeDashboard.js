@@ -132,7 +132,7 @@ export default function EmployeeDashboard() {
             {greeting}, {user?.name}
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "4px" }}>
-            Staff workstation attendance telemetry & shift portal
+            Here is your attendance summary and shift details for today.
           </p>
         </div>
 
@@ -297,9 +297,9 @@ export default function EmployeeDashboard() {
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Grace Standard</span>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Arrival Rule</span>
             <p style={{ fontSize: "13.5px", color: "var(--text-body)", marginTop: "4px", fontWeight: 500 }}>
-              Cutoff: 09:30 AM
+              On-time: by 09:30 AM
             </p>
           </div>
         </div>

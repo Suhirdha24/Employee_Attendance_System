@@ -214,13 +214,13 @@ export default function AllEmployeesAttendance() {
       >
         <div>
           <span style={{ fontSize: "12px", color: "var(--primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Workforce Master Audit
+            Attendance Records
           </span>
           <h1 style={{ fontSize: "28px", marginTop: "2px", color: "var(--text-main)" }}>
-            All Employees Attendance Records
+            All Attendance Records
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "2px" }}>
-            Comprehensive chronological audit log across all units, teams, and departments
+            View, search, and manage attendance logs across all departments.
           </p>
         </div>
 
