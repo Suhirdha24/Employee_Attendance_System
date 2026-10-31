@@ -235,13 +235,23 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <button
-            className="btn btn-outline"
-            style={{ width: "100%", padding: "11px", fontWeight: 600 }}
-            onClick={() => nav(auth.user?.role === "employee" ? "/employee" : "/login")}
-          >
-            Go to Employee Portal →
-          </button>
+          <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+            <button
+              className="btn btn-primary"
+              style={{ flex: 1, padding: "11px", fontWeight: 700 }}
+              onClick={() => quickLogin("alex@company.com", "password123", "employee")}
+              disabled={Boolean(demoLoadingRole)}
+            >
+              {demoLoadingRole === "employee" ? "Entering..." : "▶ Open Employee View"}
+            </button>
+            <button
+              className="btn btn-outline"
+              style={{ padding: "11px 16px", fontWeight: 600 }}
+              onClick={() => nav("/login")}
+            >
+              Sign In
+            </button>
+          </div>
         </div>
 
         {/* MANAGER PORTAL CARD */}
@@ -297,13 +307,23 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <button
-            className="btn btn-outline"
-            style={{ width: "100%", padding: "11px", fontWeight: 600 }}
-            onClick={() => nav(auth.user?.role === "manager" ? "/manager" : "/login")}
-          >
-            Go to Manager Portal →
-          </button>
+          <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+            <button
+              className="btn btn-primary"
+              style={{ flex: 1, padding: "11px", fontWeight: 700, background: "#0284c7", borderColor: "#0284c7" }}
+              onClick={() => quickLogin("manager@company.com", "manager123", "manager")}
+              disabled={Boolean(demoLoadingRole)}
+            >
+              {demoLoadingRole === "manager" ? "Entering..." : "▶ Open Manager View"}
+            </button>
+            <button
+              className="btn btn-outline"
+              style={{ padding: "11px 16px", fontWeight: 600 }}
+              onClick={() => nav("/login")}
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       </div>
 

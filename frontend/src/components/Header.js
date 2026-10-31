@@ -1,16 +1,28 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/authSlice";
+import { logout, login } from "../features/authSlice";
 
 export default function Header() {
   const auth = useSelector((s) => s.auth);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
   const closeMenu = () => setMobileMenuOpen(false);
+
+  const handleQuickSwitch = async (targetRole) => {
+    closeMenu();
+    if (targetRole === "manager") {
+      await dispatch(login({ email: "manager@company.com", password: "manager123" }));
+      navigate("/manager");
+    } else {
+      await dispatch(login({ email: "alex@company.com", password: "password123" }));
+      navigate("/employee");
+    }
+  };
 
   return (
     <header className="navbar">
@@ -150,7 +162,25 @@ export default function Header() {
         {/* ZONE 3: ACTIONS & USER PROFILE */}
         <div className="nav-actions">
           {!auth.user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => handleQuickSwitch("employee")}
+                style={{ background: "#eef2ff", color: "#4338ca", border: "1px solid #c7d2fe", fontSize: "12px", fontWeight: 700 }}
+                title="Preview Employee Portal with Alex's account"
+              >
+                👨‍💼 Try Employee
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() => handleQuickSwitch("manager")}
+                style={{ background: "#fdf4ff", color: "#7e22ce", border: "1px solid #f0abfc", fontSize: "12px", fontWeight: 700 }}
+                title="Preview Manager Portal with Eleanor's account"
+              >
+                👩‍💼 Try Manager
+              </button>
               <Link
                 to="/login"
                 className={`nav-link ${isActive("/login") ? "active" : ""}`}
@@ -158,36 +188,44 @@ export default function Header() {
               >
                 Sign In
               </Link>
-              <Link
-                to="/register"
-                className={`btn btn-primary btn-sm ${
-                  isActive("/register") ? "active" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Register
-              </Link>
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => handleQuickSwitch(auth.user.role === "manager" ? "employee" : "manager")}
+                style={{
+                  fontSize: "12px",
+                  padding: "5px 10px",
+                  fontWeight: 600,
+                  background: "var(--bg-surface)",
+                  borderColor: "var(--border-medium)",
+                }}
+                title={auth.user.role === "manager" ? "Switch to Employee View" : "Switch to Manager View"}
+              >
+                ⇄ {auth.user.role === "manager" ? "Employee View" : "Manager View"}
+              </button>
+
               <div className="user-badge">
                 <div className="user-avatar-mini">
                   {auth.user.name ? auth.user.name.charAt(0).toUpperCase() : "U"}
                 </div>
                 <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
-                  {auth.user.name}
+                  {auth.user.name.split(" ")[0]}
                 </span>
                 <span className={`role-pill ${auth.user.role}`}>
                   {auth.user.role}
                 </span>
               </div>
+
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => {
                   closeMenu();
                   dispatch(logout());
                 }}
-                style={{ padding: "6px 14px", fontWeight: 600 }}
+                style={{ padding: "6px 12px", fontWeight: 600 }}
               >
                 Logout
               </button>
