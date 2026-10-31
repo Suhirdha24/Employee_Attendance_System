@@ -136,7 +136,7 @@ export default function RegisterPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
             <div className="form-group">
-              <label className="form-label">Assigned Unit</label>
+              <label className="form-label">Department</label>
               <select
                 className="form-select"
                 value={department}
@@ -153,7 +153,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">System Role</label>
+              <label className="form-label">Role</label>
               <select
                 className="form-select"
                 value={role}
@@ -171,7 +171,7 @@ export default function RegisterPage() {
             style={{ width: "100%", marginTop: "12px", padding: "12px", fontSize: "14.5px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Creating Profile..." : "Complete Enrollment"}
+            {auth.loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 

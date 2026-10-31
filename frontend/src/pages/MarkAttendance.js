@@ -174,7 +174,7 @@ export default function MarkAttendance() {
                 transition: "all 0.15s ease",
               }}
             >
-              🏢 In-Office Station
+              🏢 In-Office
             </button>
             <button
               type="button"
@@ -193,7 +193,7 @@ export default function MarkAttendance() {
                 transition: "all 0.15s ease",
               }}
             >
-              🌐 Authorized Remote / WFH
+              🌐 Remote (WFH)
             </button>
           </div>
         </div>
@@ -233,7 +233,7 @@ export default function MarkAttendance() {
                 fontWeight: 700,
               }}
             >
-              ✕ Not Punched In Today
+              Not Checked In Yet
             </span>
           )}
 
@@ -438,7 +438,7 @@ export default function MarkAttendance() {
             <strong>Half-Day Policy:</strong> Shifts with total logged duration under 4.5 hours are classified as <strong>Half-Day</strong>.
           </li>
           <li>
-            <strong>Remote Work Verification:</strong> Employees operating away from office workstations must select <em>Authorized Remote</em> when recording their shift.
+            <strong>Remote Work:</strong> Working from home or out of office? Simply select <em>Working Remotely</em> when checking in.
           </li>
         </ul>
       </div>

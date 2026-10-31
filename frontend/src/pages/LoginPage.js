@@ -181,7 +181,7 @@ export default function LoginPage() {
             style={{ width: "100%", marginTop: "10px", padding: "12px", fontSize: "14.5px" }}
             disabled={auth.loading}
           >
-            {auth.loading ? "Authenticating..." : "Sign In to Workstation"}
+            {auth.loading ? "Signing in..." : "Sign In"}
           </button>
 
           {auth.error && (
@@ -206,7 +206,7 @@ export default function LoginPage() {
         <div style={{ marginTop: "28px", paddingTop: "20px", borderTop: "1px solid var(--border-subtle)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 600, margin: 0, textTransform: "uppercase" }}>
-              Quick Evaluation Fill:
+              Quick Demo Accounts:
             </p>
             {(email || password) && (
               <button

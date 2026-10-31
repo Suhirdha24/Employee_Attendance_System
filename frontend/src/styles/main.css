@@ -104,6 +104,39 @@ a:hover {
   color: var(--primary-hover);
 }
 
+/* Accessibility Focus Outline for Keyboard Users */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Empty State Helper */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.empty-state-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
 /* --------------------------------------
    LAYOUT STRUCTURE
 -------------------------------------- */
@@ -631,7 +664,7 @@ a:hover {
 }
 
 /* --------------------------------------
-   FILTER CHIPS
+   FILTER CHIPS & SEGMENTED CONTROLS
 -------------------------------------- */
 .filter-chips {
   display: flex;
@@ -641,16 +674,19 @@ a:hover {
 }
 
 .filter-chip {
-  padding: 5px 14px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-medium);
   background: #ffffff;
   color: var(--text-body);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .filter-chip:hover {
@@ -663,7 +699,46 @@ a:hover {
   background: var(--primary);
   border-color: var(--primary);
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+/* WORK MODE SELECTOR BUTTONS */
+.workmode-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: #ffffff;
+  color: var(--text-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.workmode-btn:hover {
+  background: var(--bg-surface);
+  border-color: #94a3b8;
+}
+
+.workmode-btn.active-office {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.workmode-btn.active-remote {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 /* --------------------------------------

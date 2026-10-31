@@ -225,7 +225,7 @@ export default function ReportsPage() {
             📥 Export Report (CSV)
           </button>
           <Link to="/manager" className="btn btn-outline btn-sm" style={{ textDecoration: "none" }}>
-            ← Operations Portal
+            ← Back to Dashboard
           </Link>
         </div>
       </div>
@@ -379,7 +379,7 @@ export default function ReportsPage() {
         <div className="card">
           <h3 style={{ fontSize: "16px", marginBottom: "4px", color: "var(--text-main)" }}>Work Mode Distribution</h3>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "16px" }}>
-            Office workstation vs authorized remote attendance
+            Office vs Remote attendance breakdown
           </p>
 
           <div style={{ width: "100%", height: "260px" }}>

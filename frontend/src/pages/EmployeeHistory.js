@@ -165,13 +165,13 @@ export default function EmployeeHistory() {
             <table className="custom-table">
               <thead>
                 <tr>
-                  <th>Shift Date</th>
+                  <th>Date</th>
                   <th>Work Mode</th>
-                  <th>Check-In Time</th>
-                  <th>Check-Out Time</th>
-                  <th>Duration</th>
-                  <th>Compliance Status</th>
-                  <th>Remarks</th>
+                  <th>Check-In</th>
+                  <th>Check-Out</th>
+                  <th>Hours</th>
+                  <th>Status</th>
+                  <th>Notes</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,10 +223,10 @@ export default function EmployeeHistory() {
             <div>
               <div style={{ marginBottom: "16px" }}>
                 <span style={{ fontSize: "12px", color: "var(--primary)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.04em" }}>
-                  Monthly Attendance Map
+                  Monthly Overview
                 </span>
                 <h2 style={{ fontSize: "20px", marginTop: "2px", color: "var(--text-main)" }}>
-                  Shift Presence Calendar
+                  Monthly Attendance Calendar
                 </h2>
               </div>
 

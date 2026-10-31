@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("StaffTrack HRMS ErrorBoundary caught an error:", error, errorInfo);
+    console.error("StaffTrack Error caught:", error, errorInfo);
   }
 
   handleReset = () => {
@@ -68,10 +68,10 @@ class ErrorBoundary extends React.Component {
               ⚠️
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#0f172a", marginBottom: "8px" }}>
-              Workstation Interface Alert
+              Something Went Wrong
             </h2>
             <p style={{ fontSize: "14px", color: "#64748b", lineHeight: 1.6, marginBottom: "20px" }}>
-              The workstation encountered an unexpected error while initializing. This typically occurs when previous session cache or network cookies are invalid.
+              The page ran into an unexpected issue. Please click Reload to refresh the screen, or reset your session cache if the issue persists.
             </p>
 
             {this.state.error && (
@@ -107,7 +107,7 @@ class ErrorBoundary extends React.Component {
                   cursor: "pointer",
                 }}
               >
-                Reload Workstation
+                Reload Page
               </button>
               <button
                 onClick={this.handleReset}

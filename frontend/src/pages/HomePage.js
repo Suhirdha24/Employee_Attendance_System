@@ -8,6 +8,7 @@ export default function HomePage() {
   const dispatch = useDispatch();
   const auth = useSelector((s) => s.auth);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [demoLoadingRole, setDemoLoadingRole] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -15,9 +16,14 @@ export default function HomePage() {
   }, []);
 
   const quickLogin = async (email, password, role) => {
-    const res = await dispatch(login({ email, password }));
-    if (res.meta.requestStatus === "fulfilled") {
-      nav(role === "manager" ? "/manager" : "/employee");
+    setDemoLoadingRole(role);
+    try {
+      const res = await dispatch(login({ email, password }));
+      if (res.meta.requestStatus === "fulfilled") {
+        nav(role === "manager" ? "/manager" : "/employee");
+      }
+    } finally {
+      setDemoLoadingRole(null);
     }
   };
 
@@ -143,16 +149,18 @@ export default function HomePage() {
             <button
               className="btn btn-sm"
               style={{ background: "#eef2ff", color: "#4338ca", border: "1px solid #c7d2fe" }}
+              disabled={Boolean(demoLoadingRole)}
               onClick={() => quickLogin("alex@company.com", "password123", "employee")}
             >
-              👨‍💼 Alex (Employee)
+              {demoLoadingRole === "employee" ? "Signing in..." : "👨‍💼 Alex (Employee)"}
             </button>
             <button
               className="btn btn-sm"
               style={{ background: "#fdf4ff", color: "#7e22ce", border: "1px solid #f0abfc" }}
+              disabled={Boolean(demoLoadingRole)}
               onClick={() => quickLogin("manager@company.com", "manager123", "manager")}
             >
-              👩‍💼 Eleanor (Manager)
+              {demoLoadingRole === "manager" ? "Signing in..." : "👩‍💼 Eleanor (Manager)"}
             </button>
           </div>
         )}

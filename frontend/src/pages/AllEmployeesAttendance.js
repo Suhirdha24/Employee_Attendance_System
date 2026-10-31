@@ -229,7 +229,7 @@ export default function AllEmployeesAttendance() {
             📥 Export CSV
           </button>
           <Link to="/manager" className="btn btn-primary btn-sm" style={{ textDecoration: "none" }}>
-            ← Operations Portal
+            ← Back to Dashboard
           </Link>
         </div>
       </div>
@@ -244,7 +244,7 @@ export default function AllEmployeesAttendance() {
           <input
             type="text"
             className="input-field"
-            placeholder="Search by name, ID, unit, or email..."
+            placeholder="Search by name, ID, department, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

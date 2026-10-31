@@ -317,20 +317,66 @@ export default function ManagerDashboard() {
               style={{ border: "none" }}
               onClick={() => setActiveTab("today")}
             >
-              📅 Today's Live Roster ({todayList.length})
+              📅 Today's Attendance ({todayList.length})
             </button>
             <button
               className={`btn btn-sm ${activeTab === "all" ? "btn-primary" : "btn-outline"}`}
               style={{ border: "none" }}
               onClick={() => setActiveTab("all")}
             >
-              📁 All Historical Records ({allList.length})
+              📁 All Records ({allList.length})
             </button>
           </div>
 
           <div style={{ fontSize: "13px", color: "var(--text-muted)" }}>
             Showing <strong>{displayedList.length}</strong> records
           </div>
+        </div>
+
+        {/* ONE-CLICK QUICK FILTER CHIPS */}
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "18px" }}>
+          <button
+            type="button"
+            className={`filter-chip ${selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
+            onClick={() => { setSelectedStatus("all"); setSelectedWorkMode("all"); }}
+          >
+            All Staff
+          </button>
+          <button
+            type="button"
+            className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
+            onClick={() => setSelectedStatus(selectedStatus === "present" ? "all" : "present")}
+          >
+            🟢 Present ({summary?.presentToday || 0})
+          </button>
+          <button
+            type="button"
+            className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
+            onClick={() => setSelectedStatus(selectedStatus === "late" ? "all" : "late")}
+          >
+            ⏰ Late ({summary?.lateToday || 0})
+          </button>
+          <button
+            type="button"
+            className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
+            onClick={() => setSelectedStatus(selectedStatus === "absent" ? "all" : "absent")}
+          >
+            ❌ Absent ({summary?.absentToday || 0})
+          </button>
+          <button
+            type="button"
+            className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
+            onClick={() => setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote")}
+          >
+            🌐 Remote ({summary?.remoteToday || 0})
+          </button>
+          <button
+            type="button"
+            className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
+            onClick={() => setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office")}
+          >
+            🏢 In-Office ({summary?.officeToday || 0})
+          </button>
         </div>
 
         {/* SEARCH & FILTERS ROW */}
