@@ -289,3 +289,4 @@ export function saveMockStore(records, todayRecords) {
     if (todayRecords) localStorage.setItem(STORAGE_KEY_TODAY, JSON.stringify(todayRecords));
   } catch (_) {}
 }
+

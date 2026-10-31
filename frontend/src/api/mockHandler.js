@@ -157,6 +157,37 @@ export function handleMockRequest(config) {
     });
   }
 
+  if (url === "/attendance/workmode" && (method === "put" || method === "post")) {
+    let todayItem = todayRecords.find(
+      (r) => r.userId === currentUserId || (currentUser && r.employeeId === currentUser.employeeId)
+    );
+
+    if (!todayItem) {
+      todayItem = {
+        _id: `rec_${todayStr}_${currentUserId}`,
+        userId: currentUserId,
+        name: currentUser?.name || "Alex Johnson",
+        employeeId: currentUser?.employeeId || "EMP1001",
+        department: currentUser?.department || "Engineering",
+        email: currentUser?.email || "alex@company.com",
+        date: todayStr,
+        checkInTime: null,
+        checkOutTime: null,
+        totalHours: 0,
+        status: "absent",
+        remarks: "",
+      };
+      todayRecords.push(todayItem);
+    }
+
+    todayItem.workMode = body.workMode || "Office";
+    saveMockStore(records, todayRecords);
+    return ok({
+      message: `Work mode updated to ${todayItem.workMode === "Remote" ? "Remote (WFH)" : "In-Office"}`,
+      attendance: todayItem,
+    });
+  }
+
   if (url === "/attendance/checkin" && method === "post") {
     let todayItem = todayRecords.find(
       (r) => r.userId === currentUserId || (currentUser && r.employeeId === currentUser.employeeId)
@@ -339,3 +370,4 @@ export function handleMockRequest(config) {
   // Fallback default
   return ok({ message: "OK" });
 }
+

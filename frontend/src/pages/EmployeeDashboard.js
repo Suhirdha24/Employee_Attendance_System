@@ -54,6 +54,21 @@ export default function EmployeeDashboard() {
     loadData();
   }, []);
 
+  const handleSelectWorkMode = async (mode) => {
+    setWorkMode(mode);
+    if (isCheckedIn && !isCheckedOut) {
+      try {
+        const res = await API.put("/attendance/workmode", { workMode: mode });
+        addToast(res.data?.message || `Switched work mode to ${mode === "Remote" ? "Remote (WFH)" : "In-Office"}`, "success");
+        await loadData();
+      } catch (err) {
+        addToast(err.response?.data?.message || "Failed to switch work mode", "error");
+      }
+    } else {
+      addToast(`Selected ${mode === "Remote" ? "Remote (WFH)" : "In-Office"} for check-in`, "info");
+    }
+  };
+
   const handleCheckIn = async () => {
     setActionLoading(true);
     try {
@@ -251,7 +266,7 @@ export default function EmployeeDashboard() {
               <button
                 type="button"
                 className={`workmode-btn ${workMode === "Office" ? "active-office" : ""}`}
-                onClick={() => setWorkMode("Office")}
+                onClick={() => handleSelectWorkMode("Office")}
               >
                 <span style={{ fontSize: "18px" }}>🏢</span>
                 <span>Working in Office</span>
@@ -259,10 +274,10 @@ export default function EmployeeDashboard() {
               <button
                 type="button"
                 className={`workmode-btn ${workMode === "Remote" ? "active-remote" : ""}`}
-                onClick={() => setWorkMode("Remote")}
+                onClick={() => handleSelectWorkMode("Remote")}
               >
                 <span style={{ fontSize: "18px" }}>🌐</span>
-                <span>Working Remotely</span>
+                <span>Remote (WFH)</span>
               </button>
             </div>
           </div>
@@ -284,9 +299,28 @@ export default function EmployeeDashboard() {
           >
             <div>
               <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Work Mode</span>
-              <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-main)", marginTop: "3px" }}>
-                {(todayData?.attendance?.workMode || workMode) === "Remote" ? "🌐 Remote" : "🏢 Office"}
-              </p>
+              <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                <button
+                  type="button"
+                  onClick={() => handleSelectWorkMode("Office")}
+                  className={`workmode-btn ${(todayData?.attendance?.workMode || workMode) === "Office" ? "active-office" : ""}`}
+                  style={{ padding: "4px 8px", fontSize: "11.5px" }}
+                  disabled={isCheckedOut}
+                  title="Switch to Office"
+                >
+                  🏢 Office
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectWorkMode("Remote")}
+                  className={`workmode-btn ${(todayData?.attendance?.workMode || workMode) === "Remote" ? "active-remote" : ""}`}
+                  style={{ padding: "4px 8px", fontSize: "11.5px" }}
+                  disabled={isCheckedOut}
+                  title="Switch to Remote (WFH)"
+                >
+                  🌐 Remote
+                </button>
+              </div>
             </div>
 
             <div>

@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   checkIn,
   checkOut,
+  updateWorkMode,
   myHistory,
   todayStatus,
   mySummary,
@@ -19,6 +20,7 @@ const { protect, authorize } = require("../middleware/authMiddleware.js");
 // Employee routes (Requires authentication)
 router.post("/checkin", protect, checkIn);
 router.post("/checkout", protect, checkOut);
+router.put("/workmode", protect, updateWorkMode);
 router.get("/my-history", protect, myHistory);
 router.get("/my-summary", protect, mySummary);
 router.get("/today", protect, todayStatus);

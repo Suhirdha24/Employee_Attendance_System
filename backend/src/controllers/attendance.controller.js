@@ -111,6 +111,40 @@ exports.checkOut = async (req, res) => {
   }
 };
 
+// UPDATE WORK MODE (OFFICE / REMOTE WFH)
+exports.updateWorkMode = async (req, res) => {
+  try {
+    const userId = req.user?._id || req.body.userId;
+    if (!userId) return res.status(400).json({ message: "userId required" });
+
+    const { workMode } = req.body;
+    if (!workMode) return res.status(400).json({ message: "workMode required" });
+
+    const date = todayStr();
+    let att = await Attendance.findOne({ userId, date });
+
+    if (!att) {
+      att = await Attendance.create({
+        userId,
+        date,
+        workMode,
+        status: "absent",
+      });
+    } else {
+      att.workMode = workMode;
+      await att.save();
+    }
+
+    res.json({
+      message: `Work mode updated to ${workMode === "Remote" ? "Remote (WFH)" : "In-Office"}`,
+      attendance: att,
+    });
+  } catch (err) {
+    console.error("Update work mode error:", err);
+    res.status(500).json({ message: "Server error updating work mode" });
+  }
+};
+
 // EMPLOYEE ATTENDANCE HISTORY
 exports.myHistory = async (req, res) => {
   try {

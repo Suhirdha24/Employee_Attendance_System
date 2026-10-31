@@ -49,6 +49,21 @@ export default function MarkAttendance() {
     loadTodayStatus();
   }, []);
 
+  const handleSelectWorkMode = async (mode) => {
+    setWorkMode(mode);
+    if (isCheckedIn && !isCheckedOut) {
+      try {
+        const res = await API.put("/attendance/workmode", { workMode: mode });
+        addToast(res.data?.message || `Switched work mode to ${mode === "Remote" ? "Remote (WFH)" : "In-Office"}`, "success");
+        await loadTodayStatus();
+      } catch (err) {
+        addToast(err.response?.data?.message || "Failed to switch work mode", "error");
+      }
+    } else {
+      addToast(`Selected ${mode === "Remote" ? "Remote (WFH)" : "In-Office"} for check-in`, "info");
+    }
+  };
+
   const handleCheckIn = async () => {
     setActionLoading(true);
     try {
@@ -155,43 +170,44 @@ export default function MarkAttendance() {
               padding: "4px",
               borderRadius: "var(--radius-full)",
               border: "1px solid var(--border-medium)",
+              boxShadow: "var(--shadow-xs)",
             }}
           >
             <button
               type="button"
-              disabled={isCheckedIn}
-              onClick={() => setWorkMode("Office")}
+              onClick={() => handleSelectWorkMode("Office")}
               style={{
                 padding: "8px 22px",
                 borderRadius: "var(--radius-full)",
                 fontSize: "13.5px",
-                fontWeight: 600,
+                fontWeight: 700,
                 background: workMode === "Office" ? "var(--primary)" : "transparent",
                 color: workMode === "Office" ? "#ffffff" : "var(--text-body)",
                 border: "none",
-                boxShadow: workMode === "Office" ? "0 2px 4px rgba(79, 70, 229, 0.3)" : "none",
-                cursor: isCheckedIn ? "default" : "pointer",
+                boxShadow: workMode === "Office" ? "0 2px 6px rgba(79, 70, 229, 0.3)" : "none",
+                cursor: "pointer",
                 transition: "all 0.15s ease",
               }}
+              title="Click to switch to In-Office"
             >
               🏢 In-Office
             </button>
             <button
               type="button"
-              disabled={isCheckedIn}
-              onClick={() => setWorkMode("Remote")}
+              onClick={() => handleSelectWorkMode("Remote")}
               style={{
                 padding: "8px 22px",
                 borderRadius: "var(--radius-full)",
                 fontSize: "13.5px",
-                fontWeight: 600,
-                background: workMode === "Remote" ? "var(--primary)" : "transparent",
+                fontWeight: 700,
+                background: workMode === "Remote" ? "#10b981" : "transparent",
                 color: workMode === "Remote" ? "#ffffff" : "var(--text-body)",
                 border: "none",
-                boxShadow: workMode === "Remote" ? "0 2px 4px rgba(79, 70, 229, 0.3)" : "none",
-                cursor: isCheckedIn ? "default" : "pointer",
+                boxShadow: workMode === "Remote" ? "0 2px 6px rgba(16, 185, 129, 0.3)" : "none",
+                cursor: "pointer",
                 transition: "all 0.15s ease",
               }}
+              title="Click to switch to Remote (WFH)"
             >
               🌐 Remote (WFH)
             </button>
