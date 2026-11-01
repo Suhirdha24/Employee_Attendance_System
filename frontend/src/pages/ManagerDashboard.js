@@ -237,6 +237,16 @@ export default function ManagerDashboard() {
         </div>
 
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={async () => {
+              await loadData();
+              addToast("Attendance records refreshed!", "success");
+            }}
+            title="Refresh attendance records"
+          >
+            🔄 Refresh
+          </button>
           <button className="btn btn-outline btn-sm" onClick={handleExportCSV}>
             📥 Export CSV
           </button>
@@ -307,7 +317,7 @@ export default function ManagerDashboard() {
             alignItems: "center",
             flexWrap: "wrap",
             gap: "16px",
-            marginBottom: "20px",
+            marginBottom: "16px",
           }}
         >
           {/* TAB SWITCHER */}
@@ -315,68 +325,126 @@ export default function ManagerDashboard() {
             <button
               className={`btn btn-sm ${activeTab === "today" ? "btn-primary" : "btn-outline"}`}
               style={{ border: "none" }}
-              onClick={() => setActiveTab("today")}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedStatus("all");
+                setSelectedWorkMode("all");
+              }}
             >
               📅 Today's Attendance ({todayList.length})
             </button>
             <button
               className={`btn btn-sm ${activeTab === "all" ? "btn-primary" : "btn-outline"}`}
               style={{ border: "none" }}
-              onClick={() => setActiveTab("all")}
+              onClick={() => {
+                setActiveTab("all");
+                setSelectedStatus("all");
+                setSelectedWorkMode("all");
+              }}
             >
               📁 All Records ({allList.length})
             </button>
           </div>
 
           <div style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-            Showing <strong>{displayedList.length}</strong> records
+            {activeTab === "today" ? (
+              <span>Showing <strong>{displayedList.length}</strong> of {todayList.length} staff for today</span>
+            ) : (
+              <span>Showing <strong>{displayedList.length}</strong> of {allList.length} total logs</span>
+            )}
           </div>
         </div>
 
-        {/* ONE-CLICK QUICK FILTER CHIPS */}
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "18px" }}>
-          <button
-            type="button"
-            className={`filter-chip ${selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
-            onClick={() => { setSelectedStatus("all"); setSelectedWorkMode("all"); }}
-          >
-            All Staff
-          </button>
-          <button
-            type="button"
-            className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
-            onClick={() => setSelectedStatus(selectedStatus === "present" ? "all" : "present")}
-          >
-            🟢 Present ({summary?.presentToday || 0})
-          </button>
-          <button
-            type="button"
-            className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
-            onClick={() => setSelectedStatus(selectedStatus === "late" ? "all" : "late")}
-          >
-            ⏰ Late ({summary?.lateToday || 0})
-          </button>
-          <button
-            type="button"
-            className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
-            onClick={() => setSelectedStatus(selectedStatus === "absent" ? "all" : "absent")}
-          >
-            ❌ Absent ({summary?.absentToday || 0})
-          </button>
-          <button
-            type="button"
-            className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
-            onClick={() => setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote")}
-          >
-            🌐 Remote ({summary?.remoteToday || 0})
-          </button>
-          <button
-            type="button"
-            className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
-            onClick={() => setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office")}
-          >
-            🏢 In-Office ({summary?.officeToday || 0})
-          </button>
+        {/* ONE-CLICK QUICK FILTER CHIPS (FOR TODAY'S ROSTER) */}
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Quick Filters for Today's Roster:
+            </span>
+            {(selectedStatus !== "all" || selectedWorkMode !== "all" || searchTerm || selectedDept !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedStatus("all");
+                  setSelectedWorkMode("all");
+                  setSelectedDept("all");
+                  setSearchTerm("");
+                }}
+                style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className={`filter-chip ${activeTab === "today" && selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedStatus("all");
+                setSelectedWorkMode("all");
+              }}
+            >
+              All Staff ({todayList.length})
+            </button>
+            <button
+              type="button"
+              className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedStatus(selectedStatus === "present" ? "all" : "present");
+                setSelectedWorkMode("all");
+              }}
+            >
+              🟢 Present ({summary?.presentToday || 0})
+            </button>
+            <button
+              type="button"
+              className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedStatus(selectedStatus === "late" ? "all" : "late");
+                setSelectedWorkMode("all");
+              }}
+            >
+              ⏰ Late ({summary?.lateToday || 0})
+            </button>
+            <button
+              type="button"
+              className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedStatus(selectedStatus === "absent" ? "all" : "absent");
+                setSelectedWorkMode("all");
+              }}
+            >
+              ❌ Absent ({summary?.absentToday || 0})
+            </button>
+            <button
+              type="button"
+              className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote");
+                setSelectedStatus("all");
+              }}
+            >
+              🌐 Remote ({summary?.remoteToday || 0})
+            </button>
+            <button
+              type="button"
+              className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("today");
+                setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office");
+                setSelectedStatus("all");
+              }}
+            >
+              🏢 In-Office ({summary?.officeToday || 0})
+            </button>
+          </div>
         </div>
 
         {/* SEARCH & FILTERS ROW */}

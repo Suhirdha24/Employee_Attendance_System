@@ -345,10 +345,17 @@ export function handleMockRequest(config) {
       records.find((r) => r._id === recId);
 
     if (item) {
-      if (body.status) item.status = body.status;
+      if (body.status) {
+        item.status = body.status;
+        if (body.status !== "absent" && !item.checkInTime) {
+          item.checkInTime = `${item.date}T09:00:00.000Z`;
+          item.checkOutTime = `${item.date}T17:30:00.000Z`;
+        }
+      }
       if (body.totalHours !== undefined) item.totalHours = Number(body.totalHours);
       if (body.workMode) item.workMode = body.workMode;
       if (body.remarks !== undefined) item.remarks = body.remarks;
+      item.modifiedByManager = true;
       saveMockStore(records, todayRecords);
     }
     return ok({ message: "Attendance adjusted successfully!", attendance: item });
@@ -359,11 +366,14 @@ export function handleMockRequest(config) {
   }
 
   if (url === "/dashboard/manager" && method === "get") {
+    const presentToday = todayRecords.filter((r) => r.status === "present" || r.status === "late").length;
+    const lateToday = todayRecords.filter((r) => r.status === "late").length;
+    const absentToday = todayRecords.filter((r) => r.status === "absent").length;
     return ok({
       totalEmployees: MOCK_USERS.length,
-      presentToday: 10,
-      lateToday: 2,
-      absentToday: 2,
+      presentToday,
+      lateToday,
+      absentToday,
     });
   }
 
