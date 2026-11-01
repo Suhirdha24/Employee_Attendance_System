@@ -19,6 +19,9 @@ export default function ManagerDashboard() {
   const [selectedDept, setSelectedDept] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedWorkMode, setSelectedWorkMode] = useState("all");
+  const [selectedDateFilter, setSelectedDateFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   // Selected Employee for Drill-down Modal
   const [selectedEmp, setSelectedEmp] = useState(null);
@@ -81,11 +84,52 @@ export default function ManagerDashboard() {
     loadData();
   }, []);
 
+  // Historical records (past shifts, excluding today's live shift records)
+  const historyList = useMemo(() => {
+    const todayStr =
+      todayList.length > 0 && todayList[0].date
+        ? todayList[0].date
+        : new Date().toISOString().split("T")[0];
+    const pastOnly = allList.filter((r) => r.date !== todayStr);
+    return pastOnly.length > 0 ? pastOnly : allList;
+  }, [allList, todayList]);
+
+  // Available dates for historical date filtering
+  const availableDates = useMemo(() => {
+    const dates = new Set();
+    historyList.forEach((r) => {
+      if (r.date) dates.add(r.date);
+    });
+    return Array.from(dates).sort().reverse();
+  }, [historyList]);
+
+  // Historical counts for quick filter chips
+  const historyCounts = useMemo(() => {
+    const present = historyList.filter((r) => r.status === "present").length;
+    const late = historyList.filter((r) => r.status === "late").length;
+    const absent = historyList.filter((r) => r.status === "absent").length;
+    const remote = historyList.filter((r) => r.workMode === "Remote").length;
+    const office = historyList.filter((r) => r.workMode === "Office").length;
+    return { present, late, absent, remote, office };
+  }, [historyList]);
+
   // Filter current active list
   const displayedList = useMemo(() => {
-    const sourceList = activeTab === "today" ? todayList : allList;
+    let sourceList;
+    if (activeTab === "today") {
+      sourceList = todayList;
+    } else {
+      sourceList = selectedDateFilter === "all_with_today" ? allList : historyList;
+    }
 
     return sourceList.filter((item) => {
+      // Date filter (active on History Archive)
+      const matchDate =
+        activeTab === "today" ||
+        selectedDateFilter === "all" ||
+        selectedDateFilter === "all_with_today" ||
+        item.date === selectedDateFilter;
+
       // Search match
       const q = searchTerm.toLowerCase();
       const matchSearch =
@@ -109,9 +153,17 @@ export default function ManagerDashboard() {
         selectedWorkMode === "all" ||
         (item.workMode && item.workMode.toLowerCase() === selectedWorkMode.toLowerCase());
 
-      return matchSearch && matchDept && matchStatus && matchWorkMode;
+      return matchDate && matchSearch && matchDept && matchStatus && matchWorkMode;
     });
-  }, [activeTab, todayList, allList, searchTerm, selectedDept, selectedStatus, selectedWorkMode]);
+  }, [activeTab, todayList, historyList, allList, searchTerm, selectedDept, selectedStatus, selectedWorkMode, selectedDateFilter]);
+
+  // Total pages and paginated slice for History Archive
+  const totalPages = Math.ceil(displayedList.length / PAGE_SIZE) || 1;
+  const paginatedList = useMemo(() => {
+    if (activeTab === "today") return displayedList;
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return displayedList.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [activeTab, displayedList, currentPage]);
 
   // Export CSV
   const handleExportCSV = () => {
@@ -324,25 +376,29 @@ export default function ManagerDashboard() {
           <div style={{ display: "flex", gap: "8px", background: "var(--bg-surface)", padding: "4px", borderRadius: "10px", border: "1px solid var(--border-subtle)" }}>
             <button
               className={`btn btn-sm ${activeTab === "today" ? "btn-primary" : "btn-outline"}`}
-              style={{ border: "none" }}
+              style={{ border: "none", fontWeight: 600 }}
               onClick={() => {
                 setActiveTab("today");
                 setSelectedStatus("all");
                 setSelectedWorkMode("all");
+                setSelectedDateFilter("all");
+                setCurrentPage(1);
               }}
             >
               📅 Today's Attendance ({todayList.length})
             </button>
             <button
               className={`btn btn-sm ${activeTab === "all" ? "btn-primary" : "btn-outline"}`}
-              style={{ border: "none" }}
+              style={{ border: "none", fontWeight: 600 }}
               onClick={() => {
                 setActiveTab("all");
                 setSelectedStatus("all");
                 setSelectedWorkMode("all");
+                setSelectedDateFilter("all");
+                setCurrentPage(1);
               }}
             >
-              📁 All Records ({allList.length})
+              📁 History Archive ({historyList.length})
             </button>
           </div>
 
@@ -350,25 +406,27 @@ export default function ManagerDashboard() {
             {activeTab === "today" ? (
               <span>Showing <strong>{displayedList.length}</strong> of {todayList.length} staff for today</span>
             ) : (
-              <span>Showing <strong>{displayedList.length}</strong> of {allList.length} total logs</span>
+              <span>Showing <strong>{displayedList.length}</strong> of {historyList.length} past records ({availableDates.length} days)</span>
             )}
           </div>
         </div>
 
-        {/* ONE-CLICK QUICK FILTER CHIPS (FOR TODAY'S ROSTER) */}
+        {/* ONE-CLICK QUICK FILTER CHIPS */}
         <div style={{ marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
             <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Quick Filters for Today's Roster:
+              {activeTab === "today" ? "Quick Filters for Today's Roster:" : "Quick Filters for History Archive:"}
             </span>
-            {(selectedStatus !== "all" || selectedWorkMode !== "all" || searchTerm || selectedDept !== "all") && (
+            {(selectedStatus !== "all" || selectedWorkMode !== "all" || searchTerm || selectedDept !== "all" || selectedDateFilter !== "all") && (
               <button
                 type="button"
                 onClick={() => {
                   setSelectedStatus("all");
                   setSelectedWorkMode("all");
                   setSelectedDept("all");
+                  setSelectedDateFilter("all");
                   setSearchTerm("");
+                  setCurrentPage(1);
                 }}
                 style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: 0 }}
               >
@@ -378,72 +436,145 @@ export default function ManagerDashboard() {
           </div>
 
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              className={`filter-chip ${activeTab === "today" && selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedStatus("all");
-                setSelectedWorkMode("all");
-              }}
-            >
-              All Staff ({todayList.length})
-            </button>
-            <button
-              type="button"
-              className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedStatus(selectedStatus === "present" ? "all" : "present");
-                setSelectedWorkMode("all");
-              }}
-            >
-              🟢 Present ({summary?.presentToday || 0})
-            </button>
-            <button
-              type="button"
-              className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedStatus(selectedStatus === "late" ? "all" : "late");
-                setSelectedWorkMode("all");
-              }}
-            >
-              ⏰ Late ({summary?.lateToday || 0})
-            </button>
-            <button
-              type="button"
-              className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedStatus(selectedStatus === "absent" ? "all" : "absent");
-                setSelectedWorkMode("all");
-              }}
-            >
-              ❌ Absent ({summary?.absentToday || 0})
-            </button>
-            <button
-              type="button"
-              className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote");
-                setSelectedStatus("all");
-              }}
-            >
-              🌐 Remote ({summary?.remoteToday || 0})
-            </button>
-            <button
-              type="button"
-              className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("today");
-                setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office");
-                setSelectedStatus("all");
-              }}
-            >
-              🏢 In-Office ({summary?.officeToday || 0})
-            </button>
+            {activeTab === "today" ? (
+              <>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus("all");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  All Staff ({todayList.length})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "present" ? "all" : "present");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🟢 Present ({summary?.presentToday || 0})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "late" ? "all" : "late");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  ⏰ Late ({summary?.lateToday || 0})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "absent" ? "all" : "absent");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  ❌ Absent ({summary?.absentToday || 0})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote");
+                    setSelectedStatus("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🌐 Remote ({summary?.remoteToday || 0})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office");
+                    setSelectedStatus("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🏢 In-Office ({summary?.officeToday || 0})
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "all" && selectedWorkMode === "all" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus("all");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  All History Logs ({historyList.length})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "present" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "present" ? "all" : "present");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🟢 Present ({historyCounts.present})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "late" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "late" ? "all" : "late");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  ⏰ Late ({historyCounts.late})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedStatus === "absent" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedStatus(selectedStatus === "absent" ? "all" : "absent");
+                    setSelectedWorkMode("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  ❌ Absent ({historyCounts.absent})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedWorkMode === "Remote" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedWorkMode(selectedWorkMode === "Remote" ? "all" : "Remote");
+                    setSelectedStatus("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🌐 Remote ({historyCounts.remote})
+                </button>
+                <button
+                  type="button"
+                  className={`filter-chip ${selectedWorkMode === "Office" ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedWorkMode(selectedWorkMode === "Office" ? "all" : "Office");
+                    setSelectedStatus("all");
+                    setCurrentPage(1);
+                  }}
+                >
+                  🏢 In-Office ({historyCounts.office})
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -505,6 +636,28 @@ export default function ManagerDashboard() {
             </select>
           </div>
 
+          {activeTab === "all" && (
+            <div>
+              <label className="form-label">Filter Date</label>
+              <select
+                className="form-select"
+                value={selectedDateFilter}
+                onChange={(e) => {
+                  setSelectedDateFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="all">All Past Dates ({historyList.length} logs)</option>
+                {availableDates.map((d) => (
+                  <option key={d} value={d}>
+                    📅 {d}
+                  </option>
+                ))}
+                <option value="all_with_today">All Dates + Today ({allList.length} logs)</option>
+              </select>
+            </div>
+          )}
+
           <div style={{ display: "flex", alignItems: "flex-end" }}>
             <button
               className="btn btn-outline"
@@ -514,6 +667,8 @@ export default function ManagerDashboard() {
                 setSelectedDept("all");
                 setSelectedStatus("all");
                 setSelectedWorkMode("all");
+                setSelectedDateFilter("all");
+                setCurrentPage(1);
               }}
             >
               Reset Filters
@@ -523,7 +678,81 @@ export default function ManagerDashboard() {
       </div>
 
       {/* ATTENDANCE TABLE */}
-      <div className="card">
+      <div className="card" style={{ padding: "0", overflow: "hidden" }}>
+        {/* Table Header Banner */}
+        <div
+          style={{
+            padding: "16px 24px",
+            borderBottom: "1px solid var(--border-subtle)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px",
+            background: activeTab === "today" ? "linear-gradient(to right, #f8fafc, #eff6ff)" : "linear-gradient(to right, #f8fafc, #f1f5f9)",
+          }}
+        >
+          <div>
+            <h3
+              style={{
+                fontSize: "16px",
+                fontWeight: 700,
+                color: "var(--text-main)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              {activeTab === "today" ? (
+                <>
+                  <span>📅 Today's Shift Roster</span>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      padding: "2px 8px",
+                      borderRadius: "12px",
+                      background: "#dbeafe",
+                      color: "#1d4ed8",
+                      fontWeight: 700,
+                    }}
+                  >
+                    LIVE TODAY ({todayList.length} STAFF)
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>📁 Historical Attendance Archive</span>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      padding: "2px 8px",
+                      borderRadius: "12px",
+                      background: "#e2e8f0",
+                      color: "#334155",
+                      fontWeight: 700,
+                    }}
+                  >
+                    PAST RECORDS ({displayedList.length} LOGS)
+                  </span>
+                </>
+              )}
+            </h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "3px" }}>
+              {activeTab === "today"
+                ? "Live real-time punch-ins, work mode, and current elapsed duration for today."
+                : `Past shift attendance logs across ${availableDates.length} working days. Filter by date or paginate below.`}
+            </p>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+              {activeTab === "today"
+                ? `${displayedList.length} of ${todayList.length} staff`
+                : `Showing ${paginatedList.length} of ${displayedList.length} (Page ${currentPage} of ${totalPages})`}
+            </span>
+          </div>
+        </div>
+
         <div className="table-wrapper">
           <table className="modern-table">
             <thead>
@@ -531,24 +760,24 @@ export default function ManagerDashboard() {
                 <th>Employee</th>
                 <th>Employee ID</th>
                 <th>Department</th>
-                <th>Date</th>
+                <th>{activeTab === "today" ? "Shift Day" : "Date"}</th>
                 <th>Work Mode</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
-                <th>Duration</th>
+                <th>{activeTab === "today" ? "Live Duration" : "Hours Worked"}</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {displayedList.length === 0 ? (
+              {paginatedList.length === 0 ? (
                 <tr>
                   <td colSpan="10" style={{ textAlign: "center", padding: "36px", color: "var(--text-dim)" }}>
                     {loading ? "Loading attendance records..." : "No attendance records match your current filter."}
                   </td>
                 </tr>
               ) : (
-                displayedList.map((item) => {
+                paginatedList.map((item) => {
                   const activeDuration = getActiveDuration(item.checkInTime, item.checkOutTime);
 
                   return (
@@ -579,7 +808,38 @@ export default function ManagerDashboard() {
                         {item.employeeId || "-"}
                       </td>
                       <td>{item.department || "General"}</td>
-                      <td style={{ fontWeight: 500 }}>{item.date}</td>
+                      <td>
+                        {activeTab === "today" ? (
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              padding: "3px 8px",
+                              borderRadius: "6px",
+                              background: "#eff6ff",
+                              color: "#1d4ed8",
+                              fontWeight: 600,
+                              border: "1px solid #bfdbfe",
+                            }}
+                          >
+                            Today
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontFamily: "monospace",
+                              fontWeight: 600,
+                              color: "#334155",
+                              background: "#f8fafc",
+                              padding: "4px 8px",
+                              borderRadius: "6px",
+                              border: "1px solid #e2e8f0",
+                              fontSize: "12px",
+                            }}
+                          >
+                            📅 {item.date}
+                          </span>
+                        )}
+                      </td>
                       <td>
                         <span className={`badge-workmode ${(item.workMode || "Office").toLowerCase()}`}>
                           {item.workMode === "Remote" ? "🌐 Remote" : "🏢 Office"}
@@ -588,15 +848,17 @@ export default function ManagerDashboard() {
                       <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkInTime)}</td>
                       <td style={{ fontFamily: "monospace" }}>{formatTime(item.checkOutTime)}</td>
                       <td style={{ fontWeight: 600 }}>
-                        {activeDuration ? (
+                        {activeTab === "today" && activeDuration ? (
                           <span style={{ color: "#059669", display: "inline-flex", alignItems: "center", gap: "5px" }}>
                             <span className="pulse-indicator"></span>
                             {activeDuration}
                           </span>
-                        ) : item.totalHours && item.totalHours !== "-" ? (
-                          `${item.totalHours} hrs`
+                        ) : item.totalHours && item.totalHours !== "-" && Number(item.totalHours) > 0 ? (
+                          <span style={{ color: "var(--text-main)" }}>
+                            {item.totalHours} hrs
+                          </span>
                         ) : (
-                          "-"
+                          <span style={{ color: "var(--text-muted)" }}>-</span>
                         )}
                       </td>
                       <td>
@@ -635,6 +897,45 @@ export default function ManagerDashboard() {
             </tbody>
           </table>
         </div>
+
+        {/* PAGINATION BAR FOR HISTORICAL ARCHIVE */}
+        {activeTab !== "today" && totalPages > 1 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "14px 24px",
+              borderTop: "1px solid var(--border-subtle)",
+              background: "var(--bg-surface)",
+              flexWrap: "wrap",
+              gap: "10px",
+            }}
+          >
+            <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>
+              Showing <strong>{(currentPage - 1) * PAGE_SIZE + 1}</strong> – <strong>{Math.min(currentPage * PAGE_SIZE, displayedList.length)}</strong> of <strong>{displayedList.length}</strong> records
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <button
+                className="btn btn-outline btn-sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              >
+                ← Previous
+              </button>
+              <span style={{ fontSize: "13px", fontWeight: 600, padding: "0 6px" }}>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="btn btn-outline btn-sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* RECTIFY / ADJUST MODAL */}
