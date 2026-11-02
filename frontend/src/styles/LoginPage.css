@@ -1,174 +1,231 @@
 /* ==========================================================================
-   STAFFTRACK HRMS — MODERN CLEAN LOGIN PAGE
-   Simple, Neat, Elegant SaaS Card with 1-Click Role Access
+   STAFFTRACK HRMS — MODERN CORPORATE LOGIN (STRIPE / WORKDAY STYLE)
+   High-Trust, Clean B2B Enterprise Authentication Interface
    ========================================================================== */
 
-.clean-login-wrapper {
+.corp-login-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justifyContent: center;
+  align-items: center;
+  padding: 40px 20px 60px;
+  background-color: #f8fafc;
+  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+.corp-login-container {
+  width: 100%;
   max-width: 440px;
-  margin: 40px auto 60px;
-  padding: 0 16px;
+  margin: 0 auto;
 }
 
-.clean-login-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  padding: 36px 32px;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s ease;
+/* Corporate Brand Header */
+.corp-brand-header {
+  text-align: center;
+  margin-bottom: 28px;
 }
 
-.clean-brand-icon {
+.corp-emblem-badge {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: var(--primary-gradient);
-  color: #ffffff;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 800;
   margin: 0 auto 16px;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  color: #ffffff;
 }
 
-.clean-login-title {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-main);
-  letter-spacing: -0.02em;
-  text-align: center;
+.corp-company-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin-bottom: 6px;
 }
 
-.clean-login-subtitle {
-  color: var(--text-muted);
-  font-size: 13.5px;
-  text-align: center;
-  line-height: 1.5;
-  margin-bottom: 24px;
+.corp-company-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
 }
 
-/* 1-Click Role Demo Cards */
-.demo-role-grid {
+.corp-tier-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4338ca;
+  background: #e0e7ff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #c7d2fe;
+}
+
+.corp-login-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin-bottom: 6px;
+}
+
+.corp-login-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Authentication Card */
+.corp-auth-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  padding: 32px 28px;
+}
+
+/* Segmented Role Switcher */
+.corp-role-segment {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 22px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
 }
 
-.demo-role-btn {
-  background: #f8fafc;
-  border: 1px solid var(--border-medium);
-  border-radius: 12px;
-  padding: 12px;
+.corp-role-tab {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-align: left;
-  cursor: pointer;
+  justify-content: center;
+  gap: 6px;
   transition: all 0.15s ease;
 }
 
-.demo-role-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-
-.demo-role-btn.employee {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1e40af;
-}
-
-.demo-role-btn.employee:hover:not(:disabled) {
-  background: #dbeafe;
-  border-color: #93c5fd;
-}
-
-.demo-role-btn.manager {
-  background: #faf5ff;
-  border-color: #e9d5ff;
-  color: #6b21a8;
-}
-
-.demo-role-btn.manager:hover:not(:disabled) {
-  background: #f3e8ff;
-  border-color: #d8b4fe;
-}
-
-.demo-role-icon {
-  font-size: 22px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.demo-role-title {
-  font-size: 13px;
+.corp-role-tab.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
   font-weight: 700;
-  line-height: 1.2;
 }
 
-.demo-role-desc {
-  font-size: 11px;
-  opacity: 0.75;
-  margin-top: 1px;
-}
-
-/* Subtle Divider */
-.clean-divider {
+/* Role Quick Context Banner */
+.corp-demo-banner {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  text-align: center;
-  margin: 20px 0;
-  color: var(--text-dim);
-  font-size: 11.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.clean-divider::before,
-.clean-divider::after {
-  content: "";
-  flex: 1;
-  border-bottom: 1px solid var(--border-subtle);
+.corp-demo-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.clean-divider span {
-  padding: 0 12px;
+.corp-demo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
 }
 
-/* Inputs with Icons */
-.field-wrapper {
+.corp-demo-text {
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.3;
+}
+
+.corp-demo-text strong {
+  color: #0f172a;
+}
+
+.corp-btn-quickfill {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #4338ca;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.corp-btn-quickfill:hover {
+  background: #eef2ff;
+  border-color: #a5b4fc;
+}
+
+/* Form Groups & Inputs */
+.corp-field-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.field-icon-lead {
+.corp-field-icon {
   position: absolute;
   left: 14px;
-  color: var(--text-dim);
+  color: #94a3b8;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.input-with-icon {
-  padding-left: 42px !important;
+.corp-input {
+  width: 100%;
   height: 44px;
+  padding: 0 14px 0 42px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.15s ease;
 }
 
-.field-btn-trail {
+.corp-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.corp-input::placeholder {
+  color: #94a3b8;
+}
+
+.corp-btn-eye {
   position: absolute;
   right: 10px;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--text-muted);
+  color: #64748b;
   padding: 6px;
   display: flex;
   align-items: center;
@@ -176,72 +233,159 @@
   border-radius: 4px;
 }
 
-.field-btn-trail:hover {
-  color: var(--text-main);
+.corp-btn-eye:hover {
+  color: #0f172a;
 }
 
-/* Submit Button */
-.btn-clean-submit {
+/* Corporate Submit Button */
+.corp-btn-submit {
   width: 100%;
-  height: 46px;
-  font-size: 14.5px;
+  height: 44px;
+  background: #4338ca;
+  color: #ffffff;
+  font-size: 14px;
   font-weight: 700;
-  margin-top: 8px;
-  display: inline-flex;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+  margin-top: 6px;
 }
 
-.btn-clean-submit:hover:not(:disabled) {
+.corp-btn-submit:hover:not(:disabled) {
+  background: #3730a3;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(67, 56, 202, 0.35);
 }
 
-.spinner-icon {
+.corp-btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* SSO Divider & Button */
+.corp-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.corp-divider::before,
+.corp-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.corp-divider span {
+  padding: 0 10px;
+}
+
+.corp-btn-sso {
+  width: 100%;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.corp-btn-sso:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Spinner */
+.corp-spinner {
   width: 16px;
   height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
   border-radius: 50%;
-  animation: clean-spin 0.8s linear infinite;
+  animation: corp-spin 0.8s linear infinite;
 }
 
-@keyframes clean-spin {
+@keyframes corp-spin {
   to { transform: rotate(360deg); }
 }
 
-.clean-footer-links {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 13.5px;
-  color: var(--text-muted);
+/* Error Banner */
+.corp-error-banner {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.clean-security-bar {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
+/* Corporate Footer */
+.corp-trust-footer {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.corp-compliance-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 11.5px;
-  color: var(--text-dim);
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 
-@media (max-width: 480px) {
-  .clean-login-wrapper {
-    margin: 20px auto 40px;
-    padding: 0 12px;
-  }
-  .clean-login-card {
-    padding: 28px 20px;
-  }
-  .demo-role-grid {
-    grid-template-columns: 1fr;
-  }
+.corp-compliance-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.corp-footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.corp-footer-links a {
+  color: #64748b;
+  text-decoration: none;
+}
+
+.corp-footer-links a:hover {
+  color: #0f172a;
+}
+
+.corp-copyright {
+  font-size: 11px;
+  color: #94a3b8;
 }
