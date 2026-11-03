@@ -95,27 +95,27 @@ export default function LoginPage() {
   return (
     <div className="corp-login-page">
       <div className="corp-login-container">
-        {/* CORPORATE BRAND HEADER */}
-        <div className="corp-brand-header">
-          <div className="corp-emblem-badge">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-              <path d="M2 17l10 5 10-5"></path>
-              <path d="M2 12l10 5 10-5"></path>
-            </svg>
-          </div>
-
-          <div className="corp-company-row">
-            <span className="corp-company-name">StaffTrack</span>
-            <span className="corp-tier-pill">Enterprise</span>
-          </div>
-
-          <h1 className="corp-login-title">Sign in to your organization</h1>
-          <p className="corp-login-desc">Enter your corporate credentials to access your attendance workspace.</p>
-        </div>
-
-        {/* AUTHENTICATION CARD */}
+        {/* UNIFIED AUTHENTICATION CARD */}
         <div className="corp-auth-card">
+          {/* CORPORATE BRAND HEADER */}
+          <div className="corp-brand-header">
+            <div className="corp-emblem-badge">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+
+            <div className="corp-company-row">
+              <span className="corp-company-name">StaffTrack</span>
+              <span className="corp-tier-pill">Enterprise</span>
+            </div>
+
+            <h1 className="corp-login-title">Sign in to your organization</h1>
+            <p className="corp-login-desc">Enter your corporate credentials to access your attendance workspace.</p>
+          </div>
+
           {/* SEGMENTED ROLE SWITCHER */}
           <div className="corp-role-segment">
             <button

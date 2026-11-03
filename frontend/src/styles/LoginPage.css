@@ -4,15 +4,12 @@
    ========================================================================== */
 
 .corp-login-page {
-  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   justifyContent: center;
   align-items: center;
-  padding: 40px 20px 60px;
-  background-color: #f8fafc;
-  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-  background-size: 24px 24px;
+  padding: 20px 16px 48px;
+  background-color: var(--bg-main, #f8fafc);
 }
 
 .corp-login-container {
@@ -21,23 +18,32 @@
   margin: 0 auto;
 }
 
-/* Corporate Brand Header */
+/* Unified Authentication Card */
+.corp-auth-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  padding: 36px 32px;
+}
+
+/* Corporate Brand Header (Unified Inside Card) */
 .corp-brand-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .corp-emblem-badge {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
+  margin: 0 auto 14px;
   color: #ffffff;
 }
 
@@ -73,22 +79,14 @@
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.025em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .corp-login-desc {
   font-size: 13.5px;
   color: #64748b;
   line-height: 1.5;
-}
-
-/* Authentication Card */
-.corp-auth-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  padding: 32px 28px;
+  margin: 0;
 }
 
 /* Segmented Role Switcher */
@@ -99,7 +97,7 @@
   padding: 4px;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .corp-role-tab {
@@ -272,7 +270,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 20px 0;
+  margin: 18px 0;
   color: #94a3b8;
   font-size: 11px;
   font-weight: 700;
@@ -343,7 +341,7 @@
 
 /* Corporate Footer */
 .corp-trust-footer {
-  margin-top: 24px;
+  margin-top: 22px;
   text-align: center;
 }
 
@@ -356,7 +354,7 @@
   font-size: 11px;
   color: #64748b;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .corp-compliance-item {
