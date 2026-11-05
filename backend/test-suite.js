@@ -78,6 +78,7 @@ async function ensureServerRunning() {
 }
 
 async function runTestSuite() {
+  const startTime = Date.now();
   console.log('====================================================');
   console.log('🧪 RUNNING COMPREHENSIVE ATTENDANCE SYSTEM TEST SUITE');
   console.log('====================================================\n');
@@ -238,8 +239,10 @@ async function runTestSuite() {
     }
   }
 
+  const durationMs = Date.now() - startTime;
   console.log('\n====================================================');
   console.log(`📊 TEST SUITE SUMMARY: ${passed} PASSED | ${failed} FAILED`);
+  console.log(`⏱️ Total Execution Time: ${durationMs}ms`);
   console.log('====================================================');
 
   if (failed === 0) {
